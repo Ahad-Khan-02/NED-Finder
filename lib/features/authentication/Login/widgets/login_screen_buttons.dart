@@ -4,14 +4,23 @@ import 'package:ned_finder/features/authentication/forgot_password/forgot_passwo
 import 'package:ned_finder/features/authentication/signup/sign_up_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
-class LoginScreenButtons extends StatelessWidget {
+class LoginScreenButtons extends StatefulWidget {
   const LoginScreenButtons({
     super.key,
   });
 
   @override
+  State<LoginScreenButtons> createState() => _LoginScreenButtonsState();
+}
+
+class _LoginScreenButtonsState extends State<LoginScreenButtons> {
+  @override
   Widget build(BuildContext context) {
+
+    bool isDark = HelperFunctions.isDarkMode(context); 
+    
     return Column(
       children: [
         Align(
@@ -47,9 +56,9 @@ class LoginScreenButtons extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               CustomTexts.dontHaveAccount,
-              style: TextStyle(color: Colors.black54),
+              style: TextStyle(color:isDark? CustomColors.dmainTextColor : CustomColors.lmainTextColor),
             ),
             TextButton(
               onPressed: () {

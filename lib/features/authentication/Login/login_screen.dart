@@ -5,17 +5,27 @@ import 'package:ned_finder/features/authentication/Login/widgets/login_input_fie
 import 'package:ned_finder/features/authentication/Login/widgets/login_screen_buttons.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+
+  @override
   Widget build(BuildContext context) {
+
+    bool isDark = HelperFunctions.isDarkMode(context);
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: CustomColors.gradientColors,begin: Alignment.topCenter,end: Alignment.bottomCenter),
+          gradient: LinearGradient(colors: isDark? CustomColors.dgradientColors : CustomColors.lgradientColors,begin: Alignment.topCenter,end: Alignment.bottomCenter),
         ),
         child: Center(
           child: SingleChildScrollView(
@@ -24,7 +34,7 @@ class LoginScreen extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 450), // To limit width on large screens
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               decoration: BoxDecoration(
-                color: CustomColors.boxColor,
+                color: isDark?  CustomColors.dboxColor: CustomColors.lboxColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(

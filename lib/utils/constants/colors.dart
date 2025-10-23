@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class CustomColors {
 
@@ -9,12 +8,19 @@ class CustomColors {
 
   static const Color gradientBlue = Colors.blueAccent;
   static const Color gradientWhite = Colors.white;
-  static const  List<Color> gradientColors = [gradientBlue, gradientWhite];
+  static const Color gradientblack = Colors.black;
 
-  static const Color boxColor = Colors.white;  
+  static const  List<Color> lgradientColors = [gradientBlue, gradientWhite];
+  static const  List<Color> dgradientColors = [gradientBlue, gradientblack];
+
+  static const Color lboxColor = Colors.white;
+  static const Color dboxColor = Colors.black;  
+  
   static const Color shadowColor = Colors.black;
 
-  static const Color mainTextColor = Colors.black;
+  static const Color lmainTextColor = Colors.black;
+  static const Color dmainTextColor = Colors.white;
+
   static const Color secondaryTextColor = Color(0xFF4B5363);
   static const Color textButtonColor = Colors.blue;
 

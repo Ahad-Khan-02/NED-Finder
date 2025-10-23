@@ -2,14 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/features/authentication/Login/login_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
-class SignUpScreenButtons extends StatelessWidget {
+class SignUpScreenButtons extends StatefulWidget {
   const SignUpScreenButtons({
     super.key,
   });
 
   @override
+  State<SignUpScreenButtons> createState() => _SignUpScreenButtonsState();
+}
+
+class _SignUpScreenButtonsState extends State<SignUpScreenButtons> {
+  @override
   Widget build(BuildContext context) {
+
+    bool isDark = HelperFunctions.isDarkMode(context); 
+
     return Column(
       children: [
         SizedBox(
@@ -29,9 +38,9 @@ class SignUpScreenButtons extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               CustomTexts.alreadyHaveAccount,
-              style: TextStyle(color: Colors.black54),
+              style: TextStyle(color:isDark? CustomColors.dmainTextColor : CustomColors.lmainTextColor),
             ),
             TextButton(
               onPressed: () {

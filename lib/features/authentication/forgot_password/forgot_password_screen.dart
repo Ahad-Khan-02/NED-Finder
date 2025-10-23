@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/features/authentication/common_widgets/custom_input_fields.dart';
 import 'package:ned_finder/features/authentication/common_widgets/custom_title_with_subtitle.dart';
+import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -32,11 +34,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    bool isDark = HelperFunctions.isDarkMode(context); 
+    
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blueAccent,Colors.white],
+              colors: isDark? CustomColors.dgradientColors : CustomColors.lgradientColors,
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter
               )
@@ -45,6 +50,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Center(
           child: SingleChildScrollView(
             child: Card(
+              color: isDark? CustomColors.dboxColor : CustomColors.lboxColor,
               elevation: 8.0, 
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0), 

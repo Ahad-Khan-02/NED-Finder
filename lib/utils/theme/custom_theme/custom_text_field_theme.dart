@@ -20,7 +20,7 @@ class CustomTextFieldTheme {
   );
 
   static InputDecorationTheme darkInputDecorationTheme = InputDecorationTheme(
-    prefixIconColor: CustomColors.gradientBlue,
+    prefixIconColor: Colors.white,
     floatingLabelStyle: const TextStyle(color: CustomColors.primary),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(CustomSizes.borderRadiusLg),
