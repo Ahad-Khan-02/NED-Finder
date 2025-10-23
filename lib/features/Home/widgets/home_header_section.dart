@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/features/Home/report_item/report_lost_item.dart';
+import 'package:ned_finder/features/Home/report_item/report_item.dart';
 import 'package:ned_finder/features/Home/widgets/Custom_Search_bar.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 
@@ -42,7 +42,9 @@ class HomeHeaderSection extends StatelessWidget {
       children: [
         // + Add Item Button
         TextButton.icon(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>  ReportItemScreen(isLost: false, appBarTitle: CustomTexts.reportFoundItem, )));
+          },
           icon: const Icon(Icons.add, color: Colors.green),
           label: const Text(
             CustomTexts.addItem,
@@ -60,7 +62,7 @@ class HomeHeaderSection extends StatelessWidget {
         // Report Item Button
         TextButton.icon(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) =>  ReportLostItemScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>  ReportItemScreen(isLost: true, appBarTitle: CustomTexts.reportLostItem)));
           },
           icon: const Icon(Icons.warning_amber, color: Colors.red),
           label: const Text(

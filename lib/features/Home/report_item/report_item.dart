@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/features/Home/report_item/lost_item_form_fields.dart';
+import 'package:ned_finder/features/Home/report_item/report_item_form_fields.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
-import 'package:ned_finder/features/authentication/common_widgets/custom_title_with_subtitle.dart'; 
+import 'package:ned_finder/features/authentication/common_widgets/custom_title_with_subtitle.dart';
+import 'package:ned_finder/utils/constants/texts.dart'; 
 
-class ReportLostItemScreen extends StatelessWidget {
-  const ReportLostItemScreen({super.key});
+class ReportItemScreen extends StatelessWidget {
+  const ReportItemScreen({super.key, required this.appBarTitle,required this.isLost});
+
+  final String appBarTitle;
+  
+  final bool isLost;
+
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold provides the app bar and main structure
+    // Scaffold provides the app bar and main structure 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Report Lost Item', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(CustomTexts.reportLostItem, style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -40,15 +46,15 @@ class ReportLostItemScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                // Header (Title and Subtitle)
-                const CustomTitlewithSubtitle(
-                  title: "Lost Something?",
-                  subtitle: "Provide details so we can help you find it.",      
+                // Header (Title and Subtitle) "Lost Something?"
+                CustomTitlewithSubtitle(
+                  title: isLost? CustomTexts.reportLostItemTitle : CustomTexts.reportFoundItemTitle,
+                  subtitle: isLost? CustomTexts.reportLostItemDescription : CustomTexts.reportFoundItemDescription,      
                 ),
                 const SizedBox(height: 30),
 
                 // Main Form Fields
-                const LostItemFormFields(),
+                ReportItemFormFields(isLost: isLost),
                 const SizedBox(height: 30),
 
                 // Submit Button

@@ -98,7 +98,7 @@ class CustomTexts {
 
   static const String searchItems = "Search"; // Simplified to match the input field hint
   
-  static const String addItem = "+ Add Item"; // New button text
+  static const String addItem = "Add Item"; // New button text
   static const String reportItem = "Report Item"; // Button text
   
   // Card Status Tags (Used in the item card)
@@ -114,7 +114,12 @@ class CustomTexts {
 
   // -- Report / Claim Forms --
   static const String reportLostItem = "Report Lost Item";
+  static const String reportLostItemTitle = "Lost Something?";
+  static const String reportFoundItemTitle = "Found Something?";
+  static const String reportLostItemDescription = "Provide details so we can help you find it.";
   static const String reportFoundItem = "Report Found Item";
+  static const String reportFoundItemDescription = "Provide details so we can help you claim it.";
+ 
   static const String itemName = "Item Name";
   static const String itemDescription = "Item Description";
   static const String itemLocation = "Last Seen Location";
