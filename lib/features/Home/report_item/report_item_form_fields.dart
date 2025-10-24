@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 
 
 class ReportItemFormFields extends StatefulWidget {
@@ -59,14 +60,7 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
   InputDecoration _buildInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.blue),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-      ),
+      prefixIcon: Icon(icon),
     );
   }
 
@@ -75,19 +69,20 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
  
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: [
         // 1. Item Name
         TextFormField(
-          decoration: _buildInputDecoration('Item Name', Icons.drive_file_rename_outline),
+          decoration: _buildInputDecoration(CustomTexts.itemName, Icons.drive_file_rename_outline),
         ),
         const SizedBox(height: 20),
 
         // 2. Category Dropdown
         DropdownButtonFormField<String>(
-          decoration: _buildInputDecoration('Category', Icons.category),
+          decoration: _buildInputDecoration(CustomTexts.category, Icons.category),
           value: _selectedCategory,
-          hint: const Text('Select Category'),
+          hint: const Text(CustomTexts.category),
           items: categories.map((String category) {
             return DropdownMenuItem<String>(
               value: category,
@@ -107,13 +102,13 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
           controller: _dateController,
           readOnly: true, // Prevents manual input, forces date picker usage
           onTap: () => _selectDate(context),
-          decoration: _buildInputDecoration(widget.isLost? 'Date Lost' : 'Date Found', Icons.calendar_today),
+          decoration: _buildInputDecoration(widget.isLost? CustomTexts.dateLost : CustomTexts.dateFound, Icons.calendar_today),
         ),
         const SizedBox(height: 20),
 
         // 4. Location Lost
         TextFormField(
-          decoration: _buildInputDecoration(widget.isLost? 'Location Lost (e.g., Library, 1st floor)' : 'Location Found (e.g., Library, 1st floor)', Icons.location_on),
+          decoration: _buildInputDecoration(widget.isLost? CustomTexts.locationLostHint : CustomTexts.locationFoundHint, Icons.location_on),
         ),
         const SizedBox(height: 20),
 
@@ -121,7 +116,7 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
         TextFormField(
           maxLines: 4,
           keyboardType: TextInputType.multiline,
-          decoration: _buildInputDecoration('Description', Icons.description).copyWith(
+          decoration: _buildInputDecoration(CustomTexts.description, Icons.description).copyWith(
             // Override contentPadding to align the text to the top for the multi-line field.
             // The prefixIcon will now align itself vertically near the top of the box.
             contentPadding: const EdgeInsets.fromLTRB(10, 16, 10, 10), 
@@ -135,8 +130,6 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
           icon: const Icon(Icons.cloud_upload),
           label: const Text('Upload Image (Optional)'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.blue,
-            side: const BorderSide(color: Colors.blue),
             minimumSize: const Size(double.infinity, 50),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),

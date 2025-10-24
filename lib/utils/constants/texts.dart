@@ -9,7 +9,7 @@ class CustomTexts {
   static const String ok = "OK";
   static const String next = "Next";
   static const String back = "Back";
-  static const String submit = "Submit";
+  static const String submit = "Submit Report";
   static const String skip = "Skip";
   static const String done = "Done";
   static const String continueText = "Continue";
@@ -120,11 +120,17 @@ class CustomTexts {
   static const String reportFoundItem = "Report Found Item";
   static const String reportFoundItemDescription = "Provide details so we can help you claim it.";
  
+  // -- Report Item Form Fields --
   static const String itemName = "Item Name";
-  static const String itemDescription = "Item Description";
-  static const String itemLocation = "Last Seen Location";
-  static const String itemDate = "Date";
-  static const String itemImage = "Upload Item Image";
+  static const String category = "Category";
+  static const String selectCategory = "Select Category";
+  static const String dateLost = "Date Lost";
+  static const String dateFound = "Date Found";
+  static const String locationLostHint = "Location Lost (e.g., Library, 1st floor)";
+  static const String locationFoundHint = "Location Found (e.g., Library, 1st floor)";
+  static const String description = "Description";
+  static const String uploadImage = "Upload Image (Optional)";
+
   static const String reportSubmitted =
       "Your report has been submitted successfully.";
   static const String claimItem = "Claim Item";

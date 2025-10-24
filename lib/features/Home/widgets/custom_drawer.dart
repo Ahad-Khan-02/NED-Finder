@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/images.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
@@ -22,8 +23,12 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final bool isDark = HelperFunctions.isDarkMode(context);
+
+
     return Drawer(
-      backgroundColor: CustomColors.lightBackground,
+      backgroundColor: isDark? CustomColors.darkBackground :CustomColors.lightBackground,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -39,7 +44,6 @@ class CustomDrawer extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
                   ),
                 ),
               ],
@@ -70,8 +74,8 @@ class CustomDrawer extends StatelessWidget {
                   children: [
                     const CircleAvatar(
                       radius: 20,
-                      backgroundImage: AssetImage(CustomImages.appLogo),
-                      child: Icon(Icons.person, color: Colors.white),
+                      backgroundImage: AssetImage('assets/images/iamge.png'),
+
                     ),
                     const SizedBox(width: 10),
                     Column(
@@ -106,6 +110,7 @@ class CustomDrawer extends StatelessWidget {
     required BuildContext context,
   }) {
     final bool isSelected = selectedIndex == index;
+    final bool isDark = HelperFunctions.isDarkMode(context);
 
     return InkWell(
       onTap: () {
@@ -126,7 +131,7 @@ class CustomDrawer extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.blue : Colors.black87,
+              color: isSelected ? Colors.blue : isDark? Colors.white : Colors.black87,
             ),
             const SizedBox(width: 12),
             Text(
@@ -134,7 +139,7 @@ class CustomDrawer extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? Colors.blue : Colors.black87,
+                color: isSelected ? Colors.blue : isDark? Colors.white : Colors.black87,
               ),
             ),
           ],

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Home/widgets/custom_drawer.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
 import 'package:ned_finder/features/Home/widgets/item_card_list.dart';
+import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 // Note: Removed unused color imports from the class body
 
 class HomeScreen extends StatefulWidget {
@@ -52,16 +54,17 @@ class _HomeScreenState extends State<HomeScreen> {
   // --- BUILD METHOD ---
   @override
   Widget build(BuildContext context) {
+    final bool isDark = HelperFunctions.isDarkMode(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark? CustomColors.darkBackground : CustomColors.lightBackground,
       appBar: AppBar(
         title: const Text(
           CustomTexts.appName,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: isDark? CustomColors.darkBackground : CustomColors.lightBackground,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark? Colors.white : Colors.black,
       ),
 
       // The drawer widget

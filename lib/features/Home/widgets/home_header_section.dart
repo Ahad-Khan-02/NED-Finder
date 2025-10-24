@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Home/report_item/report_item.dart';
 import 'package:ned_finder/features/Home/widgets/Custom_Search_bar.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class HomeHeaderSection extends StatelessWidget {
   const HomeHeaderSection({super.key});
   
-
   @override
   Widget build(BuildContext context) {
+    final bool isDark = HelperFunctions.isDarkMode(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -25,7 +26,7 @@ class HomeHeaderSection extends StatelessWidget {
           const SizedBox(height: 20),
 
           // 2. Search Bar
-          CustomSearchBar(text: 'Search', color: Colors.black),
+          CustomSearchBar(text: 'Search', color: isDark? Colors.white : Colors.black),
           const SizedBox(height: 20),
 
           // 3. Action Buttons (Add/Report)
