@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Required for date formatting
 import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class ViewItemScreen extends StatelessWidget {
   // Pass the item data to the screen
@@ -11,8 +12,9 @@ class ViewItemScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark  = HelperFunctions.isDarkMode(context);
     return Scaffold(
-      backgroundColor: CustomColors.lightBackground,
+      backgroundColor: isDark? CustomColors.darkBackground :CustomColors.lightBackground,
       // No app bar, as the image shows a full-screen image at the top
       body: SingleChildScrollView(
         child: Column(
@@ -42,6 +44,7 @@ class ViewItemScreen extends StatelessWidget {
                     icon: Icons.category,
                     label: 'Category',
                     value: item.category,
+                    isDark: isDark
                   ),
                   const SizedBox(height: 10),
                   
@@ -55,6 +58,7 @@ class ViewItemScreen extends StatelessWidget {
                     icon: Icons.description,
                     label: 'Description',
                     value: item.description,
+                    isDark:isDark
                   ),
                   const SizedBox(height: 20),
 
@@ -63,6 +67,7 @@ class ViewItemScreen extends StatelessWidget {
                     icon: Icons.calendar_today,
                     label: item.dateLabel,
                     value: DateFormat('yyyy-MM-dd').format(item.date),
+                    isDark: isDark
                   ),
                   const SizedBox(height: 20),
 
@@ -71,6 +76,7 @@ class ViewItemScreen extends StatelessWidget {
                     icon: Icons.location_on,
                     label: item.locationLabel,
                     value: item.location,
+                    isDark: isDark
                   ),
                   const SizedBox(height: 30),
 
@@ -134,20 +140,20 @@ class ViewItemScreen extends StatelessWidget {
     required IconData icon,
     required String label,
     required String value,
+    required bool isDark,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, color: Colors.black87, size: 24),
+            Icon(icon, color:isDark? Colors.white : Colors.black, size: 24),
             const SizedBox(width: 8),
             Text(
               label,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
               ),
             ),
           ],
@@ -169,20 +175,20 @@ class ViewItemScreen extends StatelessWidget {
     required IconData icon,
     required String label,
     required String value,
+    required bool isDark,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, color: Colors.black87, size: 24),
+            Icon(icon, color:isDark? Colors.white : Colors.black87, size: 24),
             const SizedBox(width: 8),
             Text(
               label,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
               ),
             ),
           ],
@@ -190,7 +196,7 @@ class ViewItemScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(fontSize: 16, color: Colors.black),
+          style: const TextStyle(fontSize: 16),
         ),
       ],
     );

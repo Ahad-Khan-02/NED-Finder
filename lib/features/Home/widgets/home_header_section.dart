@@ -4,9 +4,18 @@ import 'package:ned_finder/features/Home/widgets/Custom_Search_bar.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
-class HomeHeaderSection extends StatelessWidget {
-  const HomeHeaderSection({super.key});
+class HomeHeaderSection extends StatefulWidget {
+  const HomeHeaderSection({super.key, this.isMyitemsScreen= false});
   
+  final bool isMyitemsScreen;
+
+  @override
+  State<HomeHeaderSection> createState() => _HomeHeaderSectionState();
+}
+
+class _HomeHeaderSectionState extends State<HomeHeaderSection> {
+  String _selectedFilter = CustomTexts.allItemsFilter; 
+ // Initial filter value
   @override
   Widget build(BuildContext context) {
     final bool isDark = HelperFunctions.isDarkMode(context);
@@ -16,27 +25,58 @@ class HomeHeaderSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. Page Title
-          const Text(
-            CustomTexts.home,
+           Text(
+            widget.isMyitemsScreen? CustomTexts.myItems :CustomTexts.home,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 20),
+          widget.isMyitemsScreen? Container(): const SizedBox(height: 20),
 
           // 2. Search Bar
-          CustomSearchBar(text: 'Search', color: isDark? Colors.white : Colors.black),
-          const SizedBox(height: 20),
+          widget.isMyitemsScreen?  _buildActionDropDown(context) :CustomSearchBar(text: 'Search', color: isDark? Colors.white : Colors.black),
+          widget.isMyitemsScreen? Container():const SizedBox(height: 20),
 
           // 3. Action Buttons (Add/Report)
-          _buildActionButtons(context),
+          widget.isMyitemsScreen? const SizedBox() : _buildActionButtons(context),
           const SizedBox(height: 30),
         ],
       ),
     );
   }
 
+  Widget _buildActionDropDown(context) {
+    // Filter Dropdown Section
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      child: Align(
+        alignment: Alignment.topRight,
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: _selectedFilter,
+            icon: const Icon(Icons.arrow_drop_down),
+            style: const TextStyle(color: Colors.black, fontSize: 16),
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedFilter = newValue!;
+              });
+            },
+            items: <String>[
+              CustomTexts.allItemsFilter,
+              CustomTexts.lostItemsFilter,
+              CustomTexts.foundItemsFilter,
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildActionButtons(context) {
     return Row(

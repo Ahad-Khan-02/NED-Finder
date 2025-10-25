@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ned_finder/features/Home/home_screen.dart';
 import 'package:ned_finder/features/Home/widgets/custom_drawer.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
 import 'package:ned_finder/features/Home/widgets/item_card_list.dart';
@@ -7,14 +8,14 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 // Note: Removed unused color imports from the class body
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MyItemsScreen extends StatefulWidget {
+  const MyItemsScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MyItemsScreen> createState() => _MyItemsScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MyItemsScreenState extends State<MyItemsScreen> {
   int _selectedIndex = 0; // Tracks the selected item for highlight
 
   // Method to update the selected index when an item is tapped in the Drawer
@@ -30,21 +31,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMainContent() {
     // We only show the "Home" content when index 0 is selected.
     // For other indices, you would return the MyItemsScreen or SettingsScreen.
+    if (_selectedIndex == 2) {
+      return Center(
+        child: Text(
+          'Viewing ${[CustomTexts.home, CustomTexts.myItems, CustomTexts.settings][_selectedIndex]} Screen',
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
 
-    switch(_selectedIndex){
-      case 0:
-        return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        // 1. Title, Search Bar, and Action Buttons
-        HomeHeaderSection(),
-
-        // 2. Item Cards List
-        ItemCardList(),
-      ],
-    );
-    case 1:
-      return Column(
+    if (_selectedIndex == 0) {
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+    }
+    
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
         // 1. Title, Search Bar, and Action Buttons
@@ -54,20 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ItemCardList(),
       ],
     );
-  
-  default:
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        // 1. Title, Search Bar, and Action Buttons
-        HomeHeaderSection(),
-
-        // 2. Item Cards List
-        ItemCardList(),
-      ],
-    );
   }
-}
 
   // --- BUILD METHOD ---
   @override
