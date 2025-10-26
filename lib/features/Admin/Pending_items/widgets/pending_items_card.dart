@@ -106,6 +106,7 @@ class AdminPendingItemCard extends StatelessWidget {
                       child: OutlinedButton(
                         onPressed: () { /* TODO: Delete Logic */ },
                         style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.red.shade100,
                           foregroundColor: CustomColors.error,
                           side: const BorderSide(color: CustomColors.error),
                         ),
@@ -127,12 +128,12 @@ class AdminPendingItemCard extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: Colors.grey),
+        Icon(icon, size: 16,),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 14, color: Colors.black87),
+            style: const TextStyle(fontSize: 14),
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
           ),

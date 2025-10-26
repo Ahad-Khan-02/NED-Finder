@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Admin_Dashboard/lost_item_model.dart';
 import 'package:ned_finder/Models/Admin_Dashboard/report_item_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 
 
@@ -37,18 +38,20 @@ final List<ReportItemData> _reportItems = [
 
 
 class AdminDataTables extends StatelessWidget {
-  const AdminDataTables({super.key, required this.isLostItemTable});
+  const AdminDataTables({super.key, required this.isLostItemTable,});
 
   final bool isLostItemTable;
+  
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = HelperFunctions.isDarkMode(context);
     return isLostItemTable? Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // --- 1. Lost Items Table (Found Items waiting to be matched) ---
         _buildTableTitle('Lost Items'),
-        _buildLostItemsTable(),
+        _buildLostItemsTable(isDark),
         const SizedBox(height: 40),   
       ],
     ): Column(
@@ -56,7 +59,7 @@ class AdminDataTables extends StatelessWidget {
       children: [
         // --- 1. Lost Items Table (Found Items waiting to be matched) ---
         _buildTableTitle('Found Items'),
-        _buildReportItemsTable(),
+        _buildReportItemsTable(isDark),
         const SizedBox(height: 40),   
       ],
     );
@@ -70,17 +73,16 @@ class AdminDataTables extends StatelessWidget {
         style: const TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.bold,
-          color: Colors.black87,
         ),
       ),
     );
   }
 
   // --- Table for Lost Items (Found by users) ---
-  Widget _buildLostItemsTable() {
+  Widget _buildLostItemsTable(bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: CustomColors.lboxColor,
+        color: isDark? CustomColors.dark :CustomColors.lboxColor,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -130,10 +132,10 @@ class AdminDataTables extends StatelessWidget {
   }
 
   // --- Table for Report Items (Lost by users) ---
-  Widget _buildReportItemsTable() {
+  Widget _buildReportItemsTable(bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: CustomColors.lboxColor,
+        color: isDark? CustomColors.dark: CustomColors.lboxColor,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(

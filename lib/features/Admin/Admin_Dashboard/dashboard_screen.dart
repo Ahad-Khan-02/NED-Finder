@@ -3,19 +3,23 @@ import 'package:ned_finder/features/Admin/Admin_Dashboard/widgets/admin_data_tab
 import 'package:ned_finder/features/Admin/Pending_items/pending_items_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/images.dart';
-import 'package:ned_finder/utils/constants/texts.dart'; 
+import 'package:ned_finder/utils/constants/texts.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart'; 
 
 // --- 1. Define the separate table screens (for the nested navigation) ---
 
 class LostItemsTableScreen extends StatelessWidget {
   const LostItemsTableScreen({super.key});
+
+  
   @override
   Widget build(BuildContext context) {
+    bool isDark = HelperFunctions.isDarkMode(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
       child: Center(
         child: Container(
-          decoration: BoxDecoration(color: CustomColors.white, borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(color: isDark? CustomColors.darkBackground : CustomColors.lightBackground, borderRadius: BorderRadius.circular(12)),
           child: AdminDataTables(isLostItemTable: true)
         ),
       ),
@@ -27,12 +31,13 @@ class ReportedItemsTableScreen extends StatelessWidget {
   const ReportedItemsTableScreen({super.key});
   @override
   Widget build(BuildContext context) {
+    bool isDark = HelperFunctions.isDarkMode(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
       child: Center(
         child: Container(
-          decoration: BoxDecoration(color: CustomColors.white, borderRadius: BorderRadius.circular(12)),
-          child: AdminDataTables(isLostItemTable: false,)
+          decoration: BoxDecoration(color : isDark? CustomColors.darkBackground : CustomColors.lightBackground, borderRadius: BorderRadius.circular(12)),
+          child: AdminDataTables(isLostItemTable: false)
         ),
       ),
     );
@@ -60,11 +65,12 @@ class _DashboardContentScreenState extends State<DashboardContentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = HelperFunctions.isDarkMode(context);
     return Scaffold(
       // Important: Use a container or the background color for the body here, 
       // NOT the main CustomColors.lightBackground, otherwise the BottomAppBar 
       // will use the main Scaffold background color.
-      backgroundColor: Colors.transparent, 
+      backgroundColor:isDark? CustomColors.darkBackground : CustomColors.lightBackground, 
       
       // The body will show the selected table screen
       body: PageStorage(
@@ -104,6 +110,7 @@ class AdminDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = HelperFunctions.isDarkMode(context);
     // The original tabs are restored
     const List<String> tabs = [
       'Dashboard', 
@@ -115,7 +122,7 @@ class AdminDashboardScreen extends StatelessWidget {
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
-        backgroundColor: CustomColors.lightBackground, // Light background for the overall page
+        backgroundColor:isDark? CustomColors.darkBackground : CustomColors.lightBackground,  // Light background for the overall page
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -153,8 +160,9 @@ class AdminDashboardScreen extends StatelessWidget {
 
   // --- Header Widget (Remains the same as your original code) ---
   Widget _buildHeader(BuildContext context, List<String> tabs) {
+    bool isDark = HelperFunctions.isDarkMode(context);
     return Container(
-      color: CustomColors.lboxColor, // White background for the header bar
+      color: isDark? CustomColors.darkBackground : CustomColors.lightBackground, // White background for the header bar
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
       child: SafeArea(
         bottom: false,
@@ -174,7 +182,6 @@ class AdminDashboardScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
                     ),
                   ],
@@ -207,7 +214,7 @@ class AdminDashboardScreen extends StatelessWidget {
                   color: CustomColors.primary,
                 ),
                 labelColor: CustomColors.white,
-                unselectedLabelColor: Colors.black87,
+                unselectedLabelColor: isDark? Colors.white : Colors.black,
                 labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                 unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
               ),

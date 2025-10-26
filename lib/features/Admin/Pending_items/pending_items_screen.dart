@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
 import 'package:ned_finder/features/Admin/Pending_items/widgets/pending_items_card.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class PendingItemsScreen extends StatelessWidget {
   PendingItemsScreen({super.key});
@@ -39,8 +40,9 @@ class PendingItemsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = HelperFunctions.isDarkMode(context);
     return Scaffold(
-      backgroundColor: CustomColors.lightBackground,
+      backgroundColor: isDark? CustomColors.darkBackground :CustomColors.lightBackground,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -51,7 +53,6 @@ class PendingItemsScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
               ),
             ),
             const SizedBox(height: 24),
