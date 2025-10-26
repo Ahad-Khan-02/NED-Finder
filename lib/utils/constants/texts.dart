@@ -144,6 +144,13 @@ class CustomTexts {
   static const String invalidPhone = "Invalid phone number";
   static const String uploadImageError = "Please upload at least one image";
 
+  // -- My Items Screen --
+  static const String myItemsTitle = "My Items";
+  static const String allItemsFilter = "All Items";
+  static const String lostItemsFilter = "Lost Items";
+  static const String foundItemsFilter = "Found Items";
+  static const String filterBy = "Filter by:"; // For the dropdown label
+
   // -- Profile --
   static const String profile = "Profile";
   static const String editProfile = "Edit Profile";
@@ -160,4 +167,10 @@ class CustomTexts {
       "Please check your internet connection and try again.";
   static const String somethingWentWrong = "Something went wrong!";
   static const String tryAgain = "Try Again";
+
+
+
+  // -- Settins --
+  static const String settingsTitle = 'Settings';
+
 }

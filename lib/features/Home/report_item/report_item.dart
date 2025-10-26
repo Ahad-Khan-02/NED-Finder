@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Home/report_item/report_item_form_fields.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
-import 'package:ned_finder/features/authentication/common_widgets/custom_title_with_subtitle.dart';
+import 'package:ned_finder/features/Authentication/common_widgets/custom_title_with_subtitle.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart'; 
 

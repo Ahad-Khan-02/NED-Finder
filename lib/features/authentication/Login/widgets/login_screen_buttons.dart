@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/features/Home/home_screen.dart';
-import 'package:ned_finder/features/authentication/forgot_password/forgot_password_screen.dart';
-import 'package:ned_finder/features/authentication/signup/sign_up_screen.dart';
+import 'package:ned_finder/features/Admin/Admin_Dashboard/dashboard_screen.dart';
+import 'package:ned_finder/features/Authentication/forgot_password/forgot_password_screen.dart';
+import 'package:ned_finder/features/Authentication/signup/sign_up_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
@@ -45,7 +45,7 @@ class _LoginScreenButtonsState extends State<LoginScreenButtons> {
         SizedBox(
         width: double.infinity,
         child: ElevatedButton(onPressed: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) =>  HomeScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) =>  AdminDashboardScreen()));
 
         },
                 

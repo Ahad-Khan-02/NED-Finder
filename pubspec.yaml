@@ -57,7 +57,7 @@ flutter:
   # ----------------(Local Assets)-------------------- 
   assets:
     - assets/logos/
-    # - assets/images/
+    - assets/images/
     # - assets/icons/
     # - assets/icons/categories/
     # - assets/images/onboarding_images/

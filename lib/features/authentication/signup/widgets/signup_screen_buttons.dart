@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/features/authentication/Login/login_screen.dart';
+import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';

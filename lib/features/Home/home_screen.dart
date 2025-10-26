@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Home/widgets/custom_drawer.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
 import 'package:ned_finder/features/Home/widgets/item_card_list.dart';
+import 'package:ned_finder/features/Settings/settings_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
@@ -56,16 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   
   default:
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        // 1. Title, Search Bar, and Action Buttons
-        HomeHeaderSection(),
-
-        // 2. Item Cards List
-        ItemCardList(),
-      ],
-    );
+    return  const SettingsContent();
   }
 }
 

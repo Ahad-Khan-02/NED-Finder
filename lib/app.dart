@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:ned_finder/features/authentication/Login/login_screen.dart';
+import 'package:get/get.dart';
+import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
 import 'package:ned_finder/utils/theme/theme.dart';
+import 'package:ned_finder/utils/theme/theme_controller.dart'; // 🔥 Import the new controller
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      themeMode: ThemeMode.system,
-      theme: CustomAppTheme.lightTheme,
-      darkTheme: CustomAppTheme.darktheme,
-      home: LoginScreen(),
+    // Initialize the ThemeController
+    final themeController = Get.put(ThemeController());
+
+    // Use Obx to rebuild GetMaterialApp when themeMode changes
+    return Obx(
+      () => GetMaterialApp(
+        // 🔥 Use the reactive themeMode from the controller
+        themeMode: themeController.themeMode, 
+        theme: CustomAppTheme.lightTheme,
+        darkTheme: CustomAppTheme.darktheme,
+        home: const LoginScreen(),
+      ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:ned_finder/features/authentication/common_widgets/custom_input_fields.dart';
+import 'package:ned_finder/features/Authentication/common_widgets/custom_input_fields.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 
 class LoginInputFields extends StatefulWidget {
