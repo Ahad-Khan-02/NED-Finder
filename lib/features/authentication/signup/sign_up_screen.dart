@@ -15,6 +15,12 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     bool isDark = HelperFunctions.isDarkMode(context);
+    final TextEditingController passwordController = TextEditingController();
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController fullNameController = TextEditingController();
+    final TextEditingController phoneController = TextEditingController();
+    String user = '';
+    String department = '';
     
     return Scaffold(
       body: Container(
@@ -49,10 +55,24 @@ class SignUpScreen extends StatelessWidget {
         
                   // 2. Email Input Field
                   
-                  SignupInputFields(),
+                  SignupInputFields(
+                    password: passwordController, 
+                    email: emailController, 
+                    fullName: fullNameController, 
+                    phone: phoneController,
+                    onUserChanged: (selectedUser){
+                      user = selectedUser!;
+                    },
+                    onDepartmentChanged: (selectedDepartment){
+                      department = selectedDepartment!;
+                    },
+                  ),
         
                   // 4. Forgot Password Link
-                  SignUpScreenButtons(),
+                  SignUpScreenButtons(
+                    onPressed: (){
+                      
+                  },),
         
                   // 6. Sign Up Link
                   

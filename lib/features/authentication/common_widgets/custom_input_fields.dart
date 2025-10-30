@@ -3,17 +3,21 @@ import 'package:ned_finder/utils/constants/sizes.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField({
-    super.key, required this.icon, required this.text,
+    super.key, required this.icon, required this.text, required this.controller,this.keyboardType=TextInputType.text,
   });
 
   final Icon icon;
   final String text;
+  final TextEditingController controller;
+  final TextInputType keyboardType;
  
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             prefixIcon: icon,
             labelText: text,

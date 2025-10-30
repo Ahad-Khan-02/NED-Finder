@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/features/Admin/Admin_Dashboard/dashboard_screen.dart';
 import 'package:ned_finder/features/Authentication/forgot_password/forgot_password_screen.dart';
 import 'package:ned_finder/features/Authentication/signup/sign_up_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
@@ -9,7 +8,10 @@ import 'package:ned_finder/utils/helpers/helper_functions.dart';
 class LoginScreenButtons extends StatefulWidget {
   const LoginScreenButtons({
     super.key,
+    required this.onPressed,
   });
+
+  final VoidCallback onPressed;
 
   @override
   State<LoginScreenButtons> createState() => _LoginScreenButtonsState();
@@ -44,10 +46,7 @@ class _LoginScreenButtonsState extends State<LoginScreenButtons> {
         // 5. Login Button
         SizedBox(
         width: double.infinity,
-        child: ElevatedButton(onPressed: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) =>  AdminDashboardScreen()));
-
-        },
+        child: ElevatedButton(onPressed: widget.onPressed,
                 
         child: Text(CustomTexts.login))
         ),

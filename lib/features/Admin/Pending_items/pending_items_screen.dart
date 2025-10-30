@@ -15,7 +15,7 @@ class PendingItemsScreen extends StatelessWidget {
       description: 'Isa siyang malaking insecto na kulay black and purple',
       date: '2024-06-05',
       location: 'Jeju island',
-      imageUrl: 'assets/images/beru.jpg', // Placeholder image path
+      imageUrl: 'assets/images/wallet.jpg', // Placeholder image path
       statusColor: Colors.purple,
     ),
     // Item 2: karapatan q
@@ -24,7 +24,7 @@ class PendingItemsScreen extends StatelessWidget {
       description: 'matagal na kasing nawawala karapatan q kasama natin ng pake q, pahanap nalang po',
       date: '2004-11-04',
       location: 'basta nasa pilipinas lang yon di panaman aq nakakaalis ng bansa e',
-      imageUrl: 'assets/images/star.jpg', // Placeholder image path
+      imageUrl: 'assets/images/iamge.png', // Placeholder image path
       statusColor: Colors.blue,
     ),
     // Item 3: menudo
@@ -33,7 +33,7 @@ class PendingItemsScreen extends StatelessWidget {
       description: 'huhu miss ko na siya',
       date: '2024-06-29',
       location: 'sa tabi tabi lang',
-      imageUrl: 'assets/images/frog.jpg', // Placeholder image path
+      imageUrl: 'assets/images/iamge.png', // Placeholder image path
       statusColor: CustomColors.success,
     ),
   ];

@@ -14,11 +14,11 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
   // Function to simulate sending the reset link (you'd add actual logic here)
   void _sendResetLink() {
-    String email = _emailController.text;
+    String email = emailController.text;
     if (email.isNotEmpty) {
       // In a real app, you'd call an API here.
       print('Sending reset link to: $email');
@@ -71,7 +71,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                     // Email Input Field
 
-                    CustomTextFormField(icon: Icon(Icons.email), text: CustomTexts.email),
+                    CustomTextFormField(icon: Icon(Icons.email), text: CustomTexts.email,controller: emailController,),
                    
                     const SizedBox(height: 30),
 

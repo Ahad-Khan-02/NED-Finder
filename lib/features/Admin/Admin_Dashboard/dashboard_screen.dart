@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Admin/Admin_Dashboard/widgets/admin_data_tables.dart';
+import 'package:ned_finder/features/Admin/Admin_Dashboard/widgets/admin_settings_screen.dart';
 import 'package:ned_finder/features/Admin/Pending_items/pending_items_screen.dart';
+import 'package:ned_finder/features/Settings/settings_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/images.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
@@ -191,11 +193,11 @@ class AdminDashboardScreen extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () {
                     // TODO: Implement Log Out logic
-                    print('Admin Log Out pressed');
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminSettingsScreen()));
                   },
-                  icon: const Icon(Icons.logout, color: CustomColors.primary),
+                  icon: const Icon(Icons.settings, color: CustomColors.primary),
                   label: const Text(
-                    'Log Out',
+                    'Settings',
                     style: TextStyle(color: CustomColors.primary, fontWeight: FontWeight.w600),
                   ),
                 ),

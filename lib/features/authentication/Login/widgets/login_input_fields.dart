@@ -5,8 +5,11 @@ import 'package:ned_finder/utils/constants/texts.dart';
 
 class LoginInputFields extends StatefulWidget {
   const LoginInputFields({
-    super.key,
+    super.key, required this.emailController, required this.passwordController,
   });
+
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
 
   @override
   State<LoginInputFields> createState() => _LoginInputFieldsState();
@@ -14,18 +17,25 @@ class LoginInputFields extends StatefulWidget {
 
 class _LoginInputFieldsState extends State<LoginInputFields> {
 
-  final TextEditingController password = TextEditingController();
   bool _obscureText = true;
+  
+
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
 
-        CustomTextFormField(icon: Icon(Icons.email), text:  CustomTexts.email),
+        CustomTextFormField(
+          icon: Icon(Icons.email), 
+          text:  CustomTexts.email,
+          controller: widget.emailController,
+          keyboardType: TextInputType.emailAddress,
+        ),
                 
+
         TextField(
-          controller: password,
+          controller: widget.passwordController,
           obscureText: _obscureText,
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.lock),

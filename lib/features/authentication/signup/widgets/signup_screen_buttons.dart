@@ -7,8 +7,10 @@ import 'package:ned_finder/utils/helpers/helper_functions.dart';
 class SignUpScreenButtons extends StatefulWidget {
   const SignUpScreenButtons({
     super.key,
+    required this.onPressed,
   });
 
+  final VoidCallback onPressed;
   @override
   State<SignUpScreenButtons> createState() => _SignUpScreenButtonsState();
 }
@@ -27,9 +29,7 @@ class _SignUpScreenButtonsState extends State<SignUpScreenButtons> {
         // 5. Login Button
         SizedBox(
         width: double.infinity,
-        child: ElevatedButton(onPressed: (){
-          //login logic
-        },
+        child: ElevatedButton(onPressed:widget.onPressed,
                 
         child: Text(CustomTexts.signup))
         ),

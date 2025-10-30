@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:ned_finder/features/Admin/Admin_Dashboard/dashboard_screen.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_app_logo_with_title.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_title_with_subtitle.dart';
 import 'package:ned_finder/features/Authentication/Login/widgets/login_input_fields.dart';
 import 'package:ned_finder/features/Authentication/Login/widgets/login_screen_buttons.dart';
+import 'package:ned_finder/features/Home/home_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 class LoginScreen extends StatefulWidget {
@@ -17,10 +21,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
 
     bool isDark = HelperFunctions.isDarkMode(context);
+
+
 
     return Scaffold(
       body: Container(
@@ -55,10 +64,52 @@ class _LoginScreenState extends State<LoginScreen> {
         
                   // 2. Email Input Field
                   
-                  LoginInputFields(),
+                  LoginInputFields(emailController: email, passwordController: password),
         
                   // 4. Forgot Password Link
-                  LoginScreenButtons(),
+                  LoginScreenButtons(
+                    onPressed: () async { // 1. Use 'async' if the login function is asynchronous (which is common)
+                      
+                      // Check if either the email or the password field is empty (Corrected condition)
+                      if (email.text.isEmpty || password.text.isEmpty) { // Corrected: Use '||' (OR)
+                        // 2. Display an alert for missing credentials
+                        return HelperFunctions.showAlert('Alert', 'Please enter both email and password.');
+                      }
+
+                      // --- Placeholder for Actual Login Logic ---
+                      
+                      // 3. Authenticate the user (e.g., using a service/API call)
+                      final String userEmail = email.text.trim();
+                      final String userPassword = password.text.trim();
+
+                      // Imagine a function that attempts to log in and returns a boolean or user object
+                      // You would typically wrap this in a try-catch for error handling
+                      try {
+                          // Replace 'AuthService.loginUser' with your actual login function/service
+                          // bool loginSuccess = await AuthService.loginUser(userEmail, userPassword);
+                          
+
+                          if ((userEmail == 'user' && userPassword == '123') || 
+                              (userEmail == 'admin' && userPassword == '123')) {
+                            // 4. Successful Login: Navigate to the dashboard
+                            // The 'context' should be valid here
+                            final SharedPreferences prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool('isLoggedIn', true); // Save the login state
+                            Navigator.pushReplacement( // Use pushReplacement to prevent going 'back' to the login screen
+                              context, 
+                               MaterialPageRoute(builder: (context) => userEmail == 'user'? HomeScreen() : AdminDashboardScreen()),
+                            );
+                          } else {
+                            // 5. Unsuccessful Login (e.g., wrong credentials)
+                            HelperFunctions.showAlert('Login Failed', 'Invalid email or password. Please try again.');
+                          }
+
+                      } catch (e) {
+                          // 6. Handle any errors during the login process (e.g., network issues)
+                          HelperFunctions.showAlert('Error', 'An error occurred during login. Please try again later.');
+                      }
+                    },
+                  ),
         
                   // 6. Sign Up Link
                   

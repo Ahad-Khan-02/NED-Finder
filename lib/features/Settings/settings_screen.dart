@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
+import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
 import 'package:ned_finder/features/Settings/Profile/profile_screen.dart';
 import 'package:ned_finder/features/Settings/widgets/custom_settings_tile.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/theme/theme_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // NOTE: When using this inside HomeScreen's _buildMainContent, 
 // ensure the necessary constant files (colors, texts, helpers) are accessible.
@@ -91,11 +93,10 @@ class _SettingsContentState extends State<SettingsContent> {
             title: 'Logout',
             cardColor: cardColor,
             textColor: textColor,
-            onTap: () {
-              // TODO: Implement navigation or show an About dialog
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('loging out....')),
-              );
+            onTap: () async {
+              final SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('isLoggedIn', false);
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
             },
           ),
         ],
