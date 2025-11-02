@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 // Assuming PendingItemModel and AdminPendingItemCard are compatible for tracking items
 import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
 import 'package:ned_finder/features/Admin/Completed_Items/widgets/completed_items_card.dart'; 
-import 'package:ned_finder/features/Admin/Tracking_Items/widgets/tracking_items_card.dart'; 
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 

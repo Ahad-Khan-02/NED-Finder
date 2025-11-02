@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 1. Title, Search Bar, and Action Buttons
-        const HomeHeaderSection(),
+        const HomeHeaderSection(isSettingsScreen: false,),
 
         // 2. Item Cards List
         ItemCardList(items: items,),
@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 1. Title, Search Bar, and Action Buttons
-        const HomeHeaderSection(isMyitemsScreen: true,),
+        const HomeHeaderSection(isMyitemsScreen: true,isSettingsScreen: false,),
 
         // 2. Item Cards List
         ItemCardList(items: myItems,),
@@ -143,7 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   
   default:
-    return  const SettingsContent();
+    return  Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const HomeHeaderSection(isSettingsScreen: true,),
+        const SettingsContent(),
+      ],
+    );
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/images.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
@@ -74,8 +75,9 @@ class CustomDrawer extends StatelessWidget {
                   children: [
                     const CircleAvatar(
                       radius: 20,
-                      backgroundImage: AssetImage('assets/images/iamge.png'),
-
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      child: Icon(Icons.person),
                     ),
                     const SizedBox(width: 10),
                     Column(
@@ -87,7 +89,7 @@ class CustomDrawer extends StatelessWidget {
                         ),
                         Text(
                           userRole,
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          style: TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       ],
                     ),

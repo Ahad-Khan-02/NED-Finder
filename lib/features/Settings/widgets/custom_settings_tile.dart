@@ -24,6 +24,7 @@ class SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: cardColor,
+      elevation: 5,
       margin: EdgeInsets.zero, 
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),

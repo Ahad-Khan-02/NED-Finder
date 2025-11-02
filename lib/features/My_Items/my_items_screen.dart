@@ -71,7 +71,7 @@ class _MyItemsScreenState extends State<MyItemsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 1. Title, Search Bar, and Action Buttons
-        const HomeHeaderSection(isMyitemsScreen: true,),
+        const HomeHeaderSection(isMyitemsScreen: true,isSettingsScreen: false,),
 
         // 2. Item Cards List
         ItemCardList(items: items,),

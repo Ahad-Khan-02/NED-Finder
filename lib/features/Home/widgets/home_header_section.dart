@@ -5,9 +5,10 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class HomeHeaderSection extends StatefulWidget {
-  const HomeHeaderSection({super.key, this.isMyitemsScreen= false});
+  const HomeHeaderSection({super.key, this.isMyitemsScreen= false, required this.isSettingsScreen});
   
   final bool isMyitemsScreen;
+  final bool isSettingsScreen;
 
   @override
   State<HomeHeaderSection> createState() => _HomeHeaderSectionState();
@@ -26,7 +27,7 @@ class _HomeHeaderSectionState extends State<HomeHeaderSection> {
         children: [
           // 1. Page Title
            Text(
-            widget.isMyitemsScreen? CustomTexts.myItems :CustomTexts.home,
+            widget.isSettingsScreen? CustomTexts.settings :widget.isMyitemsScreen? CustomTexts.myItems :CustomTexts.home,
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w600,
@@ -35,12 +36,12 @@ class _HomeHeaderSectionState extends State<HomeHeaderSection> {
           widget.isMyitemsScreen? Container(): const SizedBox(height: 20),
 
           // 2. Search Bar
-          widget.isMyitemsScreen?  _buildActionDropDown(context) :CustomSearchBar(text: 'Search', color: isDark? Colors.white : Colors.black),
-          widget.isMyitemsScreen? Container():const SizedBox(height: 20),
+          widget.isSettingsScreen? Container():widget.isMyitemsScreen?  _buildActionDropDown(context) :CustomSearchBar(text: 'Search', color: isDark? Colors.white : Colors.black),
+          widget.isMyitemsScreen||widget.isSettingsScreen? Container():const SizedBox(height: 20),
 
           // 3. Action Buttons (Add/Report)
-          widget.isMyitemsScreen? const SizedBox() : _buildActionButtons(context),
-          const SizedBox(height: 30),
+          widget.isMyitemsScreen||widget.isSettingsScreen? const SizedBox() : _buildActionButtons(context),
+          widget.isSettingsScreen? Container():const SizedBox(height: 30),
         ],
       ),
     );
@@ -56,7 +57,7 @@ class _HomeHeaderSectionState extends State<HomeHeaderSection> {
           child: DropdownButton<String>(
             value: _selectedFilter,
             icon: const Icon(Icons.arrow_drop_down),
-            style: const TextStyle(color: Colors.black, fontSize: 16),
+            style: const TextStyle(color:  Colors.black, fontSize: 16),
             onChanged: (String? newValue) {
               setState(() {
                 _selectedFilter = newValue!;

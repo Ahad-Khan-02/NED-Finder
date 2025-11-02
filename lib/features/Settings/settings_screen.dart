@@ -71,22 +71,6 @@ class _SettingsContentState extends State<SettingsContent> {
           ),
           const SizedBox(height: 16),
 
-          // --- FAQs Tile ---
-          SettingsTile(
-            icon: Icons.question_mark_rounded,
-            title: 'FAQs',
-            subtitle: 'Frequently Asked Questions',
-            cardColor: cardColor,
-            textColor: textColor,
-            onTap: () {
-              // TODO: Implement navigation to the FAQs screen/page
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Navigating to FAQs...')),
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-
           // --- About SeekNFInd Tile ---
           SettingsTile(
             icon: Icons.logout,

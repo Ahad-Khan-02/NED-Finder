@@ -22,7 +22,7 @@ class ViewResponseScreen extends StatelessWidget {
       backgroundColor: isDark ? CustomColors.darkBackground : CustomColors.lightBackground,
       appBar: AppBar(
         title: const Text('View Item Response'),
-        backgroundColor: CustomColors.lboxColor,
+        backgroundColor: isDark ? CustomColors.darkBackground :CustomColors.lightBackground,
         elevation: 1,
       ),
       body: SingleChildScrollView(
@@ -66,7 +66,6 @@ class ViewResponseScreen extends StatelessWidget {
               width:double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () { /* TODO: Contact Responder Logic */ },
-                icon: const Icon(Icons.call),
                 label: const Text('Accept Response'), 
               ),
             ),

@@ -1,13 +1,35 @@
 flutter_native_splash:
+  # 1. Background Colors
+  # The color properties apply to all platforms unless overridden.
   color: "#ffffff"
   color_dark: "#272727"
-  image: assets/logos/app_logo.png
-  image_dark: assets/logos/app_logo.png
+
+  # 2. Main Image / Logo (Better as Branding)
+  # By using 'branding' instead of 'image', the logo is typically placed 
+  # at the bottom and is less likely to be aggressively stretched to fill the center.
+  # This is the primary fix for the stretching.
+  branding: assets/logos/splash_logo.png
   
+  # Since your image is the same for light/dark mode, 
+  # you only need to define 'branding_dark' if the image itself is color-inverted.
+  # If the image works for both, you can often omit branding_dark.
+  # branding_dark: assets/logos/app_logo.png 
+
+  # --- Android 12 Specific Configuration ---
+  # Android 12 has strict rules. This configuration uses your logo as the icon.
+  # The icon is *always* clipped to a circle, so your original image should have 
+  # a square aspect ratio with surrounding transparent padding for best results.
   android_12:
     color: "#ffffff"
     color_dark: "#272727"
-    image: assets/logos/app_logo.png
-    image_dark: assets/logos/app_logo.png
+    # Use the 'image' property here for the central icon on Android 12+.
+    image: assets/logos/splash_logo.png
+    image_dark: assets/logos/splash_logo.png
 
-  web: false 
+  # --- Platform Specific ---
+  # Only generate for Web if needed. If false, remove the line completely.
+  web: false
+
+  # Optional: You can use a specific gravity to position the logo
+  # android_gravity: center_horizontal | center | top | bottom
+  # android_gravity: center
