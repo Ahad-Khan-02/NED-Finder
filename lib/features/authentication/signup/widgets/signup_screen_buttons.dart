@@ -44,7 +44,7 @@ class _SignUpScreenButtonsState extends State<SignUpScreenButtons> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>  LoginScreen()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  LoginScreen()));
               },
               child: const Text(
                 CustomTexts.login,

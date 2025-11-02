@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Admin/Admin_Dashboard/widgets/admin_data_tables.dart';
 import 'package:ned_finder/features/Admin/Admin_Dashboard/widgets/admin_settings_screen.dart';
+import 'package:ned_finder/features/Admin/Completed_Items/completed_items_screen.dart';
 import 'package:ned_finder/features/Admin/Pending_items/pending_items_screen.dart';
-import 'package:ned_finder/features/Settings/settings_screen.dart';
+import 'package:ned_finder/features/Admin/Tracking_Items/tracking_items_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/images.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
@@ -143,13 +144,11 @@ class AdminDashboardScreen extends StatelessWidget {
                     case 'Pending Items':
                       // Keep the original content for other tabs
                       return PendingItemsScreen();
+                    case 'Tracking Items':
+                      // Keep the original content for other tabs
+                      return TrackingItemsScreen();
                     default:
-                      return Center(
-                        child: Text(
-                          'Content for $tabName',
-                          style: TextStyle(fontSize: 20, color: Colors.grey.shade600),
-                        ),
-                      ); 
+                      return CompletedItemsScreen();
                   }
                 }).toList(),
               ),

@@ -6,70 +6,57 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class ItemCard extends StatelessWidget {
-  const ItemCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.status,
-    required this.statusColor,
-    // Note: imageUrl would be used with Image.asset or Image.network
-  });
+  const ItemCard({super.key, required this.item});
 
-  final String title;
-  final String description;
-  final String status;
-  final Color statusColor;
+  final ItemModel item;
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = HelperFunctions.isDarkMode(context);
-    
-    return Flexible(
-      flex: 1,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark? CustomColors.dark : Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image and Status Tag
-            Stack(
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? CustomColors.dark : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          // ✅ Image grows to fit card
+          Expanded(
+            child: Stack(
               children: [
-                // Placeholder for Image (Replace with actual Image.asset)
                 Container(
-                  height: 150,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(10)),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                     color: Colors.grey.shade300,
                   ),
-                  child: Center(
-                      child: Icon(Icons.image,color: Colors.blueGrey,)
-                )),
-                // Status Tag
+                  child:  Center(
+                    child:Image(image: AssetImage(item.imageUrl)),
+                  ),
+                ),
+
                 Positioned(
                   top: 10,
                   right: 10,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: statusColor,
+                      color: item.statusColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      status,
+                      item.statusText,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -80,62 +67,48 @@ class ItemCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
 
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  // Description
-                  Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 15),
+          // ✅ Text & button area
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // prevents overflow
+              children: [
+                Text(
+                  item.name,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
 
-                  // View Item Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final exampleFoundItem = ItemModel(
-                          id: '123',
-                          name: 'Leather Wallet',
-                          category: 'Wallet/Purse',
-                          date: DateTime(2024, 8, 16),
-                          location: 'CAS - ROOM 404',
-                          description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-                          imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-                          status: ItemStatus.found,
-                        );
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewItemScreen(item: exampleFoundItem)));
-                      },
-                      child: const Text(
-                        CustomTexts.viewItem,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold),
-                      ),
+                Text(
+                  item.description,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ViewItemScreen(item: item)),
+                      );
+                    },
+                    child: const Text(
+                      CustomTexts.viewItem,
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

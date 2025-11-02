@@ -72,10 +72,8 @@ class SignUpScreen extends StatelessWidget {
                   SignUpScreenButtons(
                     onPressed: (){
                       
-                  },),
-        
-                  // 6. Sign Up Link
-                  
+                    },
+                  ),                 
                 ],
               ),
             ),

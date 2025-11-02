@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/features/Home/home_screen.dart';
 import 'package:ned_finder/features/Home/widgets/custom_drawer.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
@@ -17,6 +18,28 @@ class MyItemsScreen extends StatefulWidget {
 
 class _MyItemsScreenState extends State<MyItemsScreen> {
   int _selectedIndex = 0; // Tracks the selected item for highlight
+  final List<ItemModel> items = [
+      ItemModel(
+        id: '123',
+        name: 'Leather Wallet',
+        category: 'Wallet/Purse',
+        date: DateTime(2024, 8, 16),
+        location: 'CAS - ROOM 404',
+        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
+        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
+        status: ItemStatus.found,
+      ),
+      ItemModel(
+        id: '123',
+        name: 'Leather Wallet',
+        category: 'Wallet/Purse',
+        date: DateTime(2024, 8, 16),
+        location: 'CAS - ROOM 404',
+        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
+        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
+        status: ItemStatus.found,
+      ),
+    ];
 
   // Method to update the selected index when an item is tapped in the Drawer
   void _onDrawerItemSelected(int index) {
@@ -46,12 +69,12 @@ class _MyItemsScreenState extends State<MyItemsScreen> {
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
+      children: [
         // 1. Title, Search Bar, and Action Buttons
-        HomeHeaderSection(isMyitemsScreen: true,),
+        const HomeHeaderSection(isMyitemsScreen: true,),
 
         // 2. Item Cards List
-        ItemCardList(),
+        ItemCardList(items: items,),
       ],
     );
   }

@@ -29,7 +29,7 @@ class _LoginScreenButtonsState extends State<LoginScreenButtons> {
           alignment: Alignment.center,
           child: TextButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>  ForgotPasswordScreen()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  ForgotPasswordScreen()));
             },
             child: const Text(
               CustomTexts.forgotPassword,
@@ -61,7 +61,7 @@ class _LoginScreenButtonsState extends State<LoginScreenButtons> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>  SignUpScreen()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  SignUpScreen()));
               },
               child: const Text(
                 CustomTexts.signUpHere,

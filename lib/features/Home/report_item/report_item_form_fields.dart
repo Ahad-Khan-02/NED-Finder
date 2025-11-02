@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 
 
@@ -49,11 +52,74 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
   }
 
   // --- Image Upload Placeholder ---
-  void _uploadImage() {
- 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Image picker launched! (Placeholder)')),
-    );
+  File? _pickedImage; 
+  String? _uploadedImageUrl;
+  bool _isUploading = false;
+  
+  // Instance of the Image Picker
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _uploadImage() async {
+    // 1. PICK IMAGE
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) {
+      // User canceled the selection
+      return; 
+    }
+
+    // Update state to show the user which image was picked
+    setState(() {
+      _pickedImage = File(image.path);
+      _isUploading = true;
+      _uploadedImageUrl = null; // Reset URL while uploading
+    });
+
+  //   try {
+  //     // 2. UPLOAD TO FIREBASE STORAGE
+  //     // Create a unique path in Firebase Storage (e.g., 'images/timestamp.jpg')
+  //     String fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
+  //     Reference storageRef = FirebaseStorage.instance.ref().child('product_images/$fileName');
+
+  //     // Upload the file
+  //     UploadTask uploadTask = storageRef.putFile(_pickedImage!);
+
+  //     // Wait for the upload to complete and get the download URL
+  //     TaskSnapshot snapshot = await uploadTask;
+  //     String downloadUrl = await snapshot.ref.getDownloadURL();
+
+  //     // 3. SUCCESS & STATE UPDATE
+  //     setState(() {
+  //       _uploadedImageUrl = downloadUrl;
+  //       _isUploading = false;
+  //       // Optionally, clear _pickedImage if you only need the URL
+  //       // _pickedImage = null; 
+  //     });
+
+  //     // Show a success message
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Image uploaded successfully!')),
+  //     );
+
+  //     print('Uploaded Image URL: $downloadUrl');
+
+  //   } on FirebaseException catch (e) {
+  //     // Handle Firebase specific errors
+  //     setState(() {
+  //       _isUploading = false;
+  //     });
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Upload failed: ${e.message}')),
+  //     );
+  //   } catch (e) {
+  //     // Handle other errors (e.g., IO errors, permissions)
+  //     setState(() {
+  //       _isUploading = false;
+  //     });
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('An unexpected error occurred.')),
+  //     );
+  //   }
   }
 
   // --- Input Decoration Style (Reused for all fields) ---

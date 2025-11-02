@@ -1,38 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/features/Home/widgets/item_card.dart';
-import 'package:ned_finder/utils/constants/texts.dart';
 
 class ItemCardList extends StatelessWidget {
-  const ItemCardList({super.key});
+  final List<ItemModel> items;
+
+  const ItemCardList({super.key,required this.items});
+
+  
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        scrollDirection: Axis.vertical,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              ItemCard(
-                title: 'Wallet',
-                description: 'This is for testing for found item',
-                status: CustomTexts.statusFound,
-                statusColor: Colors.green,
-              ),
-              SizedBox(width: 20),
-              ItemCard(
-                title: 'ID Lace',
-                description: 'QLFU ID Lace, green and black silk linen',
-                status: CustomTexts.statusMissing,
-                statusColor: Colors.red,
-              ),
-            ],
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            childAspectRatio: 0.6,
           ),
-          const SizedBox(height: 30),
-          // Add more rows/cards here if needed...
-        ],
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return ItemCard(item: items[index]);
+          },
+        ),
       ),
     );
   }
