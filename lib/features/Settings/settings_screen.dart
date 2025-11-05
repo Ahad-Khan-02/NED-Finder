@@ -22,9 +22,6 @@ class SettingsContent extends StatefulWidget {
 
 class _SettingsContentState extends State<SettingsContent> {
   // State for the Dark Mode toggle
-  bool _isDarkMode = false; 
-
-
   @override
   Widget build(BuildContext context) {
     // Determine card and text colors based on the current theme
@@ -42,16 +39,13 @@ class _SettingsContentState extends State<SettingsContent> {
           SettingsTile(
             icon: Icons.dark_mode,
             title: 'Dark Mode',
-            subtitle: _isDarkMode ? 'Dark Mode Is On' : 'Dark Mode Is Off',
+            subtitle: themeController.isDarkMode ? 'Dark Mode Is On' : 'Dark Mode Is Off',
             cardColor: cardColor,
             textColor: textColor,
             trailing: Switch(
               value: themeController.isDarkMode,
               onChanged: (value) {
                 themeController.toggleTheme(value);
-                setState(() {
-                  _isDarkMode = value;
-                });
               },
               activeColor: CustomColors.primary,
             ),

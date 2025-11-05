@@ -1,37 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeController extends GetxController {
-  // Use Rx<ThemeMode> to make it observable (reactive)
   final Rx<ThemeMode> _themeMode = ThemeMode.system.obs;
 
   ThemeMode get themeMode => _themeMode.value;
 
-  // Helper to check if the current theme is Dark
-  bool get isDarkMode {
-    // Check if the system is dark, or if the user explicitly set dark mode
-    if (_themeMode.value == ThemeMode.system) {
-      // Use Get.context for easy access to MediaQuery/Brightness
-      return Get.isPlatformDarkMode;
-    }
-    return _themeMode.value == ThemeMode.dark;
+  bool get isDarkMode => _themeMode.value == ThemeMode.dark;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadTheme();
   }
 
-  // Method to toggle the theme
-  void toggleTheme(bool value) {
-    _themeMode.value = value ? ThemeMode.dark : ThemeMode.light;
-    
-    // Optional: Use GetX to update the theme instantly (simpler than setState on MaterialApp)
-    // Get.changeThemeMode(_themeMode.value);
-    
-    // In a real app, you would also save 'value' (true/false) to local storage (like GetStorage)
+  void toggleTheme(bool isDark) async {
+    _themeMode.value = isDark ? ThemeMode.dark : ThemeMode.light;
+
+    final pref = await SharedPreferences.getInstance();
+    await pref.setBool('isDarkMode', isDark);
   }
 
-  // Use this for initial state in SettingsContent
-  static bool getInitialDarkModeStatus(BuildContext context) {
-    // This safely reads the current status without relying on an InheritedWidget 
-    // being fully built in initState. Use the GetX context access helper.
-    return Get.isPlatformDarkMode;
+  Future<void> loadTheme() async {
+    final pref = await SharedPreferences.getInstance();
+    bool savedTheme = pref.getBool('isDarkMode') ?? false;
+    _themeMode.value = savedTheme ? ThemeMode.dark : ThemeMode.light;
   }
-
 }
