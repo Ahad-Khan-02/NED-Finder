@@ -20,7 +20,7 @@ class ReportItemScreen extends StatelessWidget {
     // Scaffold provides the app bar and main structure 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(CustomTexts.reportLostItem, style: TextStyle(fontWeight: FontWeight.bold)),
+        title:  Text(isLost? CustomTexts.reportLostItem : CustomTexts.reportFoundItem, style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: isDark? CustomColors.darkBackground : CustomColors.lightBackground,
         foregroundColor: isDark? Colors.white : Colors.black,
         elevation: 0,
@@ -58,17 +58,17 @@ class ReportItemScreen extends StatelessWidget {
 
                 // Main Form Fields
                 ReportItemFormFields(isLost: isLost),
-                const SizedBox(height: 30),
+                
 
-                // Submit Button
-                ElevatedButton(
-                  onPressed: () {
-                    print('Submit button pressed - Status: Pending');
-                  },     
-                  child: const Text(
-                    CustomTexts.submit,
-                  ),
-                ),
+                // // Submit Button
+                // ElevatedButton(
+                //   onPressed: () {
+                //     print('Submit button pressed - Status: Pending');
+                //   },     
+                //   child: const Text(
+                //     CustomTexts.submit,
+                //   ),
+                // ),
               ],
             ),
           ),

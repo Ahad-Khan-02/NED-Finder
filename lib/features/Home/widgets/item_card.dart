@@ -42,7 +42,8 @@ class ItemCard extends StatelessWidget {
                     color: Colors.grey.shade300,
                   ),
                   child:  Center(
-                    child:Image(image: AssetImage(item.imageUrl)),
+                    child:
+                    Image(image: AssetImage('assets/images/wallet.jpg')),
                   ),
                 ),
 

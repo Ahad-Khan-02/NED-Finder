@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
-import 'package:ned_finder/features/Settings/Profile/profile_screen.dart';
 import 'package:ned_finder/features/Settings/widgets/custom_settings_tile.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';

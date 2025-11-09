@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Admin/Admin_Dashboard/dashboard_screen.dart';
+import 'package:ned_finder/features/Authentication/Auth%20Services/auth_services.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_app_logo_with_title.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_title_with_subtitle.dart';
 import 'package:ned_finder/features/Authentication/Login/widgets/login_input_fields.dart';
@@ -68,8 +69,34 @@ class _LoginScreenState extends State<LoginScreen> {
         
                   // 4. Forgot Password Link
                   LoginScreenButtons(
-                    onPressed: () async { // 1. Use 'async' if the login function is asynchronous (which is common)
-                      
+                    onPressed: () async {
+                    //   if (email.text.isEmpty || password.text.isEmpty) {
+                    //     return HelperFunctions.showAlert('Alert', 'Please enter both email and password.');
+                    //   }
+
+                    //   try {
+                    //     final response = await AuthService.login(
+                    //       email.text.trim(),
+                    //       password.text.trim(),
+                    //     );
+
+                    //     if (response["status"] == "success") {
+                    //       final prefs = await SharedPreferences.getInstance();
+                    //       await prefs.setBool('isLoggedIn', true);
+
+                    //       Navigator.pushReplacement(
+                    //         context,
+                    //         MaterialPageRoute(builder: (_) => HomeScreen()),
+                    //       );
+                    //     } else {
+                    //       HelperFunctions.showAlert("Login Failed", response["message"]);
+                    //     }
+                    //   } catch (e) {
+                    //     HelperFunctions.showAlert("Error", "Something went wrong: $e");
+                    //   }
+                    // },
+
+
                       // Check if either the email or the password field is empty (Corrected condition)
                       if (email.text.isEmpty || password.text.isEmpty) { // Corrected: Use '||' (OR)
                         // 2. Display an alert for missing credentials
@@ -107,8 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       } catch (e) {
                           // 6. Handle any errors during the login process (e.g., network issues)
                           HelperFunctions.showAlert('Error', 'An error occurred during login. Please try again later.');
-                      }
-                    },
+                      }   
+                    }, 
                   ),
         
                   // 6. Sign Up Link

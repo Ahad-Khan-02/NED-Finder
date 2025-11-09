@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ned_finder/features/Authentication/Auth%20Services/auth_services.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_app_logo_with_title.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_title_with_subtitle.dart';
 import 'package:ned_finder/features/Authentication/signup/widgets/signup_input_fields.dart';
@@ -70,8 +71,47 @@ class SignUpScreen extends StatelessWidget {
         
                   // 4. Forgot Password Link
                   SignUpScreenButtons(
-                    onPressed: (){
-                      
+                    onPressed: () async {
+                      if (emailController.text.isEmpty ||
+                          passwordController.text.isEmpty ||
+                          fullNameController.text.isEmpty ||
+                          phoneController.text.isEmpty ||
+                          user.isEmpty ||
+                          department.isEmpty) {
+
+                        return HelperFunctions.showAlert(
+                          "Missing Fields",
+                          "Please fill all required fields."
+                        );
+                      }
+
+                      // Split full name into first/last
+                      final parts = fullNameController.text.trim().split(" ");
+                      final firstName = parts.first;
+                      final lastName = parts.length > 1 ? parts.sublist(1).join(" ") : "";
+
+                      try {
+                        final response = await AuthService.signup(
+                          role: user,
+                          firstName: firstName,
+                          lastName: lastName,
+                          homeAddress: "Default Address",   // Add a field in UI later
+                          email: emailController.text.trim(),
+                          fieldOfStudy: department,
+                          year: 1, // Replace with dropdown input later
+                          password: passwordController.text.trim(),
+                        );
+
+                        if (response["status"] == "success") {
+                          HelperFunctions.showAlert("Success", "Account created successfully!");
+                          Navigator.pop(context); // Go back to login screen
+                        } else {
+                          HelperFunctions.showAlert("Signup Failed", response["message"]);
+                        }
+
+                      } catch (e) {
+                        HelperFunctions.showAlert("Error", e.toString());
+                      }
                     },
                   ),                 
                 ],

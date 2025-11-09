@@ -7,6 +7,7 @@ import 'package:ned_finder/features/Settings/settings_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
+import 'package:ned_finder/utils/http/http_client.dart';
 // Note: Removed unused color imports from the class body
 
 class HomeScreen extends StatefulWidget {
@@ -17,92 +18,111 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0; // Tracks the selected item for highlight
-  final List<ItemModel> items = [
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.found,
-      ),
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.found,
-      ),
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.missing,
-      ),
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.found,
-      ),
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.found,
-      ),
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.found,
-      )
-    ];
+  int _selectedIndex = 0;
+  // Initialize items list as empty and handle loading state
+  List<ItemModel> items = [];
+  bool _isLoading = true; // State to track if data is being fetched
 
-    final List<ItemModel> myItems = [
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.found,
-      ),
-      ItemModel(
-        id: '123',
-        name: 'Leather Wallet',
-        category: 'Wallet/Purse',
-        date: DateTime(2024, 8, 16),
-        location: 'CAS - ROOM 404',
-        description: 'This is for testing for found item. It is made of brown leather with a snake-skin pattern and has four card slots inside.',
-        imageUrl: 'assets/images/wallet.jpg', // MUST be a valid asset path
-        status: ItemStatus.found,
-      ),
-    ];
+  // You can remove the hardcoded 'items' and 'myItems' lists now,
+  // as they will be populated from the API.
+
+  // In _HomeScreenState in home.dart
+
+Future<void> _fetchItems() async {
+    try {
+      // 1. Start Loading State
+      setState(() {
+        _isLoading = true;
+      });
+
+      print('Attempting to fetch items from: items/all');
+      // 2. Make the API call (Using 'items/all' based on your FastAPI log)
+      final responseData = await Http.get('items/all'); 
+      print('Response received successfully.');
+
+      // 3. Check Response Status and Data
+      if (responseData['status'] == 'success' && responseData['data'] != null) {
+        final List itemsJson = responseData['data']['items'];
+
+        // 4. Map JSON to ItemModel using the factory constructor
+        final List<ItemModel> fetchedItems = itemsJson
+            .map((item) => ItemModel.fromJson(item))
+            .toList();
+
+        // 5. SUCCESS: Update State and disable loading
+        setState(() {
+          items = fetchedItems;
+          _isLoading = false; 
+        });
+        print('Successfully loaded ${items.length} items.');
+
+      } else {
+        // Handle non-success status
+        throw Exception('API call successful but failed to retrieve items (Status: ${responseData['status']}).');
+      }
+    } catch (e) {
+      // 6. ERROR HANDLING: CRITICAL STEP
+      print('🚨 Error fetching and parsing items: $e');
+      // If any error occurs (network failure or JSON parsing crash), 
+      // we MUST set _isLoading to false so the user isn't stuck on the spinner.
+      setState(() {
+        _isLoading = false; 
+        // Optional: Show a user-friendly error message, e.g., SnackBar
+      });
+    }
+  }
+
+  // --- Override initState to call the fetch method ---
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems(); // Start fetching data when the widget initializes
+  }
+  
+  // --- Modified _buildMainContent to handle loading state ---
+  @override
+  Widget _buildMainContent() {
+    // Show a loading indicator if data is being fetched
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    switch(_selectedIndex){
+      case 0:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HomeHeaderSection(isSettingsScreen: false,),
+            // Use the fetched 'items' list
+            Expanded(child: ItemCardList(items: items,)), 
+          ],
+        );
+      case 1:
+        // You would need a separate API call for 'myItems' (user-specific items)
+        // or filter the 'items' list if your current API endpoint returns all.
+        // For now, let's just display all items for this case too, or implement
+        // a separate `_fetchMyItems` method.
+        // Example: Filter logic (assuming user_id is known, e.g., '1')
+        final myItemsFiltered = items.where((item) => item.id == '1' /* Replace with actual user_id check */).toList();
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HomeHeaderSection(isMyitemsScreen: true, isSettingsScreen: false,),
+            Expanded(child: ItemCardList(items: myItemsFiltered,)),
+          ],
+        );
+    
+      default:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HomeHeaderSection(isSettingsScreen: true,),
+            const SettingsContent(),
+          ],
+        );
+    }
+  }
 
   // Method to update the selected index when an item is tapped in the Drawer
   void _onDrawerItemSelected(int index) {
@@ -112,46 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
     // Add navigation logic here (e.g., switch screen content based on index)
     print('Navigation Item Selected: $index');
   }
-
-  // --- MAIN CONTENT (Assembles the custom widgets) ---
-  Widget _buildMainContent() {
-    // We only show the "Home" content when index 0 is selected.
-    // For other indices, you would return the MyItemsScreen or SettingsScreen.
-
-    switch(_selectedIndex){
-      case 0:
-        return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 1. Title, Search Bar, and Action Buttons
-        const HomeHeaderSection(isSettingsScreen: false,),
-
-        // 2. Item Cards List
-        ItemCardList(items: items,),
-      ],
-    );
-    case 1:
-      return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 1. Title, Search Bar, and Action Buttons
-        const HomeHeaderSection(isMyitemsScreen: true,isSettingsScreen: false,),
-
-        // 2. Item Cards List
-        ItemCardList(items: myItems,),
-      ],
-    );
-  
-  default:
-    return  Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const HomeHeaderSection(isSettingsScreen: true,),
-        const SettingsContent(),
-      ],
-    );
-  }
-}
 
   // --- BUILD METHOD ---
   @override
