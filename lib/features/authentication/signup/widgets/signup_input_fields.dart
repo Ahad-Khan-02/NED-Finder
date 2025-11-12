@@ -9,18 +9,18 @@ class SignupInputFields extends StatefulWidget {
     required this.password,
     required this.email,
     required this.fullName,
-    required this.phone, 
     required this.onUserChanged, 
-    required this.onDepartmentChanged, 
+    required this.onDepartmentChanged,
+    required this.onYearChanged, 
     
   });
 
   final TextEditingController password;
   final TextEditingController email;
   final TextEditingController fullName;
-  final TextEditingController phone;
   final Function(String?) onUserChanged;
   final Function(String?) onDepartmentChanged;
+  final Function(String?) onYearChanged;
 
   @override
   State<SignupInputFields> createState() => _SignupInputFieldsState();
@@ -33,10 +33,10 @@ class _SignupInputFieldsState extends State<SignupInputFields> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomDropdownField(icon: Icon(Icons.groups_3), text: CustomTexts.selectUser, items: ['Student','admin'], onChanged: widget.onUserChanged),
+        CustomDropdownField(icon: Icon(Icons.groups_3), text: CustomTexts.selectUser, items: ['student','admin'], onChanged: widget.onUserChanged),
         CustomTextFormField(icon: Icon(Icons.person), text: CustomTexts.fullName,controller: widget.fullName,keyboardType: TextInputType.name,),
-        CustomTextFormField(icon: Icon(Icons.phone), text: CustomTexts.phoneNo,controller: widget.phone,keyboardType: TextInputType.phone,),
         CustomDropdownField(icon: Icon(Icons.school), text: CustomTexts.selectDepartment, items: ['CIS','SE','BCIT','ME','IM','CE','FE','TE','AI','EE'], onChanged: widget.onDepartmentChanged),
+        CustomDropdownField(icon: Icon(Icons.calendar_month), text: CustomTexts.year, items: ['1','2','3','4'], onChanged: widget.onYearChanged),
         CustomTextFormField(icon: Icon(Icons.email), text: CustomTexts.email,controller: widget.email,keyboardType: TextInputType.emailAddress,),
          
         TextField(

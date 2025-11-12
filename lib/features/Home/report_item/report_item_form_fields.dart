@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
-import 'package:ned_finder/utils/http/http_client.dart'; // Ensure this is implemented correctly!
+import 'package:ned_finder/utils/http/http_client.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Ensure this is implemented correctly!
 
 
 class ReportItemFormFields extends StatefulWidget {
@@ -91,66 +92,80 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
  }
 
  // --- Form Submission Function ---
- Future<void> _submitReport() async {
-  // Example: Basic validation
-  if (_nameController.text.isEmpty || _locationController.text.isEmpty || _dateController.text.isEmpty) {
-   ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Please fill in required fields (Name, Date, Location).')),
-   );
-   return;
+Future<void> _submitReport() async {
+  final prefs = await SharedPreferences.getInstance();
+  final int? userId = prefs.getInt('user_id');
+  final String? email = prefs.getString('email');
+
+  if (userId == null || email == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('User not logged in.')),
+    );
+    return;
   }
-  
-  // NOTE: Replace these dummy values with actual user session data!
-  const int dummyUserId = 1; 
-  const String dummyEmail = 'test@example.com'; 
-  
+
+  // Validation
+  if (_nameController.text.isEmpty ||
+      _descriptionController.text.isEmpty ||
+      _locationController.text.isEmpty ||
+      _pickedImage == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please fill in all required fields and select an image.')),
+    );
+    return;
+  }
+
+  // Prepare form fields
   final Map<String, String> fields = {
-   'user_id': dummyUserId.toString(),
-   'item_name': _nameController.text,
-   'item_description': _descriptionController.text,
-   'email': dummyEmail, 
-   'location': _locationController.text,
-   'date': _dateController.text,
-   // 'category': _selectedCategory ?? 'Other', // Include if needed by FastAPI
-   // Add 'found' status if your FastAPI needs it explicitly:
-   // 'found': widget.isLost ? 'false' : 'true',
+    'user_id': userId.toString(),
+    'item_type': widget.isLost ? 'lost' : 'found',
+    'item_name': _nameController.text.trim(),
+    'item_description': _descriptionController.text.trim(),
+    'email': email,
+    'location': _locationController.text.trim(),
   };
 
+  setState(() {
+    _isUploading = true;
+  });
 
   try {
-   setState(() {
-    _isUploading = true; // Start loading indicator
-   });
-   
-   // Call the new multipartPost helper in your Http class
-   final response = await Http.multipartPost(
-    'items/add', // FastAPI endpoint
-    fields,
-    _pickedImage, 
-    'item_image', // FastAPI's required field name for the file
-   );
+    print("📦 Sending fields: $fields");
+    print("🖼️ Sending image: ${_pickedImage!.path}");
 
-   // Handle response
-   if (response['status'] == 'success') {
-    ScaffoldMessenger.of(context).showSnackBar(
-     const SnackBar(content: Text('Item reported successfully!')),
+    final response = await Http.multipartPost(
+      'items/add',
+      fields,
+      _pickedImage!,
+      'item_image', // This must match `item_image: UploadFile = File(...)`
     );
-    // TODO: Clear form or navigate back
-   } else {
-    throw Exception(response['message'] ?? 'Failed to report item. Status: ${response['status']}');
-   }
 
+    print("🔁 Server response: $response");
+
+    if (response['status'] == 'success') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item submitted successfully!')),
+      );
+      _nameController.clear();
+      _descriptionController.clear();
+      _locationController.clear();
+      setState(() {
+        _pickedImage = null;
+      });
+    } else {
+      throw Exception(response['message'] ?? 'Failed to submit item');
+    }
   } catch (e) {
-   print('🚨 Submission Error: $e');
-   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Submission failed: ${e.toString()}')),
-   );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: ${e.toString()}')),
+    );
   } finally {
-   setState(() {
-    _isUploading = false; // Stop loading indicator
-   });
+    setState(() {
+      _isUploading = false;
+    });
   }
- }
+}
+
 
 
  // --- Input Decoration Style (Reused for all fields) ---

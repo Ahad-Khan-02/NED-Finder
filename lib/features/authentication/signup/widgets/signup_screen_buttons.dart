@@ -8,9 +8,12 @@ class SignUpScreenButtons extends StatefulWidget {
   const SignUpScreenButtons({
     super.key,
     required this.onPressed,
+    required this.isLoading,
   });
 
   final VoidCallback onPressed;
+  
+  final bool isLoading;
   @override
   State<SignUpScreenButtons> createState() => _SignUpScreenButtonsState();
 }
@@ -29,9 +32,19 @@ class _SignUpScreenButtonsState extends State<SignUpScreenButtons> {
         // 5. Login Button
         SizedBox(
         width: double.infinity,
-        child: ElevatedButton(onPressed:widget.onPressed,
-                
-        child: Text(CustomTexts.signup))
+        child: ElevatedButton(
+          onPressed: widget.onPressed,
+          child: widget.isLoading 
+              ? SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(CustomTexts.signup),
+        ),
         ),
         const SizedBox(height: 20),
 

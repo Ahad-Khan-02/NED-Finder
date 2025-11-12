@@ -45,12 +45,36 @@ class Http {
 
   // Handle the HTTP response
   static Map<String, dynamic> _handleResponse(http.Response response) {
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load data: ${response.statusCode}');
+    try {
+      final body = json.decode(response.body);
+
+      if (body is Map<String, dynamic>) {
+        // If backend sends a validation error (422), convert it into a readable message
+        if (body.containsKey('detail')) {
+          final detail = body['detail'];
+          if (detail is List && detail.isNotEmpty) {
+            return {
+              "status": "error",
+              "message": detail[0]['msg'] ?? "Validation error"
+            };
+          }
+        }
+        return body;
+      } else {
+        return {
+          "status": response.statusCode >= 200 && response.statusCode < 300 ? "success" : "error",
+          "message": response.body
+        };
+      }
+    } catch (e) {
+      return {
+        "status": "error",
+        "message": "Failed to parse response"
+      };
     }
   }
+
+
 
   // Helper method to make a MULTIPART POST request (for file uploads)
 static Future<Map<String, dynamic>> multipartPost(

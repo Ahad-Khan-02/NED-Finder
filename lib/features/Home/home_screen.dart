@@ -80,7 +80,6 @@ Future<void> _fetchItems() async {
   }
   
   // --- Modified _buildMainContent to handle loading state ---
-  @override
   Widget _buildMainContent() {
     // Show a loading indicator if data is being fetched
     if (_isLoading) {

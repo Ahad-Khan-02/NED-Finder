@@ -11,8 +11,6 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -21,30 +19,32 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-
     bool isDark = HelperFunctions.isDarkMode(context);
-
-
 
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: isDark? CustomColors.dgradientColors : CustomColors.lgradientColors,begin: Alignment.topCenter,end: Alignment.bottomCenter),
+          gradient: LinearGradient(
+            colors:
+                isDark ? CustomColors.dgradientColors : CustomColors.lgradientColors,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 450), // To limit width on large screens
+              constraints: const BoxConstraints(maxWidth: 450),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               decoration: BoxDecoration(
-                color: isDark?  CustomColors.dboxColor: CustomColors.lboxColor,
+                color: isDark ? CustomColors.dboxColor : CustomColors.lboxColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -58,87 +58,86 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-        
-                  // 1. Logo and Title
+                  // Logo & Title
                   CustomAppLogoWithTitle(),
-                  CustomTitlewithSubtitle(title: CustomTexts.loginTitle, subtitle: CustomTexts.loginSubTitle),
-        
-                  // 2. Email Input Field
-                  
-                  LoginInputFields(emailController: email, passwordController: password),
-        
-                  // 4. Forgot Password Link
+                  CustomTitlewithSubtitle(
+                    title: CustomTexts.loginTitle,
+                    subtitle: CustomTexts.loginSubTitle,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Input Fields
+                  LoginInputFields(
+                    emailController: emailController,
+                    passwordController: passwordController,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Login Button
                   LoginScreenButtons(
+                    isLoading: _isLoading,
                     onPressed: () async {
-                    //   if (email.text.isEmpty || password.text.isEmpty) {
-                    //     return HelperFunctions.showAlert('Alert', 'Please enter both email and password.');
-                    //   }
+                      if (_isLoading) return; // Prevent multiple clicks
 
-                    //   try {
-                    //     final response = await AuthService.login(
-                    //       email.text.trim(),
-                    //       password.text.trim(),
-                    //     );
-
-                    //     if (response["status"] == "success") {
-                    //       final prefs = await SharedPreferences.getInstance();
-                    //       await prefs.setBool('isLoggedIn', true);
-
-                    //       Navigator.pushReplacement(
-                    //         context,
-                    //         MaterialPageRoute(builder: (_) => HomeScreen()),
-                    //       );
-                    //     } else {
-                    //       HelperFunctions.showAlert("Login Failed", response["message"]);
-                    //     }
-                    //   } catch (e) {
-                    //     HelperFunctions.showAlert("Error", "Something went wrong: $e");
-                    //   }
-                    // },
-
-
-                      // Check if either the email or the password field is empty (Corrected condition)
-                      if (email.text.isEmpty || password.text.isEmpty) { // Corrected: Use '||' (OR)
-                        // 2. Display an alert for missing credentials
-                        return HelperFunctions.showAlert('Alert', 'Please enter both email and password.');
+                      // Validation
+                      if (emailController.text.isEmpty ||
+                          passwordController.text.isEmpty) {
+                        return HelperFunctions.showAlert(
+                            'Alert', 'Please enter both email and password.');
                       }
 
-                      // --- Placeholder for Actual Login Logic ---
-                      
-                      // 3. Authenticate the user (e.g., using a service/API call)
-                      final String userEmail = email.text.trim();
-                      final String userPassword = password.text.trim();
+                      setState(() => _isLoading = true);
 
-                      // Imagine a function that attempts to log in and returns a boolean or user object
-                      // You would typically wrap this in a try-catch for error handling
                       try {
-                          // Replace 'AuthService.loginUser' with your actual login function/service
-                          // bool loginSuccess = await AuthService.loginUser(userEmail, userPassword);
-                          
+                        final response = await AuthService.login(
+                          emailController.text.trim(),
+                          passwordController.text.trim(),
+                        );
 
-                          if ((userEmail == 'user' && userPassword == '123') || 
-                              (userEmail == 'admin' && userPassword == '123')) {
-                            // 4. Successful Login: Navigate to the dashboard
-                            // The 'context' should be valid here
-                            final SharedPreferences prefs = await SharedPreferences.getInstance();
-                            await prefs.setBool('isLoggedIn', true); // Save the login state
-                            Navigator.pushReplacement( // Use pushReplacement to prevent going 'back' to the login screen
-                              context, 
-                               MaterialPageRoute(builder: (context) => userEmail == 'user'? HomeScreen() : AdminDashboardScreen()),
+                        final data = response['data'];
+
+                        // Show backend message
+                        HelperFunctions.showAlert(
+                          response['status'] == 'success'
+                              ? 'Success'
+                              : 'Login Failed',
+                          response['message'] ?? 'Something went wrong',
+                        );
+
+                        if (response['status'] == 'success' && data != null) {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('isLoggedIn', true);
+                          await prefs.setInt('user_id', data['user_id']);
+                          await prefs.setString('email', data['email']);
+                          await prefs.setString('role', data['role']);
+                          await prefs.setString('fullname', data['fullname']);
+
+                          // Navigate based on role
+                          if (data['role'] == 'admin') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => AdminDashboardScreen()),
                             );
                           } else {
-                            // 5. Unsuccessful Login (e.g., wrong credentials)
-                            HelperFunctions.showAlert('Login Failed', 'Invalid email or password. Please try again.');
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (_) => HomeScreen()),
+                            );
                           }
-
+                        }
                       } catch (e) {
-                          // 6. Handle any errors during the login process (e.g., network issues)
-                          HelperFunctions.showAlert('Error', 'An error occurred during login. Please try again later.');
-                      }   
-                    }, 
+                        HelperFunctions.showAlert(
+                          'Error',
+                          'An error occurred during login.\nDetails: $e',
+                        );
+                      } finally {
+                        setState(() => _isLoading = false);
+                      }
+                    },
                   ),
-        
-                  // 6. Sign Up Link
+                  const SizedBox(height: 20),
+
                   
                 ],
               ),
@@ -149,8 +148,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
-
-
-

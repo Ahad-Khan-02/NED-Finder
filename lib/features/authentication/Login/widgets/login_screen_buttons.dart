@@ -5,31 +5,31 @@ import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
-class LoginScreenButtons extends StatefulWidget {
+class LoginScreenButtons extends StatelessWidget {
   const LoginScreenButtons({
     super.key,
     required this.onPressed,
+    required this.isLoading,
   });
 
   final VoidCallback onPressed;
+  final bool isLoading;
 
-  @override
-  State<LoginScreenButtons> createState() => _LoginScreenButtonsState();
-}
-
-class _LoginScreenButtonsState extends State<LoginScreenButtons> {
   @override
   Widget build(BuildContext context) {
+    bool isDark = HelperFunctions.isDarkMode(context);
 
-    bool isDark = HelperFunctions.isDarkMode(context); 
-    
     return Column(
       children: [
+        // Forgot Password
         Align(
           alignment: Alignment.center,
           child: TextButton(
             onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  ForgotPasswordScreen()));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ForgotPasswordScreen()));
             },
             child: const Text(
               CustomTexts.forgotPassword,
@@ -41,27 +41,44 @@ class _LoginScreenButtonsState extends State<LoginScreenButtons> {
           ),
         ),
         const SizedBox(height: 20),
-        
-                
-        // 5. Login Button
+
+        // Login Button with Loading
         SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(onPressed: widget.onPressed,
-                
-        child: Text(CustomTexts.login))
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: isLoading ? null : onPressed, // Disable button while loading
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: isLoading
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Text(CustomTexts.login),
+          ),
         ),
         const SizedBox(height: 20),
 
+        // Sign Up Link
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               CustomTexts.dontHaveAccount,
-              style: TextStyle(color:isDark? CustomColors.dmainTextColor : CustomColors.lmainTextColor),
+              style: TextStyle(
+                  color: isDark
+                      ? CustomColors.dmainTextColor
+                      : CustomColors.lmainTextColor),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  SignUpScreen()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => SignUpScreen()));
               },
               child: const Text(
                 CustomTexts.signUpHere,

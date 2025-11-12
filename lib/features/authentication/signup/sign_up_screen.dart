@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Authentication/Auth%20Services/auth_services.dart';
+import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_app_logo_with_title.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_title_with_subtitle.dart';
 import 'package:ned_finder/features/Authentication/signup/widgets/signup_input_fields.dart';
@@ -9,20 +10,36 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  bool _isLoading = false;
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
+  String user = '';
+  String department = '';
+  String year = '';
+
+  @override
+  void dispose() {
+    // Always dispose controllers
+    passwordController.dispose();
+    emailController.dispose();
+    fullNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
 
     bool isDark = HelperFunctions.isDarkMode(context);
-    final TextEditingController passwordController = TextEditingController();
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController fullNameController = TextEditingController();
-    final TextEditingController phoneController = TextEditingController();
-    String user = '';
-    String department = '';
-    
+  
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -60,60 +77,72 @@ class SignUpScreen extends StatelessWidget {
                     password: passwordController, 
                     email: emailController, 
                     fullName: fullNameController, 
-                    phone: phoneController,
                     onUserChanged: (selectedUser){
                       user = selectedUser!;
                     },
                     onDepartmentChanged: (selectedDepartment){
                       department = selectedDepartment!;
                     },
+                    onYearChanged: (selectedYear){
+                      year = selectedYear!;
+                    },
                   ),
         
                   // 4. Forgot Password Link
-                  SignUpScreenButtons(
+                 SignUpScreenButtons(
+                  isLoading: _isLoading,
                     onPressed: () async {
+                      if (_isLoading) return; // Prevent multiple clicks
+
                       if (emailController.text.isEmpty ||
                           passwordController.text.isEmpty ||
                           fullNameController.text.isEmpty ||
-                          phoneController.text.isEmpty ||
+                          year.isEmpty ||
                           user.isEmpty ||
                           department.isEmpty) {
-
                         return HelperFunctions.showAlert(
                           "Missing Fields",
                           "Please fill all required fields."
                         );
                       }
 
-                      // Split full name into first/last
-                      final parts = fullNameController.text.trim().split(" ");
-                      final firstName = parts.first;
-                      final lastName = parts.length > 1 ? parts.sublist(1).join(" ") : "";
+                      setState(() {
+                        _isLoading = true; // Start loading
+                      });
 
                       try {
                         final response = await AuthService.signup(
                           role: user,
-                          firstName: firstName,
-                          lastName: lastName,
-                          homeAddress: "Default Address",   // Add a field in UI later
+                          fullname: fullNameController.text.trim(),
                           email: emailController.text.trim(),
                           fieldOfStudy: department,
-                          year: 1, // Replace with dropdown input later
+                          year: int.tryParse(year) ?? 1,
                           password: passwordController.text.trim(),
                         );
 
+                        print('response : $response');
+
+                        HelperFunctions.showAlert(
+                          response["status"] == "success" ? "Success" : "Signup Failed",
+                          response["message"] ?? "Something went wrong"
+                        );
+
                         if (response["status"] == "success") {
-                          HelperFunctions.showAlert("Success", "Account created successfully!");
-                          Navigator.pop(context); // Go back to login screen
-                        } else {
-                          HelperFunctions.showAlert("Signup Failed", response["message"]);
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen())); // Go back to login
                         }
 
                       } catch (e) {
-                        HelperFunctions.showAlert("Error", e.toString());
+                        HelperFunctions.showAlert(
+                          "Error",
+                          "Failed to signup. Please try again.\nDetails: ${e.toString()}"
+                        );
+                      } finally {
+                        setState(() {
+                          _isLoading = false; // Stop loading
+                        });
                       }
                     },
-                  ),                 
+                  ),       
                 ],
               ),
             ),

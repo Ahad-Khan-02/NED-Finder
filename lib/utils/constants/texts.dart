@@ -42,7 +42,7 @@ class CustomTexts {
   static const String password = "Password";
   static const String username = "Username";
   static const String fullName = "Full Name";
-  static const String phoneNo = "Phone Number";
+  static const String year = "Year";
   static const String selectUser = 'Select User';
   static const String selectDepartment = 'Select Department';
   static const String rememberMe = "Remember Me?";
