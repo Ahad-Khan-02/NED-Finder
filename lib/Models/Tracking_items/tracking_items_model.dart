@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-enum ItemStatus { found, missing }
+enum ItemStatus { lost, found }
 
-class PendingItemModel {
+class TrackingItemModel {
   final int id;
   final int userId; 
-  // This will be a placeholder since the name isn't joined in the API response
-  final String submitterName; 
+  final String submitterName; // Placeholder for submitter name
   final String name;
   final String description;
   final String location;
   final String itemType; // 'lost' or 'found'
-  final String status;   // Will always be 'pending' for this screen
+  final String status;   // Should be 'approved'
   final DateTime dateSubmitted;
   final String imageBase64; 
+  // Note: statusColor is a UI property, not from API, so it's removed here.
 
-  PendingItemModel({
+  TrackingItemModel({
     required this.id,
     required this.userId,
     required this.submitterName,
@@ -51,15 +51,14 @@ class PendingItemModel {
 
   // --- Factory Constructor for JSON Deserialization ---
 
-  factory PendingItemModel.fromJson(Map<String, dynamic> json) {
-    // We prefer 'created_at' if available for accurate submission time
+  factory TrackingItemModel.fromJson(Map<String, dynamic> json) {
     final dateString = json['created_at'] ?? json['date'] ?? ''; 
     final parsedDate = DateTime.tryParse(dateString) ?? DateTime.now();
     
     // Placeholder for submitter name
     final String submitterName = json['submitter_name'] ?? 'User ID: ${json['user_id']}';
 
-    return PendingItemModel(
+    return TrackingItemModel(
       id: json['id'] as int? ?? 0,
       userId: json['user_id'] as int? ?? 0,
       submitterName: submitterName, 
@@ -67,7 +66,7 @@ class PendingItemModel {
       description: json['item_description'] ?? 'No description.',
       location: json['location'] ?? 'Unknown Location',
       itemType: json['item_type'] ?? 'lost',
-      status: json['status'] ?? 'pending',
+      status: json['status'] ?? 'approved', // Expected status for tracking
       dateSubmitted: parsedDate,
       imageBase64: json['item_image'] ?? '', 
     );

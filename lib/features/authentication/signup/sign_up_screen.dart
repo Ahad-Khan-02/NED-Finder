@@ -116,7 +116,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fullname: fullNameController.text.trim(),
                           email: emailController.text.trim(),
                           fieldOfStudy: department,
-                          year: int.tryParse(year) ?? 1,
+                          year:user=='admin'? 0 : int.tryParse(year) ?? 1,
                           password: passwordController.text.trim(),
                         );
 

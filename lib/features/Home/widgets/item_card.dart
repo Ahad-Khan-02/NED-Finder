@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/features/Home/view_item_screen.dart';
@@ -6,13 +8,17 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class ItemCard extends StatelessWidget {
-  const ItemCard({super.key, required this.item});
+  const ItemCard({super.key, required this.item,required this.isMyItem});
 
   final ItemModel item;
+  
+  final bool isMyItem;
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = HelperFunctions.isDarkMode(context);
+    final Uint8List bytes = item.imageBytes;
+    final bool hasImage = bytes.isNotEmpty;
 
     return Container(
       decoration: BoxDecoration(
@@ -36,28 +42,39 @@ class ItemCard extends StatelessWidget {
             child: Stack(
               children: [
                 Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                    color: Colors.grey.shade300,
-                  ),
-                  child:  Center(
-                    child:
-                    Image(image: AssetImage('assets/images/wallet.jpg')),
-                  ),
-                ),
+                       width: double.infinity,
+                       decoration: BoxDecoration(
+                         borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                         color: Colors.grey.shade300,
+                       ),
+                       child: Center(
+                         child: 
+                            // 🎯 FIX: Display the image using Image.memory with the decoded bytes
+                      hasImage
+                      ? ClipRRect(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                            child: Image.memory(
+                              bytes,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                        )
+                      : const Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+                       ),
+                    ),
 
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 5,
+                  right: 5,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: item.statusColor,
+                      color: item.labelColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      item.statusText,
+                      item.labelText,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -66,6 +83,25 @@ class ItemCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                isMyItem?  Positioned(
+                    bottom: 1,
+                    left: 1,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: item.statusColor,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        item.statusText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ):Container(),
               ],
             ),
           ),

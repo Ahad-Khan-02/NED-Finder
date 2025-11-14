@@ -4,8 +4,10 @@ import 'package:ned_finder/features/Home/widgets/item_card.dart';
 
 class ItemCardList extends StatelessWidget {
    final List<ItemModel> items;
+   
+   final dynamic isMyItem;
 
-   const ItemCardList({super.key, required this.items});
+   const ItemCardList({super.key, required this.items,required this.isMyItem});
 
   
 
@@ -23,7 +25,7 @@ class ItemCardList extends StatelessWidget {
           ),
           itemCount: items.length,
           itemBuilder: (context, index) {
-             return ItemCard(item: items[index]);
+             return ItemCard(item: items[index],isMyItem: isMyItem,);
           },
         ),
      );

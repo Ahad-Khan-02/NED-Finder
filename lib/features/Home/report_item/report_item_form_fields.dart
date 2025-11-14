@@ -1,309 +1,295 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Ensure this is implemented correctly!
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReportItemFormFields extends StatefulWidget {
+  const ReportItemFormFields({super.key, required this.isLost});
 
+  final bool isLost;
 
- const ReportItemFormFields({
- super.key,
- required this.isLost
- });
- 
- final bool isLost;
- 
-
- @override
- State<ReportItemFormFields> createState() => _ReportItemFormFieldsState();
+  @override
+  State<ReportItemFormFields> createState() => _ReportItemFormFieldsState();
 }
 
 class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
+  String? _selectedCategory;
+  File? _pickedImage;
+  bool _isUploading = false;
 
- // --- State Variables ---
- String? _selectedCategory; 
- File? _pickedImage; // Stores the local image file for submission
- 
- // Boolean to control the loading state of the submit button
- bool _isUploading = false; 
- 
- final ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
 
- // --- Text Controllers for all fields ---
- final TextEditingController _nameController = TextEditingController();
- final TextEditingController _dateController = TextEditingController();
- final TextEditingController _locationController = TextEditingController();
- final TextEditingController _descriptionController = TextEditingController();
- 
- 
- // Example categories (Define these in CustomTexts or an enum in a real app)
- final List<String> categories = [
-  'Electronics',
-  'Stationery',
-  'Wallet/Purse',
-  'ID/Documents',
-  'Clothing',
-  'Other'
- ];
- 
- // --- Cleanup Controllers ---
- @override
- void dispose() {
-  _nameController.dispose();
-  _dateController.dispose();
-  _locationController.dispose();
-  _descriptionController.dispose();
-  super.dispose();
- }
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
+  final List<String> categories = [
+    'Electronics',
+    'Stationery',
+    'Wallet/Purse',
+    'ID/Documents',
+    'Clothing',
+    'Other'
+  ];
 
- // --- Date Picker Function ---
- Future<void> _selectDate(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-   context: context,
-   initialDate: DateTime.now(),
-   firstDate: DateTime(2020),
-   lastDate: DateTime.now(),
-  );
-  if (picked != null) {
-   setState(() {
-    _dateController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-   });
-  }
- }
-
-
- // --- Image Picker Function ---
- Future<void> _uploadImage() async {
-  final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
-  if (image == null) {
-   return; 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dateController.dispose();
+    _locationController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
-  setState(() {
-   // Store the picked file and trigger UI update
-   _pickedImage = File(image.path);
-  });
- }
-
- // --- Form Submission Function ---
-Future<void> _submitReport() async {
-  final prefs = await SharedPreferences.getInstance();
-  final int? userId = prefs.getInt('user_id');
-  final String? email = prefs.getString('email');
-
-  if (userId == null || email == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('User not logged in.')),
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
     );
-    return;
-  }
-
-  // Validation
-  if (_nameController.text.isEmpty ||
-      _descriptionController.text.isEmpty ||
-      _locationController.text.isEmpty ||
-      _pickedImage == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please fill in all required fields and select an image.')),
-    );
-    return;
-  }
-
-  // Prepare form fields
-  final Map<String, String> fields = {
-    'user_id': userId.toString(),
-    'item_type': widget.isLost ? 'lost' : 'found',
-    'item_name': _nameController.text.trim(),
-    'item_description': _descriptionController.text.trim(),
-    'email': email,
-    'location': _locationController.text.trim(),
-  };
-
-  setState(() {
-    _isUploading = true;
-  });
-
-  try {
-    print("📦 Sending fields: $fields");
-    print("🖼️ Sending image: ${_pickedImage!.path}");
-
-    final response = await Http.multipartPost(
-      'items/add',
-      fields,
-      _pickedImage!,
-      'item_image', // This must match `item_image: UploadFile = File(...)`
-    );
-
-    print("🔁 Server response: $response");
-
-    if (response['status'] == 'success') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Item submitted successfully!')),
-      );
-      _nameController.clear();
-      _descriptionController.clear();
-      _locationController.clear();
+    if (picked != null) {
       setState(() {
-        _pickedImage = null;
+        _dateController.text =
+            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       });
-    } else {
-      throw Exception(response['message'] ?? 'Failed to submit item');
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: ${e.toString()}')),
-    );
-  } finally {
+  }
+
+  Future<void> _uploadImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) return;
+
     setState(() {
-      _isUploading = false;
+      _pickedImage = File(image.path);
     });
   }
-}
 
+  Future<void> _submitReport() async {
+    final prefs = await SharedPreferences.getInstance();
+    final int? userId = prefs.getInt('user_id');
+    final String? email = prefs.getString('email');
 
-
- // --- Input Decoration Style (Reused for all fields) ---
- InputDecoration _buildInputDecoration(String label, IconData icon) {
-  return InputDecoration(
-   labelText: label,
-   prefixIcon: Icon(icon),
-  );
- }
-
-
-
- @override
- Widget build(BuildContext context) {
-
-  return Column(
-   children: [
-    // 1. Item Name
-    TextFormField(
-     controller: _nameController,
-     decoration: _buildInputDecoration(CustomTexts.itemName, Icons.drive_file_rename_outline),
-    ),
-    const SizedBox(height: 20),
-
-    // 2. Category Dropdown
-    DropdownButtonFormField<String>(
-     decoration: _buildInputDecoration(CustomTexts.category, Icons.category),
-     value: _selectedCategory,
-     hint: const Text(CustomTexts.category),
-     items: categories.map((String category) {
-      return DropdownMenuItem<String>(
-       value: category,
-       child: Text(category),
+    if (userId == null || email == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not logged in.')),
       );
-     }).toList(),
-     onChanged: (String? newValue) {
-      setState(() {
-       _selectedCategory = newValue;
-      });
-     },
-    ),
-    const SizedBox(height: 20),
+      return;
+    }
 
-    // 3. Date Lost/Found
-    TextFormField(
-     controller: _dateController,
-     readOnly: true, 
-     onTap: () => _selectDate(context),
-     decoration: _buildInputDecoration(widget.isLost? CustomTexts.dateLost : CustomTexts.dateFound, Icons.calendar_today),
-    ),
-    const SizedBox(height: 20),
-
-    // 4. Location Lost/Found
-    TextFormField(
-     controller: _locationController,
-     decoration: _buildInputDecoration(widget.isLost? CustomTexts.locationLostHint : CustomTexts.locationFoundHint, Icons.location_on),
-    ),
-    const SizedBox(height: 20),
-
-    // 5. Description
-    TextFormField(
-     controller: _descriptionController,
-     maxLines: 4,
-     keyboardType: TextInputType.multiline,
-     decoration: _buildInputDecoration(CustomTexts.description, Icons.description).copyWith(
-      contentPadding: const EdgeInsets.fromLTRB(10, 16, 10, 10), 
-     ),
-    ),
-    const SizedBox(height: 20),
-
-    // 6. Upload Image Button and Preview
-    OutlinedButton.icon(
-     onPressed: _uploadImage,
-     // Conditional Icon and Label
-     icon: _pickedImage != null 
-      ? const Icon(Icons.check_circle_outline, color: Colors.green) 
-      : const Icon(Icons.cloud_upload), 
-     label: Text(
-      _pickedImage != null 
-       ? 'Image Selected: ${Uri.file(_pickedImage!.path).pathSegments.last}'
-       : 'Upload Image (Optional)',
-     ),
-     style: OutlinedButton.styleFrom(
-      minimumSize: const Size(double.infinity, 50),
-      // Conditional Border Color
-      side: _pickedImage != null ? const BorderSide(color: Colors.green, width: 2) : null, 
-      shape: RoundedRectangleBorder(
-       borderRadius: BorderRadius.circular(10.0),
-      ),
-     ),
-    ),
-
-    // Image Thumbnail Preview
-    if (_pickedImage != null)
-     Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Container(
-       height: 100,
-       width: 100,
-       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade400),
-       ),
-       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.file(
-         _pickedImage!,
-         fit: BoxFit.cover,
+    if (_nameController.text.isEmpty ||
+        _descriptionController.text.isEmpty ||
+        _locationController.text.isEmpty ||
+        _pickedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Please fill in all required fields and select an image.'),
         ),
-       ),
-      ),
-     ),
+      );
+      return;
+    }
 
+    final Map<String, String> fields = {
+      'user_id': userId.toString(),
+      'item_type': widget.isLost ? 'lost' : 'found',
+      'item_name': _nameController.text.trim(),
+      'item_description': _descriptionController.text.trim(),
+      'email': email,
+      'location': _locationController.text.trim(),
+    };
 
-    // Submit Button
-    const SizedBox(height: 30),
-    SizedBox(
-     width: double.infinity,
-     child: ElevatedButton(
-      // Disable button when uploading
-      onPressed: _isUploading ? null : _submitReport, 
-      
-      // Conditional child for loading indicator
-      child: _isUploading
-        ? const SizedBox(
-          height: 20, 
-          width: 20,
-          child: CircularProgressIndicator(
-           color: Colors.white, 
-           strokeWidth: 3,
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      print("📦 Sending fields: $fields");
+      print("📸 Sending image: ${_pickedImage!.path}");
+
+      // ✅ Make sure your Http.multipartPost uses MultipartFile.fromFile internally
+      final response = await Http.multipartPost(
+        'items/add',
+        fields,
+        _pickedImage!,
+        'item_image',
+      );
+
+      print("🔁 Server response: $response");
+
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ??
+                'Item submitted successfully, awaiting admin approval'),
           ),
-         )
-        : const Text(
-          CustomTexts.submit,
-         ),
-     ),
-    ),
-   ],
-  );
- }
+        );
+
+        // Clear fields
+        _nameController.clear();
+        _descriptionController.clear();
+        _locationController.clear();
+        _dateController.clear();
+        setState(() {
+          _pickedImage = null;
+          _selectedCategory = null;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Failed to submit item')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
+    }
+  }
+
+  InputDecoration _buildInputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _nameController,
+          decoration: _buildInputDecoration(
+              CustomTexts.itemName, Icons.drive_file_rename_outline),
+        ),
+        const SizedBox(height: 20),
+
+        DropdownButtonFormField<String>(
+          decoration:
+              _buildInputDecoration(CustomTexts.category, Icons.category),
+          value: _selectedCategory,
+          hint: const Text(CustomTexts.category),
+          items: categories.map((String category) {
+            return DropdownMenuItem<String>(
+              value: category,
+              child: Text(category),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedCategory = newValue;
+            });
+          },
+        ),
+        const SizedBox(height: 20),
+
+        TextFormField(
+          controller: _dateController,
+          readOnly: true,
+          onTap: () => _selectDate(context),
+          decoration: _buildInputDecoration(
+            widget.isLost ? CustomTexts.dateLost : CustomTexts.dateFound,
+            Icons.calendar_today,
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        TextFormField(
+          controller: _locationController,
+          decoration: _buildInputDecoration(
+              widget.isLost
+                  ? CustomTexts.locationLostHint
+                  : CustomTexts.locationFoundHint,
+              Icons.location_on),
+        ),
+        const SizedBox(height: 20),
+
+        TextFormField(
+          controller: _descriptionController,
+          maxLines: 4,
+          keyboardType: TextInputType.multiline,
+          decoration: _buildInputDecoration(
+            CustomTexts.description,
+            Icons.description,
+          ).copyWith(
+            contentPadding: const EdgeInsets.fromLTRB(10, 16, 10, 10),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        OutlinedButton.icon(
+          onPressed: _uploadImage,
+          icon: _pickedImage != null
+              ? const Icon(Icons.check_circle_outline, color: Colors.green)
+              : const Icon(Icons.cloud_upload),
+          label: Text(
+            _pickedImage != null
+                ? 'Image Selected: ${Uri.file(_pickedImage!.path).pathSegments.last}'
+                : 'Upload Image',
+          ),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
+            side: _pickedImage != null
+                ? const BorderSide(color: Colors.green, width: 2)
+                : null,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ),
+
+        if (_pickedImage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade400),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(
+                  _pickedImage!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+
+        const SizedBox(height: 30),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _isUploading ? null : _submitReport,
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            child: _isUploading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                  )
+                : const Text(CustomTexts.submit),
+          ),
+        ),
+      ],
+    );
+  }
 }

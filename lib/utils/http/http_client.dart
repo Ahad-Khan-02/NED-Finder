@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+
 
 class Http {
   static const String _baseUrl = 'http://10.0.2.2:8000'; // Replace with your API base URL
@@ -77,13 +80,13 @@ class Http {
 
 
   // Helper method to make a MULTIPART POST request (for file uploads)
-static Future<Map<String, dynamic>> multipartPost(
-    String endpoint, 
-    Map<String, String> fields, 
-    File? imageFile,
-    String imageFieldName, // e.g., 'item_image'
+  static Future<Map<String, dynamic>> multipartPost(
+  String endpoint, 
+  Map<String, String> fields, 
+  File? imageFile,
+  String imageFieldName, // e.g., 'item_image'
   ) async {
-  
+
   final uri = Uri.parse('$_baseUrl/$endpoint');
   final request = http.MultipartRequest('POST', uri);
 
@@ -92,10 +95,18 @@ static Future<Map<String, dynamic>> multipartPost(
 
   // Add file
   if (imageFile != null) {
+    // 🎯 FIX 1: Detect MIME type using the 'mime' package
+    final mimeType = lookupMimeType(imageFile.path); 
+    final contentType = mimeType != null 
+      ? MediaType.parse(mimeType) 
+      : MediaType('image', 'jpeg'); // Fallback to image/jpeg if detection fails
+
+    // 🎯 FIX 2: Explicitly pass the contentType to the MultipartFile
     request.files.add(
       await http.MultipartFile.fromPath(
-        imageFieldName, // Must match the field name in FastAPI: 'item_image'
-        imageFile.path,
+          imageFieldName, 
+          imageFile.path,
+          contentType: contentType, // <--- THIS IS THE CRITICAL ADDITION
       ),
     );
   }
@@ -103,8 +114,8 @@ static Future<Map<String, dynamic>> multipartPost(
   final streamedResponse = await request.send();
   final response = await http.Response.fromStream(streamedResponse);
 
-  return _handleResponse(response); // Reuse your existing response handler
-}
+  return _handleResponse(response);
+  }
 }
 
 //.\venv\Scripts\activate

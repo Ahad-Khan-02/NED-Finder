@@ -1,22 +1,21 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-enum ItemStatus { found, missing }
+enum ItemStatus { lost, found }
 
-class PendingItemModel {
+class CompletedItemModel {
   final int id;
   final int userId; 
-  // This will be a placeholder since the name isn't joined in the API response
-  final String submitterName; 
+  final String submitterName; // Placeholder
   final String name;
   final String description;
   final String location;
   final String itemType; // 'lost' or 'found'
-  final String status;   // Will always be 'pending' for this screen
+  final String status;   // Should be 'approved' or 'completed'
   final DateTime dateSubmitted;
   final String imageBase64; 
 
-  PendingItemModel({
+  CompletedItemModel({
     required this.id,
     required this.userId,
     required this.submitterName,
@@ -51,7 +50,7 @@ class PendingItemModel {
 
   // --- Factory Constructor for JSON Deserialization ---
 
-  factory PendingItemModel.fromJson(Map<String, dynamic> json) {
+  factory CompletedItemModel.fromJson(Map<String, dynamic> json) {
     // We prefer 'created_at' if available for accurate submission time
     final dateString = json['created_at'] ?? json['date'] ?? ''; 
     final parsedDate = DateTime.tryParse(dateString) ?? DateTime.now();
@@ -59,7 +58,7 @@ class PendingItemModel {
     // Placeholder for submitter name
     final String submitterName = json['submitter_name'] ?? 'User ID: ${json['user_id']}';
 
-    return PendingItemModel(
+    return CompletedItemModel(
       id: json['id'] as int? ?? 0,
       userId: json['user_id'] as int? ?? 0,
       submitterName: submitterName, 
@@ -67,7 +66,7 @@ class PendingItemModel {
       description: json['item_description'] ?? 'No description.',
       location: json['location'] ?? 'Unknown Location',
       itemType: json['item_type'] ?? 'lost',
-      status: json['status'] ?? 'pending',
+      status: json['status'] ?? 'approved', // Default status for this screen
       dateSubmitted: parsedDate,
       imageBase64: json['item_image'] ?? '', 
     );

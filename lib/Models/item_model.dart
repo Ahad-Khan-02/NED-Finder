@@ -1,64 +1,119 @@
-// lib/models/item_model.dart
+// item_model.dart
 
+import 'dart:typed_data';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-// Assuming this is correctly imported for CustomColors
-import 'package:ned_finder/utils/constants/colors.dart'; 
-
-enum ItemStatus { found, missing }
+import 'package:ned_finder/utils/constants/colors.dart'; // Assuming this provides CustomColors
 
 class ItemModel {
-  final String id;
-  final int userId; // 🚨 ADDED: To match the 'user_id' in JSON
-  final String name;
-  final String category;
-  final DateTime date;
+  // Ensure fields are non-nullable by providing required defaults in the constructor
+  final int id;
+  final int userId;
+  final String itemType;
+  final String name; 
+  final String description; 
+  final String email;
+  final DateTime date; 
   final String location;
-  final String description;
-  final String imageUrl; // Note: Your JSON doesn't have 'imageUrl', using a placeholder
-  final ItemStatus status;
+  final bool isFound; 
+  final String status;
+  final DateTime createdAt; 
+  final String imageBase64; 
+  
+  // --- Computed Properties for UI ---
+  
+  // Uses base64Decode safely
+  Uint8List get imageBytes {
+    try {
+      return base64Decode(imageBase64);
+    } catch (e) {
+      // Return an empty list if decoding fails
+      return Uint8List(0);
+    }
+  }
+
+  // Uses safe status string (guaranteed non-null by fromJson)
+  Color get statusColor {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return CustomColors.success;
+      case 'pending':
+        return CustomColors.warning;
+      case 'rejected':
+        return CustomColors.error;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String get statusText {
+    return status.toUpperCase();
+  }
+
+  // --- Helper Getters for Item Type ---
+  String get labelText => itemType == 'found' ? 'Found' : 'Missing';
+  
+  Color get labelColor => itemType == 'found' ? CustomColors.success : CustomColors.error;
+  
+  String get dateLabel => itemType == 'found' ? 'Date Found' : 'Date Lost';
+  
+  String get locationLabel => itemType == 'found' ? 'Location Found' : 'Location Lost';
+
+  // --- Date/Time Helpers ---
+  String get dateString => '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  String get timeString => '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+
 
   ItemModel({
     required this.id,
-    required this.userId, // 🚨 ADDED
+    required this.userId,
+    required this.itemType,
     required this.name,
-    required this.category,
+    required this.description,
+    required this.email,
     required this.date,
     required this.location,
-    required this.description,
-    required this.imageUrl,
+    required this.isFound,
     required this.status,
+    required this.createdAt,
+    required this.imageBase64,
   });
 
-  // 🚀 CRITICAL ADDITION: Factory constructor for JSON deserialization
+  // --- Null-Safe JSON Factory Constructor ---
   factory ItemModel.fromJson(Map<String, dynamic> json) {
-    // Determine status based on the 'found' boolean field
-    final bool isFound = json['found'] ?? false;
-    final ItemStatus status = isFound ? ItemStatus.found : ItemStatus.missing;
+    
+    // 1. Image Base64 Extraction (Null-safe and splits off data URI headers)
+    final String fullImageString = json['item_image'] as String? ?? '';
+    final String base64Data = fullImageString.split(',').last.trim();
 
-    // Use a date field that includes the time for better accuracy
-    final String dateString = json['created_at'] ?? json['date'] ?? DateTime.now().toIso8601String();
+    // 2. Field Extraction with Null Safety (using ?? to provide defaults)
+    
+    // Safety for DateTimes
+    final DateTime safeDate = DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now();
+    final DateTime safeCreatedAt = DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now();
 
     return ItemModel(
-      // Safely convert int ID to String
-      id: json['id']?.toString() ?? '0', 
-      // Safely access and cast userId
-      userId: json['user_id'] as int? ?? 0, 
-      name: json['item_name'] ?? 'Unknown Item',
-      // Category is not in JSON, using a hardcoded default
-      category: 'General Item', 
-      // Parse the date string
-      date: DateTime.parse(dateString), 
-      location: json['location'] ?? 'Unknown Location',
-      description: json['item_description'] ?? 'No description.',
-      // Image URL is missing from JSON, use a placeholder
-      imageUrl: json['item_image'] ?? 'assets/images/placeholder.jpg', 
-      status: status,
+      // Numbers (use ?? 0)
+      id: json['id'] as int? ?? 0,
+      userId: json['user_id'] as int? ?? 0,
+      
+      // Strings (use ?? 'N/A' or a contextual default)
+      itemType: json['item_type'] as String? ?? 'lost', // Default to 'lost'
+      name: json['item_name'] as String? ?? 'Unnamed Item',
+      description: json['item_description'] as String? ?? 'No description provided.',
+      email: json['email'] as String? ?? 'user@example.com',
+      location: json['location'] as String? ?? 'Unknown Location',
+      status: json['status'] as String? ?? 'pending', // Default status to prevent UI crash
+      
+      // Booleans (use ?? false)
+      isFound: json['found'] as bool? ?? false,
+
+      // DateTimes (use safe, parsed values)
+      date: safeDate,
+      createdAt: safeCreatedAt,
+
+      // Base64
+      imageBase64: base64Data, 
     );
   }
-
-  // Helper getter for UI
-  String get statusText => status == ItemStatus.found ? 'Found' : 'Missing';
-  Color get statusColor => status == ItemStatus.found ? CustomColors.success : CustomColors.error;
-  String get dateLabel => status == ItemStatus.found ? 'Date Found' : 'Date Lost';
-  String get locationLabel => status == ItemStatus.found ? 'Location Found' : 'Location Lost';
 }

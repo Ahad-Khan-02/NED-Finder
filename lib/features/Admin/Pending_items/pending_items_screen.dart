@@ -3,46 +3,112 @@ import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
 import 'package:ned_finder/features/Admin/Pending_items/widgets/pending_items_card.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
+import 'package:ned_finder/utils/http/http_client.dart'; // Import Http client
 
-class PendingItemsScreen extends StatelessWidget {
-  PendingItemsScreen({super.key});
+// Convert to StatefulWidget to manage API fetching state
+class PendingItemsScreen extends StatefulWidget {
+  const PendingItemsScreen({super.key});
 
-  // Dummy data based on the "Pending Items" image
-  final List<PendingItemModel> dummyPendingItems = [
-    // Item 1: Alaga ko si beru
-    PendingItemModel(
-      title: 'Alaga ko si beru',
-      description: 'Isa siyang malaking insecto na kulay black and purple',
-      date: '2024-06-05',
-      location: 'Jeju island',
-      imageUrl: 'assets/images/wallet.jpg', // Placeholder image path
-      statusColor: Colors.purple,
-    ),
-    // Item 2: karapatan q
-    PendingItemModel(
-      title: 'karapatan q',
-      description: 'matagal na kasing nawawala karapatan q kasama natin ng pake q, pahanap nalang po',
-      date: '2004-11-04',
-      location: 'basta nasa pilipinas lang yon di panaman aq nakakaalis ng bansa e',
-      imageUrl: 'assets/images/iamge.png', // Placeholder image path
-      statusColor: Colors.blue,
-    ),
-    // Item 3: menudo
-    PendingItemModel(
-      title: 'menudo',
-      description: 'huhu miss ko na siya',
-      date: '2024-06-29',
-      location: 'sa tabi tabi lang',
-      imageUrl: 'assets/images/iamge.png', // Placeholder image path
-      statusColor: CustomColors.success,
-    ),
-  ];
+  @override
+  State<PendingItemsScreen> createState() => _PendingItemsScreenState();
+}
+
+class _PendingItemsScreenState extends State<PendingItemsScreen> {
+  List<PendingItemModel> _pendingItems = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPendingItems();
+  }
+
+  // --- API FETCHING METHOD ---
+  Future<void> _fetchPendingItems() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final responseData = await Http.get('items/pending');
+
+      if (responseData['status'] == 'success' && responseData['data'] != null) {
+        final List itemsJson = responseData['data']['items'] ?? [];
+
+        final List<PendingItemModel> fetchedItems = itemsJson
+            .map((item) => PendingItemModel.fromJson(item))
+            .toList();
+
+        setState(() {
+          _pendingItems = fetchedItems;
+          _isLoading = false;
+        });
+        debugPrint('Successfully loaded ${_pendingItems.length} pending items.');
+
+      } else {
+        throw Exception(responseData['message'] ?? 'Failed to retrieve pending items.');
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Error fetching data: ${e.toString()}';
+        _isLoading = false;
+      });
+      debugPrint('API Error: $_error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     bool isDark = HelperFunctions.isDarkMode(context);
+
+    // --- Conditional Content based on State ---
+    Widget bodyContent;
+
+    if (_isLoading) {
+      bodyContent = const Center(child: CircularProgressIndicator());
+    } else if (_error != null) {
+      bodyContent = Center(
+        child: Text(
+          _error!,
+          style: TextStyle(color: CustomColors.error),
+        ),
+      );
+    } else if (_pendingItems.isEmpty) {
+      bodyContent = const Center(
+        child: Text(
+          '🎉 No pending items currently requiring approval!',
+          style: TextStyle(fontSize: 18),
+        ),
+      );
+    } else {
+      // Data Loaded Successfully
+      bodyContent = GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 350,
+          // FIX: Adjusted childAspectRatio from 0.8 to 0.78 to provide more vertical space
+          // (Lower ratio = Taller Card)
+          childAspectRatio: 0.78, 
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 40,
+        ),
+        itemCount: _pendingItems.length,
+        itemBuilder: (context, index) {
+          // Pass the actual fetched model data to the card
+          return AdminPendingItemCard(
+            item: _pendingItems[index],
+            onUpdate: _fetchPendingItems,
+            );
+        },
+      );
+    }
+
+    // --- Scaffold Structure ---
     return Scaffold(
-      backgroundColor: isDark? CustomColors.darkBackground :CustomColors.lightBackground,
+      backgroundColor: isDark ? CustomColors.darkBackground : CustomColors.lightBackground,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -56,22 +122,8 @@ class PendingItemsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
-            // Grid View of Cards
-            GridView.builder(
-              shrinkWrap: true, // Crucial for embedding GridView inside SingleChildScrollView
-              physics: const NeverScrollableScrollPhysics(), // Prevents nested scrolling issues
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 350, // Max width of each card
-                childAspectRatio: 0.8, // Adjusted to fit image + title + 4 details + 2 buttons
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-              ),
-              itemCount: dummyPendingItems.length,
-              itemBuilder: (context, index) {
-                return AdminPendingItemCard(item: dummyPendingItems[index]);
-              },
-            ),
+            // Display the determined content (Loading, Error, Empty, or Grid)
+            bodyContent,
           ],
         ),
       ),

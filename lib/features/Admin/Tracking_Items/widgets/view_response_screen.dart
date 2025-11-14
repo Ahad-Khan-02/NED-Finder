@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
+import 'package:ned_finder/Models/Tracking_items/tracking_items_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class ViewResponseScreen extends StatelessWidget {
-  // Accepts the item model to display details and the associated response
-  final PendingItemModel item;
+  // Accepts the TrackingItemModel
+  final TrackingItemModel item; 
 
   const ViewResponseScreen({super.key, required this.item});
 
   // --- Dummy Response Data (Simulating a response related to the item) ---
+  // In a real app, this data would be fetched from a /responses/item_id API endpoint
   final String _dummyResponseName = 'Juan Dela Cruz';
   final String _dummyResponseText = 
       'I saw a wallet matching this description (brown leather, slightly worn) left on a desk in the library study area on the date specified. I left it with the CAS security guard, Mr. Reyes. Please check there.';
@@ -30,7 +31,7 @@ class ViewResponseScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Section 1: Original Item Details (from the card) ---
+            // --- Section 1: Original Item Details ---
             const Text(
               'Tracking Item Details',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: CustomColors.primary),
@@ -40,10 +41,10 @@ class ViewResponseScreen extends StatelessWidget {
             // Item Card Snapshot (simplified display)
             _buildDetailSection(
               isDark, 
-              title: item.title, 
-              description: item.description, 
-              date: item.date, 
-              location: item.location
+              title: item.name, // Use item.name
+              description: item.description, // Use item.description
+              date: item.dateString, // Use item.dateString
+              location: item.location // Use item.location
             ),
 
             const SizedBox(height: 32),
@@ -61,15 +62,29 @@ class ViewResponseScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // --- Section 3: Admin Action Buttons ---
+            // --- Section 3: Admin Action Button ---
+            SizedBox(
+              width:double.infinity,
+              child: ElevatedButton.icon( // Changed to ElevatedButton for prominence
+                onPressed: () { /* TODO: Implement contact/completion logic using item.id */ },
+                icon: const Icon(Icons.check_circle_outline),
+                label: const Text('Accept Response & Complete Item'), 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CustomColors.success,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             SizedBox(
               width:double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () { /* TODO: Contact Responder Logic */ },
-                label: const Text('Accept Response'), 
+                icon: const Icon(Icons.call),
+                label: Text('Contact Responder (ID: ${item.id})'), 
               ),
             ),
-            const SizedBox(width: 16),
           ],
         ),
       ),

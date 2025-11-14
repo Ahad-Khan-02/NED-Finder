@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Required for date formatting
 import 'package:ned_finder/Models/item_model.dart';
@@ -21,7 +23,7 @@ class ViewItemScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // 1. Item Image Section
-            _buildImageSection(context),
+            _buildImageSection(context,imageBytes:item.imageBytes ),
 
             // 2. Item Details (White Card Area)
             Padding(
@@ -43,7 +45,7 @@ class ViewItemScreen extends StatelessWidget {
                   _buildDetailRow(
                     icon: Icons.category,
                     label: 'Category',
-                    value: item.category,
+                    value: 'item category',
                     isDark: isDark
                   ),
                   const SizedBox(height: 10),
@@ -93,26 +95,57 @@ class ViewItemScreen extends StatelessWidget {
 
   // --- Widget Builders ---
 
-  Widget _buildImageSection(BuildContext context) {
+  Widget _buildImageSection(BuildContext context, {required Uint8List imageBytes}) {
+    final bool hasImage = imageBytes.isNotEmpty;
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.4, // Takes 40% of screen height
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200, // Placeholder background
-        image: DecorationImage(
-          // Use Image.network or Image.asset here. Using a hardcoded asset path for simplicity.
-          image: AssetImage(item.imageUrl), 
-          fit: BoxFit.cover,
-        ),
-      ),
-      // Ensures the image area is pushed down from the top edge (status bar)
-      child: SafeArea(
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+      width: double.infinity, // Ensure it spans the width
+      color: Colors.grey.shade200, // Placeholder background
+
+      // Use a Stack to layer the image content and the back button
+      child: Stack(
+        children: [
+          // 1. Image Content (fills the entire container)
+          hasImage
+              ? Image.memory(
+                  imageBytes,
+                  fit: BoxFit.cover, // Ensures the image covers the area
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Icon(Icons.broken_image, 
+                      color: Colors.blueGrey.shade400, 
+                      size: 60),
+                  ),
+                )
+              : const Center(
+                  child: Text(
+                    'No Image Available',
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                ),
+
+          // 2. Back Button (positioned over the image, safe from status bar)
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.black54, // Black background for contrast
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,171 +1,140 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/item_model.dart';
-import 'package:ned_finder/features/Home/home_screen.dart';
-import 'package:ned_finder/features/Home/widgets/custom_drawer.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
 import 'package:ned_finder/features/Home/widgets/item_card_list.dart';
-import 'package:ned_finder/utils/constants/colors.dart';
-import 'package:ned_finder/utils/constants/texts.dart';
-import 'package:ned_finder/utils/helpers/helper_functions.dart';
-import 'package:ned_finder/utils/http/http_client.dart'; // REQUIRED for API calls
+import 'package:ned_finder/utils/http/http_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MyItemsScreen extends StatefulWidget {
-   const MyItemsScreen({super.key});
+// Renamed to content to match the embedding style (like SettingsContent)
+class MyItemsContent extends StatefulWidget {
+  const MyItemsContent({super.key});
 
-   @override
-   State<MyItemsScreen> createState() => _MyItemsScreenState();
+  @override
+  State<MyItemsContent> createState() => _MyItemsContentState();
 }
 
-class _MyItemsScreenState extends State<MyItemsScreen> {
-   int _selectedIndex = 1; // Default to My Items screen index
-   List<ItemModel> items = []; // List to store fetched items
-   bool _isLoading = true;
-   String? _error;
+class _MyItemsContentState extends State<MyItemsContent> {
+  List<ItemModel> items = []; // List to store fetched items
+  bool _isLoading = true;
+  String? _error;
+  int? currentUserId;
 
-   // ⚠️ NOTE: Replace this with actual user session data retrieval!
-   // For now, we will use a dummy user ID.
-   final int currentUserId = 1; 
+  @override
+  void initState() {
+    super.initState();
+    // Start fetching data immediately when the content loads
+    _fetchMyItems();
+  }
 
-   @override
-   void initState() {
-   super.initState();
-   // Start fetching data immediately when the screen loads
-   _fetchMyItems(); 
-   }
+  // --- DATA FETCHING ---
+  Future<void> _fetchMyItems() async {
+    // 1. Get User ID from SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
 
-   // --- DATA FETCHING ---
-   Future<void> _fetchMyItems() async {
-   try {
-       // 1. Set Loading State
-       setState(() {
-         _isLoading = true;
-         _error = null;
-       });
+    if (userId == null) {
+      setState(() {
+        _error = 'User not logged in. Cannot fetch items.';
+        _isLoading = false;
+      });
+      return;
+    }
 
-       // 2. API Call using the path parameter
-       final endpoint = 'my-items/$currentUserId';
-       final responseData = await Http.get(endpoint); 
+    setState(() {
+      currentUserId = userId;
+      _isLoading = true;
+      _error = null;
+    });
 
-       // 3. Check Response and Parse Data
-       if (responseData['status'] == 'success' && responseData['data'] != null) {
-         // Assuming 'data' contains the list directly, or under an 'items' key
-         final List itemsJson = responseData['data']['items'] ?? responseData['data']; 
+    try {
+      // 2. API Call using the user ID
+      final endpoint = 'my-items/$currentUserId';
+      final responseData = await Http.get(endpoint);
 
-         final List<ItemModel> fetchedItems = itemsJson
-            .map((item) => ItemModel.fromJson(item))
-            .toList();
+      // 3. Check Response and Parse Data
+      if (responseData['status'] == 'success' && responseData['data'] != null) {
+        // Assuming 'data' contains the list directly, or under an 'items' key
+        final List itemsJson = responseData['data']['items'] ?? responseData['data'];
 
-         // 4. Update State with Data
-         setState(() {
-            items = fetchedItems;
-            _isLoading = false;
-         });
-       } else {
-         throw Exception(responseData['message'] ?? 'Failed to retrieve your items.');
-       }
-   } catch (e) {
-       // 5. Handle Error State
-       print('🚨 Error fetching my items: $e');
-       setState(() {
-         _error = 'Could not load your reported items. Check the network connection or try again later.';
-         _isLoading = false;
-       });
-   }
-   }
+        final List<ItemModel> fetchedItems =
+            itemsJson.map((item) => ItemModel.fromJson(item)).toList();
 
-   // --- DRAWER NAVIGATION LOGIC ---
-   void _onDrawerItemSelected(int index) {
-   setState(() {
-       _selectedIndex = index;
-   });
-  
-   // Handle Navigation outside of this screen
-   if (index == 0) {
-       // Navigate to Home Screen
-       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-   } else if (index == 2) {
-       // Navigate to Settings Screen (Example)
-       print('Navigating to Settings');
-       // Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
-   }
-   // If index == 1, stay on MyItemsScreen
-   }
+        // 4. Update State with Data
+        setState(() {
+          items = fetchedItems;
+          _isLoading = false;
+        });
+        debugPrint('Successfully loaded ${items.length} user items of userID ${currentUserId}');
+      } else {
+        throw Exception(
+            responseData['message'] ?? 'Failed to retrieve your reported items.');
+      }
+    } catch (e) {
+      // 5. Handle Error State
+      print('🚨 Error fetching my items: $e');
+      setState(() {
+        _error =
+            'Could not load your reported items. Check the network connection or try again later.';
+        _isLoading = false;
+      });
+    }
+  }
 
-   // --- MAIN CONTENT (Handles Loading/Error/Data) ---
-   Widget _buildMainContent() {
-   // 1. Check for Errors
-   if (_error != null) {
-       return Center(child: Text(_error!));
-   }
+  // --- MAIN CONTENT (Handles Loading/Error/Data) ---
+  Widget _buildContent() {
+    // 1. Check for Errors
+    if (_error != null) {
+      return Center(child: Text(_error!));
+    }
 
-   // 2. Check for Loading
-   if (_isLoading) {
-       return const Center(child: CircularProgressIndicator());
-   }
+    // 2. Check for Loading
+    if (_isLoading) {
+      // Use a Simple Loading Indicator centered in a container that fills the height
+      return const Center(child: CircularProgressIndicator());
+    }
 
-   // 3. Check for Empty Data
-   if (items.isEmpty) {
-       return Center(
-         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+    // 3. Check for Empty Data
+    if (items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             const Icon(Icons.info_outline, size: 50, color: Colors.grey),
             const SizedBox(height: 10),
             const Text(
-                'You haven\'t reported any items yet.',
-                style: TextStyle(fontSize: 16),
+              'You haven\'t reported any items yet.',
+              style: TextStyle(fontSize: 16),
             ),
             TextButton(
-                onPressed: _fetchMyItems,
-                child: const Text('Try Reloading'),
+              onPressed: _fetchMyItems,
+              child: const Text('Try Reloading',style: TextStyle(color: Colors.blue),),
             )
-            ],
-         ),
-       );
-   }
+          ],
+        ),
+      );
+    }
 
-   // 4. Display Data
-   return Column(
-       crossAxisAlignment: CrossAxisAlignment.start,
-       children: [
-         // 1. Title, Search Bar, and Action Buttons
-         const HomeHeaderSection(isMyitemsScreen: true, isSettingsScreen: false),
+    // 4. Display Data
+    // We wrap ItemCardList in Expanded to allow it to fill the remaining space
+    return Expanded(
+      child: ItemCardList(items: items,isMyItem: true,),
+    );
+  }
 
-         // 2. Item Cards List (Must be wrapped in Expanded when inside a Column/Flexible)
-         Expanded(
-            child: ItemCardList(items: items),
-         ),
-       ],
-   );
-   }
-
-   // --- BUILD METHOD ---
-   @override
-   Widget build(BuildContext context) {
-   final bool isDark = HelperFunctions.isDarkMode(context);
-   return Scaffold(
-       backgroundColor: isDark? CustomColors.darkBackground : CustomColors.lightBackground,
-       appBar: AppBar(
-         title: const Text(
-            CustomTexts.appName,
-            style: TextStyle(fontWeight: FontWeight.bold),
-         ),
-         backgroundColor: isDark? CustomColors.darkBackground : CustomColors.lightBackground,
-         elevation: 0,
-         foregroundColor: isDark? Colors.white : Colors.black,
-       ),
-
-       // The drawer widget
-       drawer: CustomDrawer(
-         selectedIndex: _selectedIndex,
-         onItemSelected: _onDrawerItemSelected,
-         // Assuming CustomTexts handles these, if not, hardcode or pass them from a user model
-         userName: CustomTexts.userName,
-         userRole: CustomTexts.userRole,
-       ),
-
-       // The main content of the screen
-       body: _buildMainContent(),
-   );
-   }
+  // --- BUILD METHOD ---
+  @override
+  Widget build(BuildContext context) {
+    // The structure needs to be a Column containing the header and the main content.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      // HomeHeaderSection remains the same, but we set isMyitemsScreen to true.
+      children: [
+        const HomeHeaderSection(isMyitemsScreen: true, isSettingsScreen: false),
+        
+        // This is where the dynamic content (Loading/Error/Data List) goes.
+        // It must be wrapped in Expanded inside the outer Column.
+        _buildContent(),
+      ],
+    );
+  }
 }

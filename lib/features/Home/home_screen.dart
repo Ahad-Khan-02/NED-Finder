@@ -3,6 +3,7 @@ import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/features/Home/widgets/custom_drawer.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
 import 'package:ned_finder/features/Home/widgets/item_card_list.dart';
+import 'package:ned_finder/features/My_Items/my_items_screen.dart';
 import 'package:ned_finder/features/Settings/settings_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
@@ -29,15 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
   // In _HomeScreenState in home.dart
 
 Future<void> _fetchItems() async {
+
     try {
       // 1. Start Loading State
       setState(() {
         _isLoading = true;
       });
 
-      print('Attempting to fetch items from: items/all');
+      print('Attempting to fetch items from: items/approved');
       // 2. Make the API call (Using 'items/all' based on your FastAPI log)
-      final responseData = await Http.get('items/all'); 
+      final responseData = await Http.get('items/approved'); 
       print('Response received successfully.');
 
       // 3. Check Response Status and Data
@@ -54,7 +56,7 @@ Future<void> _fetchItems() async {
           items = fetchedItems;
           _isLoading = false; 
         });
-        print('Successfully loaded ${items.length} items.');
+        print('🚨 Successfully loaded ${items.length} items.');
 
       } else {
         // Handle non-success status
@@ -93,7 +95,7 @@ Future<void> _fetchItems() async {
           children: [
             const HomeHeaderSection(isSettingsScreen: false,),
             // Use the fetched 'items' list
-            Expanded(child: ItemCardList(items: items,)), 
+            Expanded(child: ItemCardList(items: items,isMyItem: false,)), 
           ],
         );
       case 1:
@@ -102,15 +104,8 @@ Future<void> _fetchItems() async {
         // For now, let's just display all items for this case too, or implement
         // a separate `_fetchMyItems` method.
         // Example: Filter logic (assuming user_id is known, e.g., '1')
-        final myItemsFiltered = items.where((item) => item.id == '1' /* Replace with actual user_id check */).toList();
         
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const HomeHeaderSection(isMyitemsScreen: true, isSettingsScreen: false,),
-            Expanded(child: ItemCardList(items: myItemsFiltered,)),
-          ],
-        );
+        return  const MyItemsContent();
     
       default:
         return Column(
