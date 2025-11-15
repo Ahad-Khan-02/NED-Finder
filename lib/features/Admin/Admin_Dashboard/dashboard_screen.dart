@@ -3,7 +3,7 @@ import 'package:ned_finder/features/Admin/Admin_Dashboard/widgets/admin_data_tab
 import 'package:ned_finder/features/Admin/Admin_Dashboard/widgets/admin_settings_screen.dart';
 import 'package:ned_finder/features/Admin/Completed_Items/completed_items_screen.dart';
 import 'package:ned_finder/features/Admin/Pending_items/pending_items_screen.dart';
-import 'package:ned_finder/features/Admin/Tracking_Items/tracking_items_screen.dart';
+import 'package:ned_finder/features/Admin/Pending_Claims/pending_claims_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/images.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
@@ -118,7 +118,7 @@ class AdminDashboardScreen extends StatelessWidget {
     const List<String> tabs = [
       'Dashboard', 
       'Pending Items', 
-      'Tracking Items', 
+      'Pending Claims', 
       'Completed Items'
     ];
 
@@ -144,9 +144,9 @@ class AdminDashboardScreen extends StatelessWidget {
                     case 'Pending Items':
                       // Keep the original content for other tabs
                       return PendingItemsScreen();
-                    case 'Tracking Items':
+                    case 'Pending Claims':
                       // Keep the original content for other tabs
-                      return TrackingItemsScreen();
+                      return PendingClaimsScreen();
                     default:
                       return CompletedItemsScreen();
                   }

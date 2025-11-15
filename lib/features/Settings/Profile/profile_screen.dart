@@ -1,23 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:ned_finder/Models/User/user_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
+import 'package:ned_finder/utils/http/http_client.dart';
 
-// 1. Convert to StatefulWidget for better data management (though it's optional)
+
+// 1. Convert to StatefulWidget for better data management 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  // Required: The ID of the user whose profile should be displayed
+  // In a real app, this would be the current authenticated user's ID.
+  final int userId; 
+  
+  const ProfileScreen({super.key, required this.userId});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Dummy data (now private state properties)
-  final String _userName = CustomTexts.userName; // "John Matthew Perez"
-  final String _userCourse = 'BSCS 1B'; // Changed from 'CIS' to match image better
-  final String userEmail = 'khan4602360@neduet.edu.pk';
+  // Future to hold the result of the API call
+  late Future<UserModel> _userProfileFuture;
+
+  // Static stats for demonstration (These would typically also come from an API)
   final int _missingItems = 0;
   final int _foundItems = 1;
+
+  static Future<UserModel> fetchUser(int userId) async {
+    // Construct the endpoint path: e.g., 'users/11'
+    final endpoint = 'users/$userId'; 
+    
+    // Use the static Http client to make the GET request
+    final result = await Http.get(endpoint);
+
+    if (result['status'] == 'success' && result.containsKey('data')) {
+      // Map the 'data' part of the response to the UserModel
+      return UserModel.fromJson(result['data'] as Map<String, dynamic>);
+    } else {
+      // Throw an exception with the error message from the API or a default message
+      throw Exception(result['message'] ?? 'Failed to load user data.');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Start fetching the user data immediately using the passed userId
+    _userProfileFuture = fetchUser(widget.userId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: isDark? CustomColors.darkBackground : CustomColors.lightBackground,
+        backgroundColor: isDark ? CustomColors.darkBackground : CustomColors.lightBackground,
         elevation: 0,
-        foregroundColor: isDark? Colors.white : Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -36,62 +66,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- Header Row (Profile Title and Actions) ---
-            _ProfileHeader(),
+            const _ProfileHeader(),
             const SizedBox(height: 32),
-      
-            // --- Main Profile Info Section (FIXED ALIGNMENT) ---
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start, // Keep avatar and text aligned to top
-              children: [
-                // Profile Avatar
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: CustomColors.primary.withOpacity(0.8),
-                  ),
-                  child: const Icon(
-                    Icons.person,
-                    size: 70,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: 24),
-      
-                // User Details (Vertically Aligned)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Name is slightly higher to align with the top of the avatar circle
-                      Text(
-                        _userName,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      // Removed extra vertical space here to tighten alignment
-                      
-                      // Course/Role
-                      _ProfileDetailRow(
-                        icon: Icons.school_outlined,
-                        text: _userCourse,
-                      ),
-                      const SizedBox(height: 4),
-                      // Location
-                      _ProfileDetailRow(
-                        icon: Icons.location_on_outlined,
-                        text: userEmail,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            
+            // --- Main Profile Info Section (Uses FutureBuilder) ---
+            FutureBuilder<UserModel>(
+              future: _userProfileFuture,
+              builder: (context, snapshot) {
+                // Default placeholders for loading state
+                String userName = 'Loading Name...';
+                String userRole = 'Loading Role...';
+                String userEmail = 'Loading Email...';
+
+                // Handle data state
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Show placeholders and a loading indicator
+                } else if (snapshot.hasError) {
+                  // Show error state
+                  userName = 'Error';
+                  userRole = 'Failed to load profile';
+                  userEmail = snapshot.error.toString().replaceFirst('Exception: ', '');
+                  
+                  // Use a different color to indicate error
+                  return _buildUserProfileSection(
+                    userName: userName,
+                    userRole: userRole,
+                    userEmail: userEmail,
+                    isError: true,
+                  );
+                } else if (snapshot.hasData) {
+                  // Show successful data
+                  final user = snapshot.data!;
+                  userName = user.fullname;
+                  // Use the user's role (e.g., Student, Admin) for the second detail row
+                  userRole = user.capitalizedRole; 
+                  userEmail = user.email;
+                } else {
+                  // Fallback state (No data/No error)
+                  userName = 'Guest';
+                  userRole = 'Login required';
+                  userEmail = 'Not available';
+                }
+
+                // Build the UI based on the current data (or placeholders)
+                return _buildUserProfileSection(
+                  userName: userName,
+                  userRole: userRole,
+                  userEmail: userEmail,
+                );
+              },
             ),
+
             const SizedBox(height: 40),
-      
+            
             // --- Stats Cards (Missing/Found Items) ---
             Row(
               children: [
@@ -119,56 +146,99 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+  // Extracted method to build the main profile detail section
+  Widget _buildUserProfileSection({
+    required String userName,
+    required String userRole,
+    required String userEmail,
+    bool isError = false,
+  }) {
+    // Determine the color for the details based on the state
+    final Color detailColor = isError ? Colors.red : Theme.of(context).textTheme.bodyMedium!.color!;
+    
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Profile Avatar or Loading Spinner
+        Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isError ? Colors.red.shade400 : CustomColors.primary.withOpacity(0.8),
+          ),
+          child: _userProfileFuture == null || 
+                 (isError && _userProfileFuture.runtimeType != Future<UserModel>) // Simple error check to avoid spinner on error
+              ? const Icon(Icons.person, size: 70, color: Colors.white)
+              : FutureBuilder(
+                  future: _userProfileFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator(color: Colors.white));
+                    }
+                    return const Icon(Icons.person, size: 70, color: Colors.white);
+                  },
+                ),
+        ),
+        const SizedBox(width: 24),
+
+        // User Details (Vertically Aligned)
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Name
+              Text(
+                userName,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: detailColor,
+                ),
+              ),
+              
+              // Role/Course (Using Role from API)
+              _ProfileDetailRow(
+                icon: Icons.school_outlined,
+                text: userRole,
+                color: detailColor,
+              ),
+              const SizedBox(height: 4),
+              
+              // Email/Location (Using Email from API)
+              _ProfileDetailRow(
+                icon: Icons.alternate_email,
+                text: userEmail,
+                color: detailColor,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class UserService {
 }
 
 // -------------------------------------------------------------
-// 2. Extracted Private Widgets for better organization and clarity
+// Extracted Private Widgets (Minor updates to accept color)
 // -------------------------------------------------------------
 
 // Helper widget for the Header Row
 class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          'Profile',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Row(
-          children: [
-            // Edit Button (Swapped to ElevatedButton.icon for the primary style)
-            ElevatedButton(onPressed: (){},
-             child: SizedBox(
-              width: 110,
-               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                   Icon(Icons.edit, size: 18),
-                   Text(CustomTexts.editProfile),
-                ]),
-             )),
-
-            const SizedBox(width: 8),
-
-            ElevatedButton(onPressed: (){},
-             child: SizedBox(
-              width: 110,
-               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                   Icon(Icons.logout, size: 18),
-                   Text(CustomTexts.logout),
-                ]),
-             )),
-          ],
-        ),
-      ],
+    return const Text(
+      'Profile',
+      style: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 }
@@ -177,22 +247,24 @@ class _ProfileHeader extends StatelessWidget {
 class _ProfileDetailRow extends StatelessWidget {
   final IconData icon;
   final String text;
+  final Color color;
 
   const _ProfileDetailRow({
     required this.icon,
     required this.text,
+    this.color = Colors.black, // Default color
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, ),
+        Icon(icon, size: 18, color: color),
         const SizedBox(width: 8),
         Flexible(
           child: Text(
             text,
-            style: TextStyle(fontSize: 16,),
+            style: TextStyle(fontSize: 16, color: color),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -229,14 +301,14 @@ class _StatCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               count.toString(),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),

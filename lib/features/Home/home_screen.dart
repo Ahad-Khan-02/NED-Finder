@@ -9,6 +9,7 @@ import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // Note: Removed unused color imports from the class body
 
 class HomeScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Initialize items list as empty and handle loading state
   List<ItemModel> items = [];
   bool _isLoading = true; // State to track if data is being fetched
+  int? currentUserId;
 
   // You can remove the hardcoded 'items' and 'myItems' lists now,
   // as they will be populated from the API.
@@ -31,10 +33,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Future<void> _fetchItems() async {
 
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+
+
     try {
       // 1. Start Loading State
       setState(() {
         _isLoading = true;
+        currentUserId = userId;
       });
 
       print('Attempting to fetch items from: items/approved');
@@ -111,8 +118,8 @@ Future<void> _fetchItems() async {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const HomeHeaderSection(isSettingsScreen: true,),
-            const SettingsContent(),
+             HomeHeaderSection(isSettingsScreen: true,),
+             SettingsContent(userID:currentUserId! ,),
           ],
         );
     }
@@ -147,9 +154,8 @@ Future<void> _fetchItems() async {
       drawer: CustomDrawer(
         selectedIndex: _selectedIndex,
         onItemSelected: _onDrawerItemSelected,
+        userId: currentUserId!,
         // Assuming CustomTexts handles these, if not, hardcode or pass them from a user model
-        userName: CustomTexts.userName,
-        userRole: CustomTexts.userRole,
       ),
 
       // The main content of the screen

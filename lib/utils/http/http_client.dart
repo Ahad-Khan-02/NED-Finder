@@ -30,6 +30,43 @@ class Http {
     return _handleResponse(response);
   }
 
+  // [NEW METHOD] Helper method to make a POST request where data MUST be sent as query parameters (e.g., /claim)
+  static Future<Map<String, dynamic>> postWithQueryParams(
+      String endpoint, Map<String, dynamic> queryParams) async {
+    
+    final baseUri = Uri.parse(_baseUrl);
+    final isHttps = baseUri.scheme == 'https';
+
+    // 1. Convert all values in the query map to strings for URL encoding
+    final stringQueryParams = queryParams.map((key, value) => MapEntry(key, value.toString()));
+
+    // 2. Build the full, reliable URI using the correct scheme (http or https)
+    final Uri uri;
+    if (isHttps) {
+      uri = Uri.https(
+        baseUri.authority, // extracts the host (e.g., example.com)
+        '/$endpoint', // the path (e.g., /claim)
+        stringQueryParams,
+      );
+    } else {
+      // Use Uri.http for local development servers like 127.0.0.1:8000
+      uri = Uri.http(
+        baseUri.authority, // extracts the host and port (e.g., 127.0.0.1:8000)
+        '/$endpoint', // the path (e.g., /claim)
+        stringQueryParams,
+      );
+    }
+
+
+    final response = await http.post(
+      uri,
+      // IMPORTANT: No headers or body are included, as the data is already in the URI.
+    );
+    return _handleResponse(response);
+  }
+
+
+
   // Helper method to make a PUT request
   static Future<Map<String, dynamic>> put(String endpoint, dynamic data) async {
     final response = await http.put(

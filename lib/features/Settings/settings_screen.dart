@@ -13,8 +13,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 // ensure the necessary constant files (colors, texts, helpers) are accessible.
 
 class SettingsContent extends StatefulWidget {
+  final int userID;
+
   // Renamed to SettingsContent to imply it's the body content, not a full screen
-  const SettingsContent({super.key});
+  const SettingsContent({super.key,required this.userID});
 
   @override
   State<SettingsContent> createState() => _SettingsContentState();
@@ -60,7 +62,7 @@ class _SettingsContentState extends State<SettingsContent> {
             cardColor: cardColor,
             textColor: textColor,
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(userId: widget.userID,)));
             },
           ),
           const SizedBox(height: 16),

@@ -11,9 +11,10 @@ class CompletedItemModel {
   final String description;
   final String location;
   final String itemType; // 'lost' or 'found'
-  final String status;   // Should be 'approved' or 'completed'
+  final String status;  // Should be 'approved' or 'completed'
   final DateTime dateSubmitted;
   final String imageBase64; 
+  final bool isFound; // NEW: Maps the 'found' field
 
   CompletedItemModel({
     required this.id,
@@ -26,6 +27,7 @@ class CompletedItemModel {
     required this.status,
     required this.dateSubmitted,
     required this.imageBase64,
+    required this.isFound, // NEW
   });
 
   // --- Getters for UI Display ---
@@ -69,6 +71,7 @@ class CompletedItemModel {
       status: json['status'] ?? 'approved', // Default status for this screen
       dateSubmitted: parsedDate,
       imageBase64: json['item_image'] ?? '', 
+      isFound: json['found'] as bool? ?? false, // Mapped directly from the 'found' API field
     );
   }
 }

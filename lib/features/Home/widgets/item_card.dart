@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/features/Home/view_item_screen.dart';
@@ -133,7 +132,7 @@ class ItemCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ViewItemScreen(item: item)),
+                        MaterialPageRoute(builder: (context) => ViewItemScreen(item: item,isMyItem: isMyItem)),
                       );
                     },
                     child: const Text(
