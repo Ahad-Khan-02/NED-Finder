@@ -7,11 +7,13 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class ItemCard extends StatelessWidget {
-  const ItemCard({super.key, required this.item,required this.isMyItem});
+  const ItemCard({super.key, required this.item,required this.isMyItem,required this.userID});
 
   final ItemModel item;
   
   final bool isMyItem;
+  
+  final int userID;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +84,7 @@ class ItemCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                isMyItem?  Positioned(
+                isMyItem? Positioned(
                     bottom: 1,
                     left: 1,
                     child: Container(
@@ -100,7 +102,24 @@ class ItemCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ):Container(),
+                  ): (item.userId==userID)? Positioned(
+                    bottom: 1,
+                    left: 1,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.yellow,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'My Item',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )):Container(),
               ],
             ),
           ),
@@ -132,7 +151,7 @@ class ItemCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ViewItemScreen(item: item,isMyItem: isMyItem)),
+                        MaterialPageRoute(builder: (context) => ViewItemScreen(item: item,isMyItem: isMyItem,currentUserID: userID,)),
                       );
                     },
                     child: const Text(

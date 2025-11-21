@@ -61,6 +61,32 @@ class AdminPendingItemCard extends StatelessWidget {
     }
   }
 
+  Future<void> _submitReject(BuildContext context, String reason) async {
+    try {
+      final uri = 'items/reject/${item.id}';
+
+      final responseData = await Http.postForm(
+        uri,
+        {"reason": reason},
+      );
+
+      if (responseData['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item rejected successfully!')),
+        );
+        onUpdate();
+        Navigator.pop(context); // Close bottom sheet
+      } else {
+        throw Exception(responseData['message']);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = HelperFunctions.isDarkMode(context);
@@ -202,13 +228,14 @@ class AdminPendingItemCard extends StatelessWidget {
                       Expanded(
                         child: OutlinedButton(
                           // 4. UPDATED: Call the rejection method
-                          onPressed: () => _rejectItem(context), 
+                          onPressed: () => _openRejectBottomSheet(context),
+
                           style: OutlinedButton.styleFrom(
                             backgroundColor: Colors.red.shade100,
                             foregroundColor: CustomColors.error,
                             side: const BorderSide(color: CustomColors.error),
                           ),
-                          child: const Text('Delete'),
+                          child: const Text('Reject'),
                         ),
                       ),
                     ],
@@ -243,4 +270,76 @@ class AdminPendingItemCard extends StatelessWidget {
       ],
     );
   }
+
+
+
+  void _openRejectBottomSheet(BuildContext context) {
+  final TextEditingController reasonController = TextEditingController();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Reason for Rejection",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            TextField(
+              controller: reasonController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: "Enter reason...",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  final reason = reasonController.text.trim();
+                  if (reason.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please enter a reason.")),
+                    );
+                    return;
+                  }
+                  _submitReject(context, reason);
+                },
+                child: const Text("Submit"),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 }

@@ -31,7 +31,7 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
 
     try {
       // Use the standard PUT method (assuming the API is idempotent and returns 200/400)
-      final responseData = await Http.put(endpoint, {}); // PUT requests often send an empty body
+      final responseData = await Http.put(endpoint); // PUT requests often send an empty body
 
       if (responseData['status'] == 'success') {
         setState(() {

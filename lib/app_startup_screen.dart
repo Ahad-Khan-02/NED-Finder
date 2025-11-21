@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/features/Admin/Admin_Dashboard/dashboard_screen.dart';
 import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
+import 'package:ned_finder/features/Home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStartupScreen extends StatefulWidget {
@@ -22,6 +23,8 @@ class _AppStartupScreenState extends State<AppStartupScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // Retrieve the saved 'isLoggedIn' flag, defaults to false if not set
     final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false; 
+    final String? role = prefs.getString('role');
+    
 
     // Use Future.microtask to perform navigation after the current build cycle
     Future.microtask(() {
@@ -29,7 +32,7 @@ class _AppStartupScreenState extends State<AppStartupScreen> {
         // User is logged in, go straight to the dashboard
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
+          MaterialPageRoute(builder: (context) => role == 'admin' ? const AdminDashboardScreen() : const HomeScreen()),
         );
       } else {
         // User is not logged in, show the login screen

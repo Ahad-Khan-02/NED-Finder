@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/item_model.dart';
+import 'package:ned_finder/features/Home/view_item_screen.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
 import 'package:ned_finder/features/Home/widgets/item_card_list.dart';
+import 'package:ned_finder/utils/constants/texts.dart'; // Ensure this is imported
 import 'package:ned_finder/utils/http/http_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Renamed to content to match the embedding style (like SettingsContent)
 class MyItemsContent extends StatefulWidget {
   const MyItemsContent({super.key});
 
@@ -14,7 +15,12 @@ class MyItemsContent extends StatefulWidget {
 }
 
 class _MyItemsContentState extends State<MyItemsContent> {
-  List<ItemModel> items = []; // List to store fetched items
+  // Master list of all user items (unchanging after fetch)
+  List<ItemModel> items = []; 
+  // List currently displayed to the user (changes based on filter)
+  List<ItemModel> _filteredItems = []; 
+  
+  String _selectedFilter = CustomTexts.allItemsFilter; // Initial filter state
   bool _isLoading = true;
   String? _error;
   int? currentUserId;
@@ -22,13 +28,41 @@ class _MyItemsContentState extends State<MyItemsContent> {
   @override
   void initState() {
     super.initState();
-    // Start fetching data immediately when the content loads
     _fetchMyItems();
   }
 
-  // --- DATA FETCHING ---
+  // --- FILTERING LOGIC ---
+  /// Filters the master list (`items`) into the displayed list (`_filteredItems`).
+  void _runFilter(String filter) {
+    List<ItemModel> results = [];
+    
+    // Update the local filter state
+    _selectedFilter = filter; 
+
+    if (filter == CustomTexts.allItemsFilter) {
+      // 1. Show all items
+      results = items;
+    } else if (filter == CustomTexts.lostItemsFilter) {
+      // 2. Filter for items that are marked as Lost (isLost = true)
+      results = items.where((item) => item.itemType == 'lost').toList();
+    } else if (filter == CustomTexts.foundItemsFilter) {
+      // 3. Filter for items that are marked as Found (isLost = false)
+      // NOTE: This assumes found items have isLost set to false
+      results = items.where((item) => item.itemType == 'found').toList();
+    } else {
+      // Default to all items if filter is unknown
+      results = items;
+    }
+
+    // Update the displayed list and re-render the UI
+    setState(() {
+      _filteredItems = results;
+    });
+  }
+  // --- END FILTERING LOGIC ---
+
+  // --- DATA FETCHING (UPDATED) ---
   Future<void> _fetchMyItems() async {
-    // 1. Get User ID from SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id');
 
@@ -47,22 +81,21 @@ class _MyItemsContentState extends State<MyItemsContent> {
     });
 
     try {
-      // 2. API Call using the user ID
       final endpoint = 'my-items/$currentUserId';
       final responseData = await Http.get(endpoint);
 
-      // 3. Check Response and Parse Data
       if (responseData['status'] == 'success' && responseData['data'] != null) {
-        // Assuming 'data' contains the list directly, or under an 'items' key
         final List itemsJson = responseData['data']['items'] ?? responseData['data'];
 
         final List<ItemModel> fetchedItems =
             itemsJson.map((item) => ItemModel.fromJson(item)).toList();
 
-        // 4. Update State with Data
+        // Update State with Data
         setState(() {
-          items = fetchedItems;
+          items = fetchedItems; // Update the master list
           _isLoading = false;
+          // Apply the current filter to the newly fetched data
+          _runFilter(_selectedFilter); 
         });
         debugPrint('Successfully loaded ${items.length} user items of userID ${currentUserId}');
       } else {
@@ -70,7 +103,6 @@ class _MyItemsContentState extends State<MyItemsContent> {
             responseData['message'] ?? 'Failed to retrieve your reported items.');
       }
     } catch (e) {
-      // 5. Handle Error State
       print('🚨 Error fetching my items: $e');
       setState(() {
         _error =
@@ -79,6 +111,30 @@ class _MyItemsContentState extends State<MyItemsContent> {
       });
     }
   }
+
+  // --- NAVIGATION AND REFRESH HANDLER ---
+  void _navigateToItemDetail(ItemModel item) async {
+    if (currentUserId == null) return;
+
+    final bool? shouldRefresh = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ViewItemScreen(
+          item: item,
+          isMyItem: true,
+          currentUserID: currentUserId!,
+        ),
+      ),
+    );
+
+    if (shouldRefresh == true) {
+      debugPrint('ViewItemScreen signaled a change. Refreshing MyItemsContent...');
+      // Re-fetch items if the detail screen signals a change (e.g., item marked as found/deleted)
+      _fetchMyItems();
+    }
+  }
+  // --- END: Navigation and Refresh Handler ---
+
 
   // --- MAIN CONTENT (Handles Loading/Error/Data) ---
   Widget _buildContent() {
@@ -89,12 +145,12 @@ class _MyItemsContentState extends State<MyItemsContent> {
 
     // 2. Check for Loading
     if (_isLoading) {
-      // Use a Simple Loading Indicator centered in a container that fills the height
       return const Center(child: CircularProgressIndicator());
     }
 
     // 3. Check for Empty Data
     if (items.isEmpty) {
+      // If the master list is empty, show the primary "no items reported" message
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -113,26 +169,43 @@ class _MyItemsContentState extends State<MyItemsContent> {
         ),
       );
     }
+    
+    if (_filteredItems.isEmpty) {
+      // If the master list is NOT empty, but the filtered list IS empty,
+      // it means the current filter yielded no results.
+      return Center(
+        child: Text('No ${_selectedFilter.toLowerCase()} found.'),
+      );
+    }
 
     // 4. Display Data
-    // We wrap ItemCardList in Expanded to allow it to fill the remaining space
     return Expanded(
-      child: ItemCardList(items: items,isMyItem: true,),
+      // The ItemCardList now uses the _filteredItems list
+      child: ItemCardList(
+        items: _filteredItems, 
+        isMyItem: true,
+        userID: currentUserId!,
+        // NOTE: You still need to ensure your ItemCardList/individual card 
+        // calls _navigateToItemDetail(item) on tap.
+        // onItemTapped: _navigateToItemDetail, // Example
+      ),
     );
   }
 
   // --- BUILD METHOD ---
   @override
   Widget build(BuildContext context) {
-    // The structure needs to be a Column containing the header and the main content.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      // HomeHeaderSection remains the same, but we set isMyitemsScreen to true.
       children: [
-        const HomeHeaderSection(isMyitemsScreen: true, isSettingsScreen: false),
+        HomeHeaderSection(
+          isMyitemsScreen: true,
+          isSettingsScreen: false,
+          // 💥 Pass the filter function to the header section
+          onFilterChanged: _runFilter, 
+        ),
         
         // This is where the dynamic content (Loading/Error/Data List) goes.
-        // It must be wrapped in Expanded inside the outer Column.
         _buildContent(),
       ],
     );

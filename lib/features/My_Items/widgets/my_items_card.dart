@@ -102,7 +102,7 @@ class MyItemCard extends StatelessWidget {
     final endpoint = 'items/${item.id}/found?user_id=${item.userId}';
 
     try {
-      final responseData = await Http.put(endpoint, {});
+      final responseData = await Http.put(endpoint);
 
       if (responseData['status'] == 'success') {
         HelperFunctions.showSnackBar(

@@ -80,7 +80,7 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
         } 
         // Custom backend error structure (e.g., from your Python code: status="failed", message=...)
         else if (response != null && response.containsKey('message')) {
-            apiErrorMessage = response['message'];
+            apiErrorMessage = response['message'].split(':')[1];
         }
 
         _showSnackBar(apiErrorMessage, isError: true);

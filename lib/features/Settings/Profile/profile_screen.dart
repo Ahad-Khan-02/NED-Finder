@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/Models/User/user_model.dart';
+import 'package:ned_finder/Models/User/user_item_stat_model.dart';
+// Note: Assuming these paths are correct for your project structure
+import 'package:ned_finder/Models/User/user_model.dart'; 
 import 'package:ned_finder/utils/constants/colors.dart';
-import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
+
+
 
 
 // 1. Convert to StatefulWidget for better data management 
 class ProfileScreen extends StatefulWidget {
   // Required: The ID of the user whose profile should be displayed
-  // In a real app, this would be the current authenticated user's ID.
   final int userId; 
   
   const ProfileScreen({super.key, required this.userId});
@@ -19,34 +21,63 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Future to hold the result of the API call
+  // Future to hold the result of the API call for user profile
   late Future<UserModel> _userProfileFuture;
 
-  // Static stats for demonstration (These would typically also come from an API)
-  final int _missingItems = 0;
-  final int _foundItems = 1;
+  // Future to hold the result of the API call for user item stats
+  late Future<UserItemStatsModel> _itemStatsFuture;
 
+  // --- Data Fetching Methods ---
+
+  // Fetches User Model (Kept static inside State class as per user's provided pattern)
   static Future<UserModel> fetchUser(int userId) async {
-    // Construct the endpoint path: e.g., 'users/11'
     final endpoint = 'users/$userId'; 
-    
-    // Use the static Http client to make the GET request
     final result = await Http.get(endpoint);
 
     if (result['status'] == 'success' && result.containsKey('data')) {
-      // Map the 'data' part of the response to the UserModel
       return UserModel.fromJson(result['data'] as Map<String, dynamic>);
     } else {
-      // Throw an exception with the error message from the API or a default message
-      throw Exception(result['message'] ?? 'Failed to load user data.');
+      throw Exception(result['message'] ?? 'Failed to load user profile.');
+    }
+  }
+
+  // [NEW] Fetches item counts based on the response structure
+  static Future<UserItemStatsModel> fetchItemStats(int userId) async {
+    final endpoint = 'my-items/$userId'; 
+    final result = await Http.get(endpoint);
+
+    if (result['status'] == 'success' && result.containsKey('data')) {
+      final data = result['data'] as Map<String, dynamic>;
+      final items = data['items'] as List<dynamic>;
+
+      int foundCount = 0;
+      int missingCount = 0;
+
+      for (var item in items) {
+        // Calculate counts based on the 'found' boolean field as requested
+        if (item['found'] == true) {
+          foundCount++;
+        } else {
+          missingCount++;
+        }
+      }
+
+      return UserItemStatsModel(
+        missingItems: missingCount,
+        foundItems: foundCount,
+      );
+    } else {
+      throw Exception(result['message'] ?? 'Failed to load item statistics.');
     }
   }
 
   @override
   void initState() {
     super.initState();
-    // Start fetching the user data immediately using the passed userId
+    // Start fetching the user profile data
     _userProfileFuture = fetchUser(widget.userId);
+    // Start fetching the item statistics data
+    _itemStatsFuture = fetchItemStats(widget.userId);
   }
 
   @override
@@ -77,69 +108,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 String userName = 'Loading Name...';
                 String userRole = 'Loading Role...';
                 String userEmail = 'Loading Email...';
+                bool isError = false;
 
                 // Handle data state
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Show placeholders and a loading indicator
+                  // Handled by placeholders
                 } else if (snapshot.hasError) {
-                  // Show error state
                   userName = 'Error';
-                  userRole = 'Failed to load profile';
+                  userRole = 'Profile Load Failed';
                   userEmail = snapshot.error.toString().replaceFirst('Exception: ', '');
-                  
-                  // Use a different color to indicate error
-                  return _buildUserProfileSection(
-                    userName: userName,
-                    userRole: userRole,
-                    userEmail: userEmail,
-                    isError: true,
-                  );
+                  isError = true;
                 } else if (snapshot.hasData) {
-                  // Show successful data
                   final user = snapshot.data!;
                   userName = user.fullname;
-                  // Use the user's role (e.g., Student, Admin) for the second detail row
-                  userRole = user.capitalizedRole; 
+                  userRole = user.fieldOfStudy!;
                   userEmail = user.email;
                 } else {
-                  // Fallback state (No data/No error)
                   userName = 'Guest';
                   userRole = 'Login required';
                   userEmail = 'Not available';
                 }
 
-                // Build the UI based on the current data (or placeholders)
                 return _buildUserProfileSection(
                   userName: userName,
                   userRole: userRole,
                   userEmail: userEmail,
+                  isError: isError,
+                  userProfileFuture: _userProfileFuture, // Pass the future for the loading spinner
                 );
               },
             ),
 
             const SizedBox(height: 40),
             
-            // --- Stats Cards (Missing/Found Items) ---
-            Row(
-              children: [
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.help_outline,
-                    label: 'Missing Item',
-                    count: _missingItems,
-                    cardColor: cardColor,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: _StatCard(
-                    icon: Icons.check_circle_outline,
-                    label: 'Found Item',
-                    count: _foundItems,
-                    cardColor: cardColor,
-                  ),
-                ),
-              ],
+            // --- Stats Cards (Missing/Found Items - Now uses FutureBuilder for Item Stats) ---
+            FutureBuilder<UserItemStatsModel>(
+              future: _itemStatsFuture,
+              builder: (context, snapshot) {
+                // Default stats
+                int missingCount = 0;
+                int foundCount = 0;
+                bool isStatsError = false;
+                
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Keep default 0s for missing/found, but show loading indicator if desired
+                } else if (snapshot.hasError) {
+                  isStatsError = true;
+                } else if (snapshot.hasData) {
+                  missingCount = snapshot.data!.missingItems;
+                  foundCount = snapshot.data!.foundItems;
+                }
+                
+                return Row(
+                  children: [
+                    Expanded(
+                      child: _StatCard(
+                        icon: Icons.help_outline,
+                        label: isStatsError ? 'Error' : 'Missing Item',
+                        count: isStatsError ? 0 : missingCount,
+                        cardColor: cardColor,
+                        isError: isStatsError,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: _StatCard(
+                        icon: Icons.check_circle_outline,
+                        label: isStatsError ? 'Error' : 'Found Item',
+                        count: isStatsError ? 0 : foundCount,
+                        cardColor: cardColor,
+                        isError: isStatsError,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -152,6 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String userName,
     required String userRole,
     required String userEmail,
+    required Future<UserModel> userProfileFuture,
     bool isError = false,
   }) {
     // Determine the color for the details based on the state
@@ -168,18 +212,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             shape: BoxShape.circle,
             color: isError ? Colors.red.shade400 : CustomColors.primary.withOpacity(0.8),
           ),
-          child: _userProfileFuture == null || 
-                 (isError && _userProfileFuture.runtimeType != Future<UserModel>) // Simple error check to avoid spinner on error
-              ? const Icon(Icons.person, size: 70, color: Colors.white)
-              : FutureBuilder(
-                  future: _userProfileFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(color: Colors.white));
-                    }
-                    return const Icon(Icons.person, size: 70, color: Colors.white);
-                  },
-                ),
+          child: FutureBuilder(
+            future: userProfileFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator(color: Colors.white));
+              }
+              // Icon is shown once loading is complete or error occurred
+              return const Icon(Icons.person, size: 70, color: Colors.white);
+            },
+          ),
         ),
         const SizedBox(width: 24),
 
@@ -220,9 +262,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-class UserService {
-}
-
 // -------------------------------------------------------------
 // Extracted Private Widgets (Minor updates to accept color)
 // -------------------------------------------------------------
@@ -233,6 +272,7 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Using hardcoded strings for buttons as CustomTexts constants were not available
     return const Text(
       'Profile',
       style: TextStyle(
@@ -279,38 +319,59 @@ class _StatCard extends StatelessWidget {
   final String label;
   final int count;
   final Color cardColor;
+  final bool isError;
 
   const _StatCard({
     required this.icon,
     required this.label,
     required this.count,
     required this.cardColor,
+    this.isError = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Determine primary color based on item type or error state
+    final Color primaryColor = isError 
+      ? Colors.red 
+      : (label.contains('Missing') ? Colors.orange : CustomColors.primary); // Example colors
+    
+    final Color textColor = isError 
+      ? Colors.white 
+      : Theme.of(context).textTheme.bodyLarge!.color!;
+      
+    // Adjust card color if there's an error to make it stand out
+    final Color finalCardColor = isError ? primaryColor: cardColor;
+
+
     return Card(
-      color: cardColor,
+      color: finalCardColor,
       elevation: 10,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Icon(icon, size: 30, ),
+            Icon(
+              icon, 
+              size: 30, 
+              color: isError ? Colors.white : primaryColor, // Icon color changes on error
+            ),
             const SizedBox(height: 12),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
+                color: isError ? Colors.white : textColor,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               count.toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
+                color: isError ? Colors.white : textColor,
               ),
             ),
           ],
