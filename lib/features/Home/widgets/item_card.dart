@@ -7,13 +7,15 @@ import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class ItemCard extends StatelessWidget {
-  const ItemCard({super.key, required this.item,required this.isMyItem,required this.userID});
+  const ItemCard({super.key, required this.item,required this.isMyItem,required this.userID,required this.onItemActionSuccess});
 
   final ItemModel item;
   
   final bool isMyItem;
   
   final int userID;
+
+  final VoidCallback onItemActionSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -149,10 +151,16 @@ class ItemCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
+                    onPressed: () async { // 👈 Change to async
+                      // 💥 Await the result from the ViewItemScreen
+                      final bool? shouldRefresh = await Navigator.push<bool>(context,
                         MaterialPageRoute(builder: (context) => ViewItemScreen(item: item,isMyItem: isMyItem,currentUserID: userID,)),
                       );
+                      
+                      // If the detail screen popped with 'true', call the success callback
+                      if (shouldRefresh == true) { // 👈 Check the result
+                        onItemActionSuccess(); // 👈 Trigger the refresh in MyItemsContent
+                      }
                     },
                     child: const Text(
                       CustomTexts.viewItem,

@@ -94,38 +94,41 @@ class _CompletedItemsScreenState extends State<CompletedItemsScreen> {
         bodyContent = GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-             maxCrossAxisExtent: 350,
-             childAspectRatio: 0.8,
-             crossAxisSpacing: 20,
-             mainAxisSpacing: 20,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // Forces exactly 2 items per row
+            childAspectRatio: 0.5,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
           ),
           itemCount: _completedItems.length,
           itemBuilder: (context, index) {
-             // Pass the actual filtered model data to the card
-             return AdminCompletedItemsCard(item: _completedItems[index]);
+            // Pass the actual filtered model data to the card
+            return AdminCompletedItemsCard(item: _completedItems[index]);
           },
         );
      }
      
      return Scaffold(
         backgroundColor: isDark ? CustomColors.darkBackground : CustomColors.lightBackground,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               const Text(
-                  'Completed Items',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-               ),
-               const SizedBox(height: 24),
-               // Display the determined content (Loading, Error, Empty, or Grid)
-               bodyContent,
-             ],
+        body: RefreshIndicator(
+          onRefresh: _fetchCompletedItems,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 const Text(
+                    'Completed Items',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                 ),
+                 const SizedBox(height: 24),
+                 // Display the determined content (Loading, Error, Empty, or Grid)
+                 bodyContent,
+               ],
+            ),
           ),
         ),
      );

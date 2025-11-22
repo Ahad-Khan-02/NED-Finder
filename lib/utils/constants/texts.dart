@@ -98,8 +98,8 @@ class CustomTexts {
 
   static const String searchItems = "Search"; // Simplified to match the input field hint
   
-  static const String addItem = "Add Item"; // New button text
-  static const String reportItem = "Report Item"; // Button text
+  static const String addItem = "Report Found Item"; // New button text
+  static const String reportItem = "Report Lost Item"; // Button text
   
   // Card Status Tags (Used in the item card)
   static const String statusFound = "Found";

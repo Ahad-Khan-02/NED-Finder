@@ -121,6 +121,7 @@ Future<void> deleteItemApiCall(BuildContext context, ItemModel item) async {
 
     if (responseData is Map<String, dynamic> && responseData['status'] == 'success') {
       HelperFunctions.showSnackBar('Item "${item.name}" successfully deleted!');
+      
       // Close the ViewItemScreen and signal success to MyItemsContent
       Navigator.of(context).pop(true); 
     } else {

@@ -9,12 +9,14 @@ class ItemCardList extends StatelessWidget {
   final bool isMyItem; 
   
   final int userID;
+  final VoidCallback onRefresh;
 
   const ItemCardList({
     super.key, 
     required this.items, 
     required this.isMyItem, 
-    required this.userID
+    required this.userID,
+    required this.onRefresh,
   });
 
   @override
@@ -35,6 +37,7 @@ class ItemCardList extends StatelessWidget {
             item: items[index],
             isMyItem: isMyItem, // Now definitively a bool
             userID: userID,
+            onItemActionSuccess: onRefresh,
           );
         },
       ),

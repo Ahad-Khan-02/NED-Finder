@@ -240,10 +240,14 @@ class _HomeScreenState extends State<HomeScreen> {
                .map((item) => ItemModel.fromJson(item))
                .toList();
 
+          final List<ItemModel> notFoundItems = fetchedItems
+               .where((item) => !item.isFound)
+               .toList();
+
           // 4. SUCCESS: Update State, initialize filtered list, and disable loading
           setState(() {
-             items = fetchedItems;
-             _filteredItems = fetchedItems; // Initialize with all fetched items
+             items = notFoundItems;
+             _filteredItems = notFoundItems; // Initialize with all fetched items
              _isLoading = false; 
           });
           print('🚨 Successfully loaded ${items.length} items.');
@@ -283,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onSearchChanged: _runSearchFilter, // Pass the search filter function
                ),
                // Use the filtered/searched list
-               _filteredItems.isEmpty? Center(child: Text("No items found.")) :Expanded(child: ItemCardList(items: _filteredItems,isMyItem: false,userID : currentUserId!)), 
+               _filteredItems.isEmpty? Center(child: Text("No items found.")) :Expanded(child: ItemCardList(items: _filteredItems,isMyItem: false,userID : currentUserId!,onRefresh: _fetchItems)), 
              ],
           );
         case 1:
@@ -304,6 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
    void _onDrawerItemSelected(int index) {
      setState(() {
         _selectedIndex = index;
+        _fetchItems();
      });
      print('Navigation Item Selected: $index');
    }

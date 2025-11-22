@@ -22,7 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController fullNameController = TextEditingController();
-  String user = '';
+  String user = 'student';
   String department = '';
   String year = '';
 
@@ -77,9 +77,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     password: passwordController, 
                     email: emailController, 
                     fullName: fullNameController, 
-                    onUserChanged: (selectedUser){
-                      user = selectedUser!;
-                    },
                     onDepartmentChanged: (selectedDepartment){
                       department = selectedDepartment!;
                     },
@@ -116,15 +113,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fullname: fullNameController.text.trim(),
                           email: emailController.text.trim(),
                           fieldOfStudy: department,
-                          year:user=='admin'? 0 : int.tryParse(year) ?? 1,
+                          year: int.tryParse(year) ?? 1,
                           password: passwordController.text.trim(),
-                        );
+                        ); 
 
-                        print('response : $response');
 
+                        String msg = response["data"]?["message"] ??
+                                    response["message"].toString().replaceAll("API Error (Status 400): ", "");                        print('response msg: ${response["message"]}');
+                        msg = msg.toString().replaceAll("Value error, ","");
+                        msg = msg.toString().replaceAll("value is ","");
+                        print("           $msg");
+                        
                         HelperFunctions.showAlert(
                           response["status"] == "success" ? "Success" : "Signup Failed",
-                          response["message"] ?? "Something went wrong"
+                          msg
                         );
 
                         if (response["status"] == "success") {

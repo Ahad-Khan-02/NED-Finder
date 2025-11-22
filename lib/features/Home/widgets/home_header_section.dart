@@ -195,7 +195,7 @@ class _HomeHeaderSectionState extends State<HomeHeaderSection> {
     Widget _buildActionDropDown(context) {
       // Filter Dropdown Section
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 0),
         child: Align(
           alignment: Alignment.topRight,
           child: DropdownButtonHideUnderline(
@@ -228,42 +228,47 @@ class _HomeHeaderSectionState extends State<HomeHeaderSection> {
 
     Widget _buildActionButtons(context) {
       return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // + Add Item Button
-          TextButton.icon(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: false, appBarTitle: CustomTexts.reportFoundItem, )));
-              },
-              icon: const Icon(Icons.add, color: Colors.green),
-              label: const Text(
-                CustomTexts.addItem,
-                style: TextStyle(color:   Colors.green, fontWeight: FontWeight.bold),
-              ),
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.green.withOpacity(0.2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          Expanded(
+            child: TextButton.icon(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: false, appBarTitle: CustomTexts.reportFoundItem, )));
+                },
+                icon: const Icon(Icons.add, color: Colors.green),
+                label: const Text(
+                  CustomTexts.addItem,
+                  style: TextStyle(color:   Colors.green, fontWeight: FontWeight.bold,fontSize: 12),
                 ),
-              ),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.green.withOpacity(0.2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+            ),
           ),
           const SizedBox(width: 10),
 
           // Report Item Button
-          TextButton.icon(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: true, appBarTitle: CustomTexts.reportLostItem)));
-              },
-              icon: const Icon(Icons.warning_amber, color: Colors.red),
-              label: const Text(
-                CustomTexts.reportItem,
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.red.withOpacity(0.2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          Expanded(
+            child: TextButton.icon(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: true, appBarTitle: CustomTexts.reportLostItem)));
+                },
+                icon: const Icon(Icons.warning_amber, color: Colors.red),
+                label: const Text(
+                  CustomTexts.reportItem,
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold,fontSize: 12),
                 ),
-              ),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.red.withOpacity(0.2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+            ),
           ),
         ],
       );

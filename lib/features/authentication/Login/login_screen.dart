@@ -97,12 +97,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         final data = response['data'];
 
                         // Show backend message
-                        HelperFunctions.showAlert(
-                          response['status'] == 'success'
-                              ? 'Success'
-                              : 'Login Failed',
-                          response['message'] ?? 'Something went wrong',
-                        );
+                        response['status'] != 'success'? HelperFunctions.showAlert(
+                          'Login Failed',
+                          'Invalid Email or Password',
+                        ):null;
 
                         if (response['status'] == 'success' && data != null) {
                           final prefs = await SharedPreferences.getInstance();

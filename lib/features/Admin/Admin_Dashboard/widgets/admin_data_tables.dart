@@ -135,8 +135,7 @@ class _AdminDataTablesState extends State<AdminDataTables> {
           columns: [
             const DataColumn(label: Text('Item ID')),
             const DataColumn(label: Text('User ID')),
-            const DataColumn(label: Text('Submitter Name')), // Needs API join
-            const DataColumn(label: Text('Name')),
+            const DataColumn(label: Text('Item Name')),
             const DataColumn(label: Text('Description')),
             DataColumn(label: Text(dateLabel)), // Dynamic label
             DataColumn(label: Text(timeLabel)), // Dynamic label
@@ -149,10 +148,7 @@ class _AdminDataTablesState extends State<AdminDataTables> {
             // .dateFound (or .dateString)
             // .timeFound (or .timeString)
             // .submitterName (needs to be implemented, defaults to placeholder)
-            
-            // Placeholder for submitterName since it's not in the base item API response
-            final String submitterName = item.name.isEmpty ? 'User ${item.userId}' : 'Ahad';
-            
+                        
             // Placeholder for date/time if your model names differ from item.dateFound/item.timeFound
             final String date = item.dateFound; // Assuming this maps to the date part
             final String time = item.timeFound; // Assuming this maps to the time part
@@ -160,7 +156,6 @@ class _AdminDataTablesState extends State<AdminDataTables> {
             return DataRow(cells: [
               DataCell(Text(item.id.toString())),
               DataCell(Text(item.userId.toString())),
-              DataCell(Text(submitterName)),
               DataCell(SizedBox(width: 100, child: Text(item.name, overflow: TextOverflow.ellipsis))),
               DataCell(SizedBox(width: 150, child: Text(item.description, overflow: TextOverflow.ellipsis))),
               DataCell(Text(date)),

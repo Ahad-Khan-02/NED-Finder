@@ -87,11 +87,10 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
       bodyContent = GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 350,
-          // FIX: Adjusted childAspectRatio from 0.8 to 0.78 to provide more vertical space
-          // (Lower ratio = Taller Card)
-          childAspectRatio: 0.78, 
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // Forces exactly 2 items per row
+          // FIX: Retained the updated aspect ratio for sufficient vertical space
+          childAspectRatio: 0.5, 
           crossAxisSpacing: 20,
           mainAxisSpacing: 40,
         ),
@@ -101,7 +100,7 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
           return AdminPendingItemCard(
             item: _pendingItems[index],
             onUpdate: _fetchPendingItems,
-            );
+          );
         },
       );
     }
@@ -109,22 +108,25 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
     // --- Scaffold Structure ---
     return Scaffold(
       backgroundColor: isDark ? CustomColors.darkBackground : CustomColors.lightBackground,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Pending Items',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+      body: RefreshIndicator(
+        onRefresh: _fetchPendingItems,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Pending Items',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            // Display the determined content (Loading, Error, Empty, or Grid)
-            bodyContent,
-          ],
+              const SizedBox(height: 24),
+              // Display the determined content (Loading, Error, Empty, or Grid)
+              bodyContent,
+            ],
+          ),
         ),
       ),
     );

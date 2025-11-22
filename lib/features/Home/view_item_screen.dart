@@ -347,8 +347,12 @@ class ViewItemScreen extends StatelessWidget {
                     value: 'Item Category', // Placeholder, update if ItemModel supports category
                     isDark: isDark,
                   ),
-                  const SizedBox(height: 10),
-                  _buildStatusTag(),
+                  isMyItem? Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      _buildStatusTag(),
+                    ],
+                  ):Container(),
                   const SizedBox(height: 20),
                   _buildDetailSection(
                     icon: Icons.description,

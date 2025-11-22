@@ -138,6 +138,7 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
           _pickedImage = null;
           _selectedCategory = null;
         });
+        Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response['message'] ?? 'Failed to submit item')),

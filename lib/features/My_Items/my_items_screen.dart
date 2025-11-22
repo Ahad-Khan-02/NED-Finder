@@ -185,6 +185,7 @@ class _MyItemsContentState extends State<MyItemsContent> {
         items: _filteredItems, 
         isMyItem: true,
         userID: currentUserId!,
+        onRefresh: _fetchMyItems,
         // NOTE: You still need to ensure your ItemCardList/individual card 
         // calls _navigateToItemDetail(item) on tap.
         // onItemTapped: _navigateToItemDetail, // Example
