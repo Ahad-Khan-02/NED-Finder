@@ -124,7 +124,7 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Provide details to claim the item. Your message will be sent to the ${widget.item.itemType == 'lost' ? 'finder' : 'owner'} for verification.',
+                'Provide details to claim the item. Also include your contact information. Your message will be sent to the ${widget.item.itemType == 'lost' ? 'finder' : 'owner'} for verification.',
                 style: TextStyle(
                     fontSize: 16, color: isDark ? Colors.white70 : Colors.black87),
               ),
@@ -147,7 +147,7 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
                 style: TextStyle(color: isDark ? Colors.white : Colors.black),
                 decoration:  InputDecoration(
                   labelText: 'Claim Message / Details',
-                  hintText: 'e.g., "The wallet had a blue key and two credit cards inside."',
+                  hintText: 'Describe why this item belongs to you and include your contact details. Example: "The wallet had a blue key and two credit cards. You can reach me at 0300-XXXXXXX."',
                   prefixIcon: Icon(Icons.message),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20)
