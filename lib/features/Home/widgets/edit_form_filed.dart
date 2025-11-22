@@ -212,8 +212,7 @@ class _EditItemFormState extends State<EditItemForm> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CustomColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  side: BorderSide(color: CustomColors.primary)
                 ),
                 child: _isLoading
                     ? const SizedBox(

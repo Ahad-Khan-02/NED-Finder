@@ -119,6 +119,7 @@ class AdminPendingItemCard extends StatelessWidget {
                     Icons.person,
                     item.submitterName,
                     isSubtitle: true,
+                    isDark,
                   ),
                   const SizedBox(height: 4),
 
@@ -126,6 +127,7 @@ class AdminPendingItemCard extends StatelessWidget {
                   _buildDetailRow(
                     Icons.location_on,
                     item.location,
+                    isDark,
                   ),
                   
                   // Removed the 'View Item' button
@@ -139,11 +141,11 @@ class AdminPendingItemCard extends StatelessWidget {
   }
 
   // Helper method for standardized detail rows (kept unchanged)
-  Widget _buildDetailRow(IconData icon, String text, {bool isSubtitle = false}) {
+  Widget _buildDetailRow(IconData icon, String text,isDark, {bool isSubtitle = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: isSubtitle ? 14 : 16, color: CustomColors.textSecondary),
+        Icon(icon, size: isSubtitle ? 14 : 16, color:isDark? CustomColors.textWhite : CustomColors.textSecondary),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
@@ -151,7 +153,7 @@ class AdminPendingItemCard extends StatelessWidget {
             style: TextStyle(
               fontSize: isSubtitle ? 12 : 14,
               fontStyle: isSubtitle ? FontStyle.italic : FontStyle.normal,
-              color: CustomColors.textSecondary
+              color: isDark? CustomColors.textWhite : CustomColors.textSecondary
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

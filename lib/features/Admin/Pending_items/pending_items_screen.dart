@@ -77,9 +77,12 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
       );
     } else if (_pendingItems.isEmpty) {
       bodyContent = const Center(
-        child: Text(
-          '🎉 No pending items currently requiring approval!',
-          style: TextStyle(fontSize: 18),
+        child: Center(
+          child: Text(
+            'No pending items currently requiring approval!',
+            style: TextStyle(fontSize: 18,),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     } else {

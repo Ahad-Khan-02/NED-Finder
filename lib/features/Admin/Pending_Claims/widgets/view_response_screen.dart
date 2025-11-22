@@ -48,7 +48,7 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
       setState(() {
         _statusMessage = 'Error processing claim: ${e.toString()}';
       });
-      debugPrint('Claim Action Error: $_statusMessage');
+      HelperFunctions.showSnackBar(_statusMessage!);
     } finally {
       if(mounted) {
         setState(() {
@@ -56,6 +56,29 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
         });
       }
     }
+  }
+
+  void _showConfirmationDialog(String text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: text=='approve' ? const Text('Confirm Item Approval') : const Text('Confirm Item Rejection'),
+          content: text=='approve' ? const Text('Are you sure you want to approve this item? This action cannot be undone.') : const Text('Are you sure you want to reject this item? This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Close the dialog
+              child: const Text('Cancel', style: TextStyle(color:  CustomColors.darkerGrey)),
+            ),
+            TextButton(onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog first
+                _updateClaimStatus(text); // Proceed with the approval
+              }, child: text=='approve' ? const Text('Approve', style: TextStyle(color: CustomColors.primary)) : const Text('Reject', style: TextStyle(color: CustomColors.error))
+            )
+          ]
+        );
+      },
+    );
   }
 
   @override
@@ -88,16 +111,8 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
                 ),
               ),
 
-            // --- Section 1: Item Visual Confirmation (New) ---
-            const Text(
-              'Item Visual Confirmation',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: CustomColors.primary),
-            ),
-            const SizedBox(height: 16),
             _buildImageDisplayCard(hasImage, widget.claim.itemImageBytes),
 
-            const SizedBox(height: 32),
-            const Divider(),
             const SizedBox(height: 32),
 
             // --- Section 2: Claimer and Justification Details ---
@@ -118,7 +133,7 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
             SizedBox(
               width:double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _isProcessing ? null : () => _updateClaimStatus('approve'),
+                onPressed: _isProcessing ? null : () => _showConfirmationDialog('approve'),
                 icon: _isProcessing ? const SizedBox(
                   width: 20, 
                   height: 20, 
@@ -126,7 +141,8 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
                 ) : const Icon(Icons.check_circle_outline),
                 label: Text(_isProcessing ? 'Processing...' : 'APPROVE Claim'), 
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: CustomColors.success,
+                  side: BorderSide(color: Colors.transparent),
+                  backgroundColor: CustomColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
@@ -138,10 +154,11 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
             SizedBox(
               width:double.infinity,
               child: OutlinedButton.icon(
-                onPressed: _isProcessing ? null : () => _updateClaimStatus('reject'),
+                onPressed: _isProcessing ? null : () => _showConfirmationDialog('reject'),
                 icon: const Icon(Icons.cancel_outlined, color: CustomColors.error),
                 label: const Text('REJECT Claim', style: TextStyle(color: CustomColors.error)), 
                 style: OutlinedButton.styleFrom(
+                  backgroundColor: CustomColors.error.withOpacity(0.1),
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   side: const BorderSide(color: CustomColors.error),
                 ),
@@ -226,7 +243,7 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
           // Claimer Justification/Message (Highlighted)
           const Text(
             'Claimer Justification:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: CustomColors.warning),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: CustomColors.primary),
           ),
           const SizedBox(height: 8),
           Padding(

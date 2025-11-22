@@ -141,7 +141,7 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? 'Failed to submit item')),
+          SnackBar(content: Text(response['message'].toString().split(':')[1] ?? 'Failed to submit item')),
         );
       }
     } catch (e) {

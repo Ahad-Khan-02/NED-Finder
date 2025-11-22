@@ -202,7 +202,7 @@ class _HomeHeaderSectionState extends State<HomeHeaderSection> {
               child: DropdownButton<String>(
                 value: _selectedFilter,
                 icon: const Icon(Icons.arrow_drop_down),
-                style: const TextStyle(color:   Colors.black, fontSize: 16),
+                style:  TextStyle(color: HelperFunctions.isDarkMode(context)? Colors.white : Colors.black, fontSize: 16),
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedFilter = newValue!;

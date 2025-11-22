@@ -91,6 +91,7 @@ class _PendingClaimsScreenState extends State<PendingClaimsScreen> {
       bodyContent = const Center(
         child: Text(
           'No claims are currently pending administrative review.',
+          textAlign: TextAlign.center,
           style: TextStyle(fontSize: 18),
         ),
       );

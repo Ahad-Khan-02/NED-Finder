@@ -14,7 +14,7 @@ Future<bool?> showConfirmationDialog(
   BuildContext context,
   String title,
   String content,
-  Color actionColor,
+  Color buttonColor,
 ) {
   return showDialog<bool>(
     context: context,
@@ -31,15 +31,10 @@ Future<bool?> showConfirmationDialog(
               style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600),
             ),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: actionColor,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: Text(title.contains('Delete') ? 'Delete' : 'Confirm'),
-          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true), 
+            child: Text(title.contains('Delete') ? 'Delete' : 'Confirm',style: TextStyle(color:buttonColor),),
+          )
         ],
       );
     },
@@ -142,7 +137,7 @@ Future<void> markAsFoundApiCall(BuildContext context, ItemModel item) async {
     context,
     'Mark as Found',
     'Are you sure you want to mark this item as found and close the listing?',
-    CustomColors.primary,
+    CustomColors.primary
   ) ?? false;
 
   if (!confirm) return;

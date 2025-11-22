@@ -76,7 +76,12 @@ class _SettingsContentState extends State<SettingsContent> {
             onTap: () async {
               final SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setBool('isLoggedIn', false);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (_) => false,
+              );
+
             },
           ),
         ],

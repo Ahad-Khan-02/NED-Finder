@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
 
 class AdminItemDetailsScreen extends StatefulWidget {
@@ -47,6 +48,29 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
     }
   }
 
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Item Approval'),
+          content: Text('Are you sure you want to approve the item: "${widget.item.name}"? This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Close the dialog
+              child: const Text('Cancel', style: TextStyle(color:  CustomColors.darkerGrey)),
+            ),
+            TextButton(onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog first
+                _approveItem(); // Proceed with the approval
+              }, child: const Text('Approve', style: TextStyle(color: CustomColors.primary)),
+            )
+          ]
+        );
+      },
+    );
+  }
+
   // --- API CALL: SUBMIT REJECTION REASON ---
   Future<void> _submitReject(String reason) async {
     setState(() => _isLoading = true);
@@ -89,7 +113,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: HelperFunctions.isDarkMode(context)? CustomColors.dark : CustomColors.lightBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -125,9 +149,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
                   onPressed: _isLoading ? null : () {
                     final reason = reasonController.text.trim();
                     if (reason.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please enter a reason.")),
-                      );
+                      HelperFunctions.showAlert('Reason Required', 'Please provide a reason before submitting.');
                       return;
                     }
                     Navigator.pop(context); // Close the bottom sheet first
@@ -160,12 +182,12 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: CustomColors.textSecondary),
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: CustomColors.primary),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   text,
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 14),
                   maxLines: maxLines,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -230,7 +252,6 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
 
             // Details Section
             _buildDetailRow(Icons.person, item.submitterName,'' ),
-            _buildDetailRow(Icons.email, 'Email', item.id.toString()),
             _buildDetailRow(Icons.calendar_today, 'Date/Time', '${item.dateString} at ${item.timeString}'),
             _buildDetailRow(Icons.location_on, 'Location', item.location),
             _buildDetailRow(Icons.description, 'Description', item.description, maxLines: 5),
@@ -241,11 +262,9 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _approveItem,
+                    onPressed: _isLoading ? null : _showConfirmationDialog,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: CustomColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: _isLoading 
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
@@ -257,6 +276,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
                   child: OutlinedButton(
                     onPressed: _isLoading ? null : _openRejectBottomSheet,
                     style: OutlinedButton.styleFrom(
+                      backgroundColor: CustomColors.error.withOpacity(0.1),
                       foregroundColor: CustomColors.error,
                       side: const BorderSide(color: CustomColors.error),
                       padding: const EdgeInsets.symmetric(vertical: 16),

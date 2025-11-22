@@ -75,9 +75,16 @@ class _SettingsContentState extends State<AdminSettingsScreen> {
               cardColor: cardColor,
               textColor: textColor,
               onTap: () async {
-                final SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setBool('isLoggedIn', false);
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+
+                if (!context.mounted) return;
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (_) => false,
+                );
               },
             ),
           ],

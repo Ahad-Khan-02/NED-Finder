@@ -112,15 +112,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           // Navigate based on role
                           if (data['role'] == 'admin') {
-                            Navigator.pushReplacement(
+                            Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(
-                                  builder: (_) => AdminDashboardScreen()),
+                              MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
+                              (_) => false,
                             );
+
                           } else {
-                            Navigator.pushReplacement(
+                            Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (_) => HomeScreen()),
+                              MaterialPageRoute(builder: (context) => HomeScreen()),
+                              (_) => false,
                             );
                           }
                         }

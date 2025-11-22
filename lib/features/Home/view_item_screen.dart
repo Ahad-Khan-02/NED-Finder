@@ -159,11 +159,12 @@ class ViewItemScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, color: isDark ? Colors.white : Colors.black87, size: 24),
+            Icon(icon, color: CustomColors.primary, size: 24),
             const SizedBox(width: 8),
             Text(
               label,
               style: const TextStyle(
+                color:  CustomColors.primary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -208,13 +209,7 @@ class ViewItemScreen extends StatelessWidget {
                                     HelperFunctions.showSnackBar('Item not approved');
                                 }
                               : () => markAsFoundApiCall(context, item), // Using external API call
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        elevation: 3,
-                      ),
+
                       child: Text(
                         item.isFound ? 'FOUND' : 'Mark as Found',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
@@ -224,18 +219,15 @@ class ViewItemScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: ElevatedButton(
+                    child: OutlinedButton(
                       onPressed: () => deleteItemApiCall(context, item), // Using external API call
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColors.error.withOpacity(0.9),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        elevation: 3,
-                      ),
+                      style: OutlinedButton.styleFrom(
+                        side:  BorderSide(width: 2 ,color: Colors.red,),
+                        backgroundColor: CustomColors.error.withOpacity(0.1)
+                      ), 
                       child: const Text(
                         'Delete Item',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13,color: CustomColors.error),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -256,12 +248,7 @@ class ViewItemScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColors.accent,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
+                      
                       child: const Text(
                         'Claim This Item',
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -271,17 +258,10 @@ class ViewItemScreen extends StatelessWidget {
         const SizedBox(height: 15),
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
+          child: OutlinedButton(
             // We use pop(false) here to ensure a simple 'Close' does not trigger a refresh
             onPressed: () => Navigator.of(context).pop(false),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: CustomColors.textSecondary,
-              elevation: 0,
-              side: BorderSide(color: CustomColors.textSecondary.withOpacity(0.5)),
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
+           
             child: const Text(
               'Close',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
@@ -325,9 +305,6 @@ class ViewItemScreen extends StatelessWidget {
                           width: 80,
                           child: ElevatedButton(
                             onPressed: () => _showEditBottomSheet(context), 
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            ),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

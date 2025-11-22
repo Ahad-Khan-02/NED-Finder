@@ -42,7 +42,7 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
     final currentUserId = prefs.getInt('user_id'); 
 
     if (currentUserId == null) {
-      _showSnackBar('Error: User not logged in. Cannot submit claim.', isError: true);
+      _showSnackBar('Error: User not logged in. Cannot submit claim.');
       setState(() {
         _isClaiming = false;
       });
@@ -64,7 +64,7 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
       final response = await Http.postWithQueryParams(endpoint, queryParams); 
 
       if (response != null && response['status'] == 'success') {
-        _showSnackBar(response['message'] ?? 'Item claim submitted successfully!', isError: false);
+        _showSnackBar(response['message'] ?? 'Item claim submitted successfully!');
         Navigator.of(context).pop();
       } else {
         // Handle API error messages gracefully (400, 404, or 500 status)
@@ -83,11 +83,11 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
             apiErrorMessage = response['message'].split(':')[1];
         }
 
-        _showSnackBar(apiErrorMessage, isError: true);
+        _showSnackBar(apiErrorMessage);
       }
     } catch (e) {
       print('Claim Submission Error: $e');
-      _showSnackBar('Connection failed. Check your network or API base URL.', isError: true);
+      _showSnackBar('Connection failed. Check your network or API base URL.');
     } finally {
       setState(() {
         _isClaiming = false;
@@ -95,11 +95,10 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
     }
   }
 
-  void _showSnackBar(String message, {required bool isError}) {
+  void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? CustomColors.error : CustomColors.success,
         duration: const Duration(seconds: 4), 
       ),
     );
@@ -146,11 +145,13 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
               TextFormField(
                 controller: _messageController,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   labelText: 'Claim Message / Details',
                   hintText: 'e.g., "The wallet had a blue key and two credit cards inside."',
                   prefixIcon: Icon(Icons.message),
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20)
+                  ),
                 ),
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
@@ -171,10 +172,6 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isClaiming ? null : _submitClaim,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    backgroundColor: CustomColors.primary,
-                  ),
                   child: _isClaiming
                       ? const SizedBox(
                           width: 24,

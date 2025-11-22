@@ -124,22 +124,7 @@ class CompletedItemsCardDetails extends StatelessWidget {
             _buildDetailRow(Icons.access_time, 'Time Submitted', item.timeString, isDark),
             _buildDetailRow(Icons.location_on, 'Location Reported', item.location, isDark),
             
-            // Action Button (Only to close, as item is completed)
-            const SizedBox(height: 30),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back, size: 20),
-                label: const Text('Back to Completed Items List'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: CustomColors.textSecondary,
-                  side: BorderSide(color: CustomColors.textSecondary.withOpacity(0.5)),
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+    
           ],
         ),
       ),

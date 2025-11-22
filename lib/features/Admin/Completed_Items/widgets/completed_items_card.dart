@@ -38,7 +38,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               // Softened shadow for better aesthetic consistency with pending card
-              color: Colors.black.withOpacity(0.1), 
+              color: Colors.black.withOpacity(0.3), 
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),
@@ -115,6 +115,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
                     Icons.person,
                     item.submitterName, // Uses placeholder logic from model
                     isSubtitle: true,
+                    isDark,
                   ),
                   const SizedBox(height: 8),
 
@@ -122,6 +123,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
                   _buildDetailRow(
                     Icons.description, 
                     item.description, // Mapped from item_description
+                    isDark,
                   ),
                   const SizedBox(height: 8),
 
@@ -129,6 +131,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
                   _buildDetailRow(
                     Icons.calendar_today, 
                     '${item.dateString} at ${item.timeString}', // Mapped from dateSubmitted
+                    isDark,
                   ),
                   const SizedBox(height: 8),
 
@@ -136,6 +139,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
                   _buildDetailRow(
                     Icons.location_on, 
                     item.location, // Mapped from location
+                    isDark
                   ),
                   
                   // No Action Buttons needed for 'Completed' items
@@ -149,12 +153,12 @@ class AdminCompletedItemsCard extends StatelessWidget {
   }
 
   // Helper method for standardized detail rows
-  Widget _buildDetailRow(IconData icon, String text, {bool isSubtitle = false}) {
+  Widget _buildDetailRow(IconData icon, String text,bool isDark ,{bool isSubtitle = false,}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Set icon color for better visibility in dark mode
-        Icon(icon, size: isSubtitle ? 14 : 16, color: CustomColors.textSecondary),
+        Icon(icon, size: isSubtitle ? 14 : 16, color:isDark? CustomColors.lightBackground : CustomColors.darkBackground),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
@@ -162,7 +166,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
             style: TextStyle(
               fontSize: isSubtitle ? 12 : 14,
               fontStyle: isSubtitle ? FontStyle.italic : FontStyle.normal,
-              color: CustomColors.textSecondary // Set text color for better consistency
+              color:isDark? CustomColors.lightBackground : CustomColors.darkBackground
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
