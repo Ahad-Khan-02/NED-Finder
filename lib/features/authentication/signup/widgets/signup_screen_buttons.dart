@@ -29,7 +29,7 @@ class _SignUpScreenButtonsState extends State<SignUpScreenButtons> {
         SizedBox(
           height: 20,
         ),
-        // 5. Login Button
+
         SizedBox(
         width: double.infinity,
         child: ElevatedButton(

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
 import 'package:ned_finder/features/Admin/Pending_items/widgets/pending_items_card.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
-import 'package:ned_finder/utils/http/http_client.dart'; // Import Http client
+import 'package:ned_finder/utils/http/http_client.dart'; 
 
-// Convert to StatefulWidget to manage API fetching state
+
 class PendingItemsScreen extends StatefulWidget {
   const PendingItemsScreen({super.key});
 
@@ -24,7 +25,6 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
     _fetchPendingItems();
   }
 
-  // --- API FETCHING METHOD ---
   Future<void> _fetchPendingItems() async {
     setState(() {
       _isLoading = true;
@@ -63,7 +63,6 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
   Widget build(BuildContext context) {
     bool isDark = HelperFunctions.isDarkMode(context);
 
-    // --- Conditional Content based on State ---
     Widget bodyContent;
 
     if (_isLoading) {
@@ -79,27 +78,25 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
       bodyContent = const Center(
         child: Center(
           child: Text(
-            'No pending items currently requiring approval!',
+            CustomTexts.noPendingItemsFound,
             style: TextStyle(fontSize: 18,),
             textAlign: TextAlign.center,
           ),
         ),
       );
     } else {
-      // Data Loaded Successfully
+
       bodyContent = GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Forces exactly 2 items per row
-          // FIX: Retained the updated aspect ratio for sufficient vertical space
+          crossAxisCount: 2,
           childAspectRatio: 0.5, 
           crossAxisSpacing: 20,
           mainAxisSpacing: 40,
         ),
         itemCount: _pendingItems.length,
         itemBuilder: (context, index) {
-          // Pass the actual fetched model data to the card
           return AdminPendingItemCard(
             item: _pendingItems[index],
             onUpdate: _fetchPendingItems,
@@ -108,7 +105,6 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
       );
     }
 
-    // --- Scaffold Structure ---
     return Scaffold(
       backgroundColor: isDark ? CustomColors.darkBackground : CustomColors.lightBackground,
       body: RefreshIndicator(
@@ -119,14 +115,13 @@ class _PendingItemsScreenState extends State<PendingItemsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Pending Items',
+                CustomTexts.pendingItemsTitle,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 24),
-              // Display the determined content (Loading, Error, Empty, or Grid)
               bodyContent,
             ],
           ),

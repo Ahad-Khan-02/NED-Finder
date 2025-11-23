@@ -12,7 +12,6 @@ class AdminCompletedItemsCard extends StatelessWidget {
 
   final CompletedItemModel item;
 
-  // Function to handle the navigation when the card is tapped
   void _handleTap(BuildContext context) {
     Navigator.push(
       context,
@@ -27,7 +26,6 @@ class AdminCompletedItemsCard extends StatelessWidget {
     final bool isDark = HelperFunctions.isDarkMode(context);
     final bool hasImage = item.imageBytes.isNotEmpty;
 
-    // 1. Wrap the entire card in InkWell to make it clickable and provide a ripple effect
     return InkWell(
       onTap: () => _handleTap(context),
       borderRadius: BorderRadius.circular(15),
@@ -37,7 +35,6 @@ class AdminCompletedItemsCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              // Softened shadow for better aesthetic consistency with pending card
               color: Colors.black.withOpacity(0.3), 
               spreadRadius: 1,
               blurRadius: 5,
@@ -48,9 +45,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Image Display
             Container(
-              // Changed height from 200 to 150 to match the style of the pending item card
               height: 150, 
               width: double.infinity,
               decoration: BoxDecoration(
@@ -61,7 +56,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
                 child: hasImage
                     ? Image.memory(
-                        item.imageBytes, // Use decoded image bytes
+                        item.imageBytes, 
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Center(
                             child: Icon(Icons.broken_image, color: Colors.blueGrey.shade400)),
@@ -73,14 +68,12 @@ class AdminCompletedItemsCard extends StatelessWidget {
               ),
             ),
 
-            // 2. Details
-            // Removed the Expanded widget around Padding for safer layout in list/grid views
+          
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Item Type Tag (Lost/Found)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -98,9 +91,8 @@ class AdminCompletedItemsCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
 
-                  // Title (item_name)
                   Text(
-                    item.name, // Mapped from item_name
+                    item.name, 
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -110,24 +102,22 @@ class AdminCompletedItemsCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
 
-                  // Submitter 
                   _buildDetailRow(
                     Icons.person,
-                    item.submitterName, // Uses placeholder logic from model
+                    item.submitterName, 
                     isSubtitle: true,
                     isDark,
                   ),
                   const SizedBox(height: 8),
 
-                  // Description
                   _buildDetailRow(
                     Icons.description, 
-                    item.description, // Mapped from item_description
+                    item.description,
                     isDark,
                   ),
                   const SizedBox(height: 8),
 
-                  // Date and Time
+  
                   _buildDetailRow(
                     Icons.calendar_today, 
                     '${item.dateString} at ${item.timeString}', // Mapped from dateSubmitted
@@ -135,14 +125,12 @@ class AdminCompletedItemsCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
 
-                  // Location
                   _buildDetailRow(
                     Icons.location_on, 
-                    item.location, // Mapped from location
+                    item.location, 
                     isDark
                   ),
                   
-                  // No Action Buttons needed for 'Completed' items
                 ],
               ),
             ),
@@ -152,12 +140,11 @@ class AdminCompletedItemsCard extends StatelessWidget {
     );
   }
 
-  // Helper method for standardized detail rows
+
   Widget _buildDetailRow(IconData icon, String text,bool isDark ,{bool isSubtitle = false,}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Set icon color for better visibility in dark mode
         Icon(icon, size: isSubtitle ? 14 : 16, color:isDark? CustomColors.lightBackground : CustomColors.darkBackground),
         const SizedBox(width: 6),
         Expanded(

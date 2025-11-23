@@ -77,9 +77,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   LoginScreenButtons(
                     isLoading: _isLoading,
                     onPressed: () async {
-                      if (_isLoading) return; // Prevent multiple clicks
+                      if (_isLoading) return; 
 
-                      // Validation
                       if (emailController.text.isEmpty ||
                           passwordController.text.isEmpty) {
                         return HelperFunctions.showAlert(
@@ -96,7 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         final data = response['data'];
 
-                        // Show backend message
                         response['status'] != 'success'? HelperFunctions.showAlert(
                           'Login Failed',
                           'Invalid Email or Password',
@@ -110,7 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           await prefs.setString('role', data['role']);
                           await prefs.setString('fullname', data['fullname']);
 
-                          // Navigate based on role
                           if (data['role'] == 'admin') {
                             Navigator.pushAndRemoveUntil(
                               context,
@@ -137,8 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-
-                  
                 ],
               ),
             ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/features/Authentication/forgot_password/forgot_password_screen.dart';
 import 'package:ned_finder/features/Authentication/signup/sign_up_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
@@ -21,32 +20,11 @@ class LoginScreenButtons extends StatelessWidget {
 
     return Column(
       children: [
-        // Forgot Password
-        Align(
-          alignment: Alignment.center,
-          child: TextButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ForgotPasswordScreen()));
-            },
-            child: const Text(
-              CustomTexts.forgotPassword,
-              style: TextStyle(
-                color: CustomColors.textButtonColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
 
-        // Login Button with Loading
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: isLoading ? null : onPressed, // Disable button while loading
+            onPressed: isLoading ? null : onPressed, 
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),

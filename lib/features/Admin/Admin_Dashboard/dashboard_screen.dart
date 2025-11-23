@@ -9,7 +9,7 @@ import 'package:ned_finder/utils/constants/images.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart'; 
 
-// --- 1. Define the separate table screens (for the nested navigation) ---
+
 
 class LostItemsTableScreen extends StatelessWidget {
   const LostItemsTableScreen({super.key});
@@ -48,7 +48,6 @@ class ReportedItemsTableScreen extends StatelessWidget {
 }
 
 
-// --- 2. Create a DashboardContentScreen with an internal BottomNavigationBar ---
 
 class DashboardContentScreen extends StatefulWidget {
   const DashboardContentScreen({super.key});
@@ -70,18 +69,14 @@ class _DashboardContentScreenState extends State<DashboardContentScreen> {
   Widget build(BuildContext context) {
     bool isDark = HelperFunctions.isDarkMode(context);
     return Scaffold(
-      // Important: Use a container or the background color for the body here, 
-      // NOT the main CustomColors.lightBackground, otherwise the BottomAppBar 
-      // will use the main Scaffold background color.
+
       backgroundColor:isDark? CustomColors.darkBackground : CustomColors.lightBackground, 
       
-      // The body will show the selected table screen
       body: PageStorage(
         bucket: _bucket,
         child: _tableScreens[_currentIndex],
       ),
 
-      // The Bottom Navigation Bar for Lost/Reported items
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -94,11 +89,11 @@ class _DashboardContentScreenState extends State<DashboardContentScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Lost Items',
+            label: CustomTexts.lostItemsTabletitle,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.report),
-            label: 'Reported Items',
+            label: CustomTexts.foundItemsTableTitle,
           ),
         ],
       ),
@@ -106,7 +101,6 @@ class _DashboardContentScreenState extends State<DashboardContentScreen> {
   }
 }
 
-// --- 3. Update the main AdminDashboardScreen to use the new content ---
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -114,12 +108,11 @@ class AdminDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isDark = HelperFunctions.isDarkMode(context);
-    // The original tabs are restored
     const List<String> tabs = [
-      'Dashboard', 
-      'Pending Items', 
-      'Pending Claims', 
-      'Completed Items'
+      CustomTexts.dashboardTab, 
+      CustomTexts.pendingItemsTab, 
+      CustomTexts.pendingClaimsTab, 
+      CustomTexts.completedItemsTab
     ];
 
     return DefaultTabController(
@@ -129,23 +122,17 @@ class AdminDashboardScreen extends StatelessWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header Section: Logo, TabBar, and Log Out Button
             _buildHeader(context, tabs),
             
-            // Main Content Area (Tab Views)
             Expanded(
               child: TabBarView(
                 children: tabs.map((String tabName) {
                   switch (tabName){
-                    case 'Dashboard':
-                      // Here we place the new widget containing the internal Bottom Nav Bar
-                      // This ensures only the 'Dashboard' tab has the Lost/Reported switcher
+                    case CustomTexts.dashboardTab:
                       return const DashboardContentScreen(); 
-                    case 'Pending Items':
-                      // Keep the original content for other tabs
+                    case CustomTexts.pendingItemsTab:
                       return PendingItemsScreen();
-                    case 'Pending Claims':
-                      // Keep the original content for other tabs
+                    case CustomTexts.pendingClaimsTab:
                       return PendingClaimsScreen();
                     default:
                       return CompletedItemsScreen();
@@ -159,21 +146,21 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
-  // --- Header Widget (Remains the same as your original code) ---
+
   Widget _buildHeader(BuildContext context, List<String> tabs) {
     bool isDark = HelperFunctions.isDarkMode(context);
     return Container(
-      color: isDark? CustomColors.darkBackground : CustomColors.lightBackground, // White background for the header bar
+      color: isDark? CustomColors.darkBackground : CustomColors.lightBackground, 
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
       child: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            // SeekNFind Logo and Log Out
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // SeekNFind Logo/Title
+
                   Row(
                   children: [
                     Image.asset(CustomImages.appLogo,height: 30,),
@@ -188,15 +175,14 @@ class AdminDashboardScreen extends StatelessWidget {
                   ],
                 ),
                 
-                // Log Out Button
+
                 TextButton.icon(
                   onPressed: () {
-                    // TODO: Implement Log Out logic
                     Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminSettingsScreen()));
                   },
                   icon: const Icon(Icons.settings, color: CustomColors.primary),
                   label: const Text(
-                    'Settings',
+                    CustomTexts.settings,
                     style: TextStyle(color: CustomColors.primary, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -209,7 +195,7 @@ class AdminDashboardScreen extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: TabBar(
                 isScrollable: true,
-                tabs: tabs.map((name) => Tab(text: '  ${name}  ')).toList(),
+                tabs: tabs.map((name) => Tab(text: '  $name  ')).toList(),
                 indicator: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: CustomColors.primary,

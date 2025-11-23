@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
 
@@ -8,7 +9,7 @@ class AdminItemDetailsScreen extends StatefulWidget {
   const AdminItemDetailsScreen({
     super.key,
     required this.item,
-    required this.onUpdate, // Callback to refresh the parent list
+    required this.onUpdate, 
   });
 
   final PendingItemModel item;
@@ -21,7 +22,7 @@ class AdminItemDetailsScreen extends StatefulWidget {
 class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
   bool _isLoading = false;
 
-  // --- API CALL: APPROVE ITEM ---
+
   Future<void> _approveItem() async {
     setState(() => _isLoading = true);
     try {
@@ -71,11 +72,10 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
     );
   }
 
-  // --- API CALL: SUBMIT REJECTION REASON ---
+
   Future<void> _submitReject(String reason) async {
     setState(() => _isLoading = true);
     try {
-      // NOTE: We use Http.multipartPost to send 'reason' as form-data, as required by the backend.
       final uri = 'items/reject/${widget.item.id}';
       
       final responseData = await Http.multipartPost(
@@ -90,7 +90,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
           const SnackBar(content: Text('Item rejected successfully!')),
         );
         widget.onUpdate();
-        Navigator.pop(context); // Close details screen (implicitly closes the bottom sheet)
+        Navigator.pop(context); 
       } else {
         throw Exception(responseData['message']);
       }
@@ -106,7 +106,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
     }
   }
 
-  // --- BOTTOM SHEET FOR REJECTION REASON ---
+
   void _openRejectBottomSheet() {
     final TextEditingController reasonController = TextEditingController();
 
@@ -130,7 +130,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Reason for Rejection",
+                CustomTexts.reasonForRejection,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
@@ -138,7 +138,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
                 controller: reasonController,
                 maxLines: 4,
                 decoration: InputDecoration(
-                  hintText: "Enter reason (e.g., Inappropriate content, Duplicate post)...",
+                  hintText: CustomTexts.reasonForRejectionHint,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
@@ -152,12 +152,12 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
                       HelperFunctions.showAlert('Reason Required', 'Please provide a reason before submitting.');
                       return;
                     }
-                    Navigator.pop(context); // Close the bottom sheet first
-                    _submitReject(reason); // Then call the API
+                    Navigator.pop(context); 
+                    _submitReject(reason); 
                   },
                   child: _isLoading 
                     ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text("Submit Rejection"),
+                    : const Text(CustomTexts.submitRejection),
                 ),
               ),
               const SizedBox(height: 20),

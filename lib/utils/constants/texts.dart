@@ -10,7 +10,8 @@ class CustomTexts {
   static const String next = "Next";
   static const String back = "Back";
   static const String submit = "Submit Report";
-  static const String skip = "Skip";
+  static const String close = "Close";
+  static const String edit = "Edit";
   static const String done = "Done";
   static const String continueText = "Continue";
   static const String success = "Success";
@@ -71,11 +72,6 @@ class CustomTexts {
   static const String otpNotReceived = "Didn’t receive OTP?";
   static const String otpSent = "OTP sent successfully.";
 
-  // -- Forgot Password --
-  static const String forgotPasswordSubTitle =
-      "Enter your registered email to reset your password.";
-  static const String passwordResetSent =
-      "Password reset link sent! Please check your email.";
 
 
 // --- Navigation Labels ---
@@ -119,7 +115,9 @@ class CustomTexts {
   static const String reportLostItemDescription = "Provide details so we can help you find it.";
   static const String reportFoundItem = "Report Found Item";
   static const String reportFoundItemDescription = "Provide details so we can help you claim it.";
- 
+  static const String claimItemButton = "Claim This Item";
+
+
   // -- Report Item Form Fields --
   static const String itemName = "Item Name";
   static const String category = "Category";
@@ -149,7 +147,12 @@ class CustomTexts {
   static const String allItemsFilter = "All Items";
   static const String lostItemsFilter = "Lost Items";
   static const String foundItemsFilter = "Found Items";
-  static const String filterBy = "Filter by:"; // For the dropdown label
+  static const String filterBy = "Filter by:"; 
+  static const String editItemTitle = "Edit Item Details";
+  static const String saveChanges = "Save Changes";
+
+
+
 
   // -- Profile --
   static const String profile = "Profile";
@@ -167,6 +170,59 @@ class CustomTexts {
       "Please check your internet connection and try again.";
   static const String somethingWentWrong = "Something went wrong!";
   static const String tryAgain = "Try Again";
+
+  // -- Admin --
+  static const String lostItemsTabletitle = "Lost Items";
+  static const String foundItemsTableTitle = "Found Items";
+  static const String timeLost = "Time lost";
+  static const String timeFound = "Time Found";
+  static const String locationLost = "Location Lost";
+  static const String locationFound = "Location Found";
+
+  static const String itemId = "Item ID";
+  static const String userId = "User ID";
+  static const String itemType = "Item Type";
+  static const String status = "Status";
+
+
+
+  static const String darkMode = "Dark Mode";
+  static const String darkModeOn = 'Dark Mode Is On';
+  static const String darkModeOff = 'Dark Mode Is Off';
+
+
+
+  static const String dashboardTab = 'Dashboard'; 
+  static const String pendingItemsTab = 'Pending Items';
+  static const String pendingClaimsTab = 'Pending Claims'; 
+  static const String completedItemsTab = 'Completed Items';
+
+
+  static const String completedItemsStatus = 'STATUS: COMPLETED (ITEM RETURNED)';
+  static const String compltedItemandSubmitterDetails = 'Item & Submitter Details';
+  static const String dateSubmitted = 'Date Submitted';
+  static const String timeSubmitted = 'Time Submitted';
+  static const String locationReported = 'Location Reported';
+  static const String noCompletedItemsFound = 'No completed (found) items found.';
+  static const String noPendingItemsFound = 'No pending items required for approval.';
+  static const String noPendingClaimsFound = 'No pending claims found.';
+  static const String completedItemsTitle = 'Completed Items';
+
+
+
+
+  static const String pendingClaimsTitle = 'Pending Claims';
+  static const String reviewPendingClaim = 'Review Pending Claim';
+  static const String claimerDetailsAndJustification = 'Claimer Details & Justification';
+  static const String claimerJustification = 'Justification';
+  static const String pendingItemsTitle = 'Pending Items';
+  static const String reasonForRejection = 'Reason for Rejection';
+  static const String reasonForRejectionHint = "Enter reason (e.g., Inappropriate content, Duplicate post)...";
+  static const String submitRejection = 'Submit Rejection';
+
+
+
+  
 
 
 

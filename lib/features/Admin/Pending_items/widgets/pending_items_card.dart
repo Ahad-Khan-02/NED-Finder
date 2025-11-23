@@ -3,19 +3,17 @@ import 'package:ned_finder/Models/Pending_Items/pending_items_model.dart';
 import 'package:ned_finder/features/Admin/Pending_items/widgets/pending_items_card_details.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
-// Import the new details screen
 
 class AdminPendingItemCard extends StatelessWidget {
   const AdminPendingItemCard({
     super.key,
     required this.item,
-    required this.onUpdate, // Callback for list update
+    required this.onUpdate, 
   });
 
   final PendingItemModel item;
   final VoidCallback onUpdate;
 
-  // Function to handle the navigation when the card is tapped
   void _navigateToDetails(BuildContext context) {
     Navigator.push(
       context,
@@ -33,7 +31,6 @@ class AdminPendingItemCard extends StatelessWidget {
     final bool isDark = HelperFunctions.isDarkMode(context);
     final bool hasImage = item.imageBytes.isNotEmpty;
 
-    // Wrap the card content in InkWell for the ripple effect and tap detection
     return InkWell(
       onTap: () => _navigateToDetails(context),
       borderRadius: BorderRadius.circular(10),
@@ -54,7 +51,7 @@ class AdminPendingItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Image Display (Fixed Height: 200)
+
             Container(
               height: 200,
               width: double.infinity,
@@ -78,13 +75,13 @@ class AdminPendingItemCard extends StatelessWidget {
               ),
             ),
 
-            // 2. Details
+
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Item Type Tag (Lost/Found)
+
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -128,9 +125,7 @@ class AdminPendingItemCard extends StatelessWidget {
                     Icons.location_on,
                     item.location,
                     isDark,
-                  ),
-                  
-                  // Removed the 'View Item' button
+                  ),                 
                 ],
               ),
             ),
@@ -140,7 +135,7 @@ class AdminPendingItemCard extends StatelessWidget {
     );
   }
 
-  // Helper method for standardized detail rows (kept unchanged)
+
   Widget _buildDetailRow(IconData icon, String text,isDark, {bool isSubtitle = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

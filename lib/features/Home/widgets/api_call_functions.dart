@@ -1,15 +1,11 @@
-import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
 
-// --- API Helpers ---
 
-/// Shows a standardized confirmation dialog.
 Future<bool?> showConfirmationDialog(
   BuildContext context,
   String title,
@@ -41,8 +37,7 @@ Future<bool?> showConfirmationDialog(
   );
 }
 
-// --- API Logic ---
-/// Handles the API call to update an item, including optional image upload.
+
 Future<void> editItemApiCall({
   required BuildContext sheetContext,
   required BuildContext screenContext,
@@ -50,15 +45,14 @@ Future<void> editItemApiCall({
   required String name,
   required String description,
   required String location,
-  Uint8List? newImageBytes,       // Optional: only send if user picked a new image
-  String? newImageMimeType,        // Optional: only send if user picked a new image
+  Uint8List? newImageBytes,      
+  String? newImageMimeType,        
 }) async {
   
   HelperFunctions.showSnackBar('Sending update request...');
 
   final endpoint = 'items/${originalItem.id}/edit';
 
-  // --- Form fields ---
   final Map<String, String> fields = {
     'user_id': originalItem.userId.toString(),
     'item_name': name,
@@ -67,20 +61,19 @@ Future<void> editItemApiCall({
   };
 
   try {
-    // --- Call API ---
+
     final responseData = await Http.put(
       endpoint,
       data: fields,
-      isMultipart: newImageBytes != null,       // Use multipart only if image exists
-      fileBytes: newImageBytes != null ? newImageBytes : null,                 // Send image bytes directly
-      fileFieldName: newImageBytes != null ? 'item_image' : null, // FastAPI field name
+      isMultipart: newImageBytes != null,       
+      fileBytes: newImageBytes != null ? newImageBytes : null,             
+      fileFieldName: newImageBytes != null ? 'item_image' : null,
       fileName: newImageBytes != null
           ? '${originalItem.id}_${DateTime.now().millisecondsSinceEpoch}.${newImageMimeType?.split('/').last ?? 'jpg'}'
           : null,
       fileMimeType: newImageMimeType,
     );
 
-    // --- Handle response ---
     if (responseData['status'] == 'success') {
       print('');
       HelperFunctions.showSnackBar('Item "$name" successfully updated!');
@@ -117,7 +110,6 @@ Future<void> deleteItemApiCall(BuildContext context, ItemModel item) async {
     if (responseData is Map<String, dynamic> && responseData['status'] == 'success') {
       HelperFunctions.showSnackBar('Item "${item.name}" successfully deleted!');
       
-      // Close the ViewItemScreen and signal success to MyItemsContent
       Navigator.of(context).pop(true); 
     } else {
       HelperFunctions.showSnackBar(
@@ -131,7 +123,6 @@ Future<void> deleteItemApiCall(BuildContext context, ItemModel item) async {
   }
 }
 
-/// Handles the API call to mark an item as found.
 Future<void> markAsFoundApiCall(BuildContext context, ItemModel item) async {
   final bool confirm = await showConfirmationDialog(
     context,
@@ -151,7 +142,7 @@ Future<void> markAsFoundApiCall(BuildContext context, ItemModel item) async {
 
     if (responseData is Map<String, dynamic> && responseData['status'] == 'success') {
       HelperFunctions.showSnackBar('Item "${item.name}" marked as found!');
-      // Close the ViewItemScreen and signal success to MyItemsContent
+
       Navigator.of(context).pop(true); 
     } else {
       HelperFunctions.showSnackBar(

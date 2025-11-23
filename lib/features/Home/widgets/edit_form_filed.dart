@@ -1,24 +1,22 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ned_finder/Models/item_model.dart';
 import 'package:ned_finder/features/Home/view_item_screen.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
-// --- Callback Definition ---
 typedef ItemSaveCallback = void Function(
-    BuildContext sheetContext, // Context of the BottomSheet for closing the form
-    BuildContext screenContext, // Context of the ViewItemScreen for closing the screen
+    BuildContext sheetContext, 
+    BuildContext screenContext, 
     String name,
     String description,
     String location,
     Uint8List? newImageBytes,
     String? newImageMimeType);
 
-// --- Edit Item Form Widget (Bottom Sheet Content) ---
 
 class EditItemForm extends StatefulWidget {
   final ItemModel item;
@@ -34,10 +32,9 @@ class _EditItemFormState extends State<EditItemForm> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
-  late TextEditingController _locationController; // Removed email controller as it was unused in the body logic
+  late TextEditingController _locationController;
   bool _isLoading = false;
 
-  // State for handling image update
   Uint8List? _newImageBytes;
   String? _newImageMimeType;
   File? _pickedImage;
@@ -49,9 +46,6 @@ class _EditItemFormState extends State<EditItemForm> {
     _nameController = TextEditingController(text: widget.item.name);
     _descriptionController = TextEditingController(text: widget.item.description);
     _locationController = TextEditingController(text: widget.item.location);
-    // Note: We don't initialize _newImageBytes with item.imageBytes here.
-    // We only pass new bytes if a new image is picked. Otherwise, the API
-    // should ignore the image fields, preserving the existing one.
   }
 
   @override
@@ -62,7 +56,6 @@ class _EditItemFormState extends State<EditItemForm> {
     super.dispose();
   }
   
-  // Handles picking an image from the gallery
   Future<void> _uploadImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
@@ -74,42 +67,31 @@ class _EditItemFormState extends State<EditItemForm> {
     setState(() {
       _pickedImage = file;
       _newImageBytes = bytes;
-      _newImageMimeType = image.mimeType; // Get mimeType from XFile
+      _newImageMimeType = image.mimeType; 
     });
   }
 
-  // Modified to pass both contexts AND image data
   void _submitForm(BuildContext sheetContext, BuildContext screenContext) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
-      // Call the external save callback which handles the API call
       widget.onSave(
         sheetContext,
         screenContext,
         _nameController.text.trim(),
         _descriptionController.text.trim(),
         _locationController.text.trim(),
-        _newImageBytes, // NEW: Pass the updated image bytes
-        _newImageMimeType, // NEW: Pass the updated image mime type
+        _newImageBytes, 
+        _newImageMimeType, 
       );
-      
-      // Note: We do not set _isLoading to false here. 
-      // The callback (onSave, which calls the API) is responsible for 
-      // navigating away/popping the sheet, which will dispose of this widget.
-      // If the API fails, the user remains on the sheet.
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the context of the ViewItemScreen (the parent)
-    // This allows us to pop the main screen after a successful save.
     final ViewItemScreen? parentWidget = context.findAncestorWidgetOfExactType<ViewItemScreen>();
-    // Use the context of the bottom sheet itself to find the screen context,
-    // falling back to the current context if the ancestor isn't immediately found.
     final BuildContext screenContext = parentWidget != null ? context : context; 
 
     return Padding(
@@ -124,7 +106,7 @@ class _EditItemFormState extends State<EditItemForm> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Edit Item Details',
+                  CustomTexts.editItemTitle,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
@@ -134,7 +116,8 @@ class _EditItemFormState extends State<EditItemForm> {
               ],
             ),
             const Divider(height: 20),
-            
+            const SizedBox(height: 15),
+
             // Item Name
             TextFormField(
               controller: _nameController,
@@ -185,18 +168,20 @@ class _EditItemFormState extends State<EditItemForm> {
             if (_pickedImage != null)
               Padding(
                 padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade400),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.file(
-                      _pickedImage!,
-                      fit: BoxFit.cover,
+                child: Center(
+                  child: Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade400),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        _pickedImage!,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
@@ -207,7 +192,6 @@ class _EditItemFormState extends State<EditItemForm> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                // Use the sheet context to call submit
                 onPressed: _pickedImage == null ? ()=>HelperFunctions.showAlert('','Please select an image') :_isLoading ? null : () =>  _submitForm(context, screenContext),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CustomColors.primary,
@@ -220,7 +204,7 @@ class _EditItemFormState extends State<EditItemForm> {
                         height: 20,
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
-                    : const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.bold)),
+                    : const Text(CustomTexts.saveChanges, style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(height: 20),

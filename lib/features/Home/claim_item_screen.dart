@@ -19,7 +19,6 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isClaiming = false;
 
-  // Set the required length to 10 to match the backend validation
   static const int minClaimMessageLength = 10; 
 
   @override
@@ -28,7 +27,6 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
     super.dispose();
   }
 
-  // --- API Call Logic ---
   Future<void> _submitClaim() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -52,41 +50,34 @@ class _ClaimItemScreenState extends State<ClaimItemScreen> {
     try {
       const endpoint = 'claim';
       
-      // 1. Construct query parameters Map
       final queryParams = {
         'item_id': widget.item.id.toString(), 
         'user_id': currentUserId.toString(),
         'claim_message': _messageController.text,
       };
 
-      // 2. CORRECTION: Use the dedicated helper method for query parameters.
-      // This is the correct way to handle the backend expecting data in the URL query string.
       final response = await Http.postWithQueryParams(endpoint, queryParams); 
 
       if (response != null && response['status'] == 'success') {
         _showSnackBar(response['message'] ?? 'Item claim submitted successfully!');
         Navigator.of(context).pop();
+      
       } else {
-        // Handle API error messages gracefully (400, 404, or 500 status)
         String apiErrorMessage = 'Claim failed. An unknown error occurred.';
         
-        // 422 (FastAPI Validation Error structure)
+
         if (response != null && response.containsKey('detail') && response['detail'] is List) {
             final detailList = response['detail'] as List;
             if (detailList.isNotEmpty && detailList[0].containsKey('msg')) {
-                // Display the specific message like "Field required" or a specific validation error
                 apiErrorMessage = detailList[0]['msg'] as String;
             }
         } 
-        // Custom backend error structure (e.g., from your Python code: status="failed", message=...)
         else if (response != null && response.containsKey('message')) {
             apiErrorMessage = response['message'].split(':')[1];
         }
-
         _showSnackBar(apiErrorMessage);
       }
     } catch (e) {
-      print('Claim Submission Error: $e');
       _showSnackBar('Connection failed. Check your network or API base URL.');
     } finally {
       setState(() {

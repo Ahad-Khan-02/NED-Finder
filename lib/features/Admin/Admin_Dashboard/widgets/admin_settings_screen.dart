@@ -9,11 +9,9 @@ import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/theme/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// NOTE: When using this inside HomeScreen's _buildMainContent, 
-// ensure the necessary constant files (colors, texts, helpers) are accessible.
 
 class AdminSettingsScreen extends StatefulWidget {
-  // Renamed to SettingsContent to imply it's the body content, not a full screen
+
   const AdminSettingsScreen({super.key});
 
   @override
@@ -21,13 +19,13 @@ class AdminSettingsScreen extends StatefulWidget {
 }
 
 class _SettingsContentState extends State<AdminSettingsScreen> {
-  // State for the Dark Mode toggle
+
   bool _isDarkMode = false; 
 
 
   @override
   Widget build(BuildContext context) {
-    // Determine card and text colors based on the current theme
+
     final themeController = Get.find<ThemeController>();
     final bool isDark = HelperFunctions.isDarkMode(context);
     final Color cardColor = isDark ? CustomColors.darkContainer : CustomColors.lightContainer;
@@ -48,11 +46,11 @@ class _SettingsContentState extends State<AdminSettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Dark Mode Tile ---
+
             SettingsTile(
               icon: Icons.dark_mode,
-              title: 'Dark Mode',
-              subtitle: _isDarkMode ? 'Dark Mode Is On' : 'Dark Mode Is Off',
+              title: CustomTexts.darkMode,
+              subtitle: _isDarkMode ? CustomTexts.darkModeOn : CustomTexts.darkModeOff,
               cardColor: cardColor,
               textColor: textColor,
               trailing: Switch(
@@ -68,10 +66,10 @@ class _SettingsContentState extends State<AdminSettingsScreen> {
             ),
             const SizedBox(height: 16),
          
-            // --- About SeekNFInd Tile ---
+
             SettingsTile(
               icon: Icons.logout,
-              title: 'Logout',
+              title: CustomTexts.logout,
               cardColor: cardColor,
               textColor: textColor,
               onTap: () async {

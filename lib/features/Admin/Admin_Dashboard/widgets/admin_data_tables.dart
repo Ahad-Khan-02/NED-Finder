@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/Models/Admin_Dashboard/lost_item_model.dart'; // Assuming this is the unified model
-// import 'package:ned_finder/Models/Admin_Dashboard/report_item_model.dart'; // Not needed if using one model
+import 'package:ned_finder/Models/Admin_Dashboard/lost_item_model.dart'; 
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
-import 'package:ned_finder/utils/http/http_client.dart'; // API client
+import 'package:ned_finder/utils/http/http_client.dart'; 
 
-// --- Converted to StatefulWidget for API calls ---
+
 class AdminDataTables extends StatefulWidget {
   const AdminDataTables({
     super.key,
@@ -19,7 +19,6 @@ class AdminDataTables extends StatefulWidget {
 }
 
 class _AdminDataTablesState extends State<AdminDataTables> {
-  // Use a single list for the currently displayed table data
   List<LostItemModel> items = [];
   bool _isLoading = true;
   String? _error;
@@ -47,7 +46,6 @@ class _AdminDataTablesState extends State<AdminDataTables> {
         final List itemsJson = responseData['data']['items'] ?? [];
 
         final List<LostItemModel> fetchedItems = itemsJson
-            // You must ensure LostItemModel has a working fromJson factory
             .map((item) => LostItemModel.fromJson(item)) 
             .toList();
 
@@ -68,7 +66,6 @@ class _AdminDataTablesState extends State<AdminDataTables> {
   }
 
   // --- BUILD METHODS ---
-
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -79,8 +76,7 @@ class _AdminDataTablesState extends State<AdminDataTables> {
       return Center(child: Text(_error!));
     }
 
-    // Determine the title based on the table type
-    final String title = widget.isLostItemTable ? 'Lost Items' : 'Found Items';
+    final String title = widget.isLostItemTable ? CustomTexts.lostItemsTabletitle : CustomTexts.foundItemsTableTitle;
     final bool isDark = HelperFunctions.isDarkMode(context);
 
     return Column(
@@ -112,9 +108,9 @@ class _AdminDataTablesState extends State<AdminDataTables> {
       return Center(child: Text('No ${isLost ? 'Lost' : 'Found'} Items submitted yet.'));
     }
 
-    final String dateLabel = isLost ? 'Date Lost' : 'Date Found';
-    final String timeLabel = isLost ? 'Time Lost' : 'Time Found';
-    final String locationLabel = isLost ? 'Location Lost' : 'Location Found';
+    final String dateLabel = isLost ? CustomTexts.dateLost : CustomTexts.dateFound;
+    final String timeLabel = isLost ? CustomTexts.timeLost : CustomTexts.timeFound;
+    final String locationLabel = isLost ? CustomTexts.locationLost : CustomTexts.locationFound;
     final Color itemTypeColor = isLost ? CustomColors.error : CustomColors.success;
     
     return Container(
@@ -133,25 +129,20 @@ class _AdminDataTablesState extends State<AdminDataTables> {
         child: DataTable(
           columnSpacing: 30,
           columns: [
-            const DataColumn(label: Text('Item ID')),
-            const DataColumn(label: Text('User ID')),
-            const DataColumn(label: Text('Item Name')),
-            const DataColumn(label: Text('Description')),
-            DataColumn(label: Text(dateLabel)), // Dynamic label
-            DataColumn(label: Text(timeLabel)), // Dynamic label
-            DataColumn(label: Text(locationLabel)), // Dynamic label
-            const DataColumn(label: Text('Item Type')),
-            const DataColumn(label: Text('Status')),
+            const DataColumn(label: Text(CustomTexts.itemId)),
+            const DataColumn(label: Text(CustomTexts.userId)),
+            const DataColumn(label: Text(CustomTexts.itemName)),
+            const DataColumn(label: Text(CustomTexts.description)),
+            DataColumn(label: Text(dateLabel)), 
+            DataColumn(label: Text(timeLabel)), 
+            DataColumn(label: Text(locationLabel)), 
+            const DataColumn(label: Text(CustomTexts.itemType)),
+            const DataColumn(label: Text(CustomTexts.status)),
           ],
           rows: items.map((item) {
-            // Assuming your LostItemModel now has the following getters:
-            // .dateFound (or .dateString)
-            // .timeFound (or .timeString)
-            // .submitterName (needs to be implemented, defaults to placeholder)
-                        
-            // Placeholder for date/time if your model names differ from item.dateFound/item.timeFound
-            final String date = item.dateFound; // Assuming this maps to the date part
-            final String time = item.timeFound; // Assuming this maps to the time part
+           
+            final String date = item.dateFound; 
+            final String time = item.timeFound; 
             
             return DataRow(cells: [
               DataCell(Text(item.id.toString())),
@@ -160,9 +151,9 @@ class _AdminDataTablesState extends State<AdminDataTables> {
               DataCell(SizedBox(width: 150, child: Text(item.description, overflow: TextOverflow.ellipsis))),
               DataCell(Text(date)),
               DataCell(Text(time)),
-              DataCell(Text(item.location)),
+              DataCell(Text(item.location,overflow: TextOverflow.ellipsis,)),
               DataCell(Text(item.itemType, style: TextStyle(color: itemTypeColor))),
-              DataCell(_buildStatusCell(item.status)), // Use a helper for status styling
+              DataCell(_buildStatusCell(item.status)), 
             ]);
           }).toList(),
         ),
@@ -191,19 +182,3 @@ class _AdminDataTablesState extends State<AdminDataTables> {
     );
   }
 }
-
-// ⚠️ IMPORTANT: You MUST ensure your LostItemModel (or ItemModel) has these fields/getters:
-/*
-class LostItemModel {
-    // ... fields matching the API ...
-    final int userId;
-    final String itemType;
-    final String status;
-    final String location;
-    // ...
-    String get dateFound;  // Must format the DateTime to a Date string
-    String get timeFound;  // Must format the DateTime to a Time string
-    String get submitterName; // Must be handled (either fetched or placeholder)
-    // ... fromJson factory 
-}
-*/

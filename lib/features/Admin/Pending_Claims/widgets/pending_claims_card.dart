@@ -5,7 +5,7 @@ import 'package:ned_finder/utils/constants/colors.dart';
 
 class AdminPendingClaimsCard extends StatelessWidget {
   final PendingClaimModel claim;
-  final VoidCallback onClaimProcessed; // Callback to refresh the parent list
+  final VoidCallback onClaimProcessed; 
 
   const AdminPendingClaimsCard({
     super.key,
@@ -15,7 +15,6 @@ class AdminPendingClaimsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if the item image data is valid
     final bool hasImage = claim.itemImageBytes.isNotEmpty;
 
     return Card(
@@ -23,14 +22,12 @@ class AdminPendingClaimsCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () async {
-          // Navigate to the full review screen
           await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ViewResponseScreen(claim: claim),
             ),
           );
-          // When returning from ViewResponseScreen, refresh the list
           onClaimProcessed(); 
         },
         child: Padding(
@@ -38,7 +35,6 @@ class AdminPendingClaimsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- Item Image (Utilizing claim.itemImageBytes) ---
               SizedBox(
                 height: 200,
                 width: double.infinity,
@@ -48,7 +44,6 @@ class AdminPendingClaimsCard extends StatelessWidget {
                       ? Image.memory(
                           claim.itemImageBytes,
                           fit: BoxFit.cover,
-                          // Fallback in case of decoding error
                           errorBuilder: (context, error, stackTrace) =>
                               const Center(child: Icon(Icons.broken_image, size: 40)),
                         )
@@ -68,7 +63,6 @@ class AdminPendingClaimsCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // --- Claim/Item Name ---
               Text(
                 claim.itemName,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -77,7 +71,6 @@ class AdminPendingClaimsCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // --- Claimer Username (Utilizing claim.username) ---
               Row(
                 children: [
                   const Icon(Icons.person, size: 16, color: CustomColors.primary),
@@ -90,7 +83,6 @@ class AdminPendingClaimsCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
 
-              // --- Claim Date ---
               Row(
                 children: [
                   const Icon(Icons.access_time, size: 16, color: CustomColors.textSecondary),
@@ -103,7 +95,6 @@ class AdminPendingClaimsCard extends StatelessWidget {
               ),
               const Spacer(),
 
-              // --- Status Tag ---
               Align(
                 alignment: Alignment.bottomRight,
                 child: Container(

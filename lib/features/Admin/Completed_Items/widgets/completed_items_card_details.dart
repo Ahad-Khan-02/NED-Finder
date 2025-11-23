@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Completed_items/completed_items_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
 class CompletedItemsCardDetails extends StatelessWidget {
@@ -11,7 +12,6 @@ class CompletedItemsCardDetails extends StatelessWidget {
 
   final CompletedItemModel item;
 
-  // Helper method to build consistent detail rows
   Widget _buildDetailRow(IconData icon, String title, String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -60,7 +60,6 @@ class CompletedItemsCardDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image (Full Width)
             Container(
               height: 300,
               width: double.infinity,
@@ -79,7 +78,6 @@ class CompletedItemsCardDetails extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Item Name and Completion Status
             Text(
               item.name,
               style: TextStyle(
@@ -89,8 +87,7 @@ class CompletedItemsCardDetails extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            
-            // Status Tag (Completed/Returned)
+
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
@@ -99,7 +96,7 @@ class CompletedItemsCardDetails extends StatelessWidget {
                 border:  BoxBorder.all(color: CustomColors.success, width: 1.5)
               ),
               child: const Text(
-                'STATUS: COMPLETED (ITEM RETURNED)',
+                CustomTexts.completedItemsStatus,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -111,20 +108,19 @@ class CompletedItemsCardDetails extends StatelessWidget {
 
             // Details Section
             const Text(
-              'Item & Submitter Details',
+              CustomTexts.compltedItemandSubmitterDetails,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: CustomColors.primary),
             ),
             const Divider(height: 20),
             
             _buildDetailRow(Icons.person, item.submitterName, '', isDark),
-            _buildDetailRow(Icons.description, 'Description', item.description, isDark),
-            _buildDetailRow(Icons.search_outlined, 'Category', item.itemType.toUpperCase(), isDark),
+            _buildDetailRow(Icons.description, CustomTexts.description, item.description, isDark),
+            _buildDetailRow(Icons.search_outlined, CustomTexts.category, item.itemType.toUpperCase(), isDark),
             
-            _buildDetailRow(Icons.calendar_today, 'Date Submitted', item.dateString, isDark),
-            _buildDetailRow(Icons.access_time, 'Time Submitted', item.timeString, isDark),
-            _buildDetailRow(Icons.location_on, 'Location Reported', item.location, isDark),
+            _buildDetailRow(Icons.calendar_today, CustomTexts.dateSubmitted, item.dateString, isDark),
+            _buildDetailRow(Icons.access_time, CustomTexts.timeSubmitted, item.timeString, isDark),
+            _buildDetailRow(Icons.location_on, CustomTexts.locationReported, item.location, isDark),
             
-    
           ],
         ),
       ),

@@ -28,7 +28,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
-    // Always dispose controllers
     passwordController.dispose();
     emailController.dispose();
     fullNameController.dispose();
@@ -49,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 450), // To limit width on large screens
+              constraints: const BoxConstraints(maxWidth: 450),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               decoration: BoxDecoration(
                 color: isDark?  CustomColors.dboxColor: CustomColors.lboxColor,
@@ -72,7 +71,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   CustomTitlewithSubtitle(title: CustomTexts.signUpTitle, subtitle: CustomTexts.signUpSubTitle),
         
                   // 2. Email Input Field
-                  
                   SignupInputFields(
                     password: passwordController, 
                     email: emailController, 
@@ -85,11 +83,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
         
-                  // 4. Forgot Password Link
                  SignUpScreenButtons(
                   isLoading: _isLoading,
                     onPressed: () async {
-                      if (_isLoading) return; // Prevent multiple clicks
+                      if (_isLoading) return; 
 
                       if (emailController.text.isEmpty ||
                           passwordController.text.isEmpty ||
@@ -104,7 +101,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
 
                       setState(() {
-                        _isLoading = true; // Start loading
+                        _isLoading = true; 
                       });
 
                       try {
@@ -119,10 +116,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
                         String msg = response["data"]?["message"] ??
-                                    response["message"].toString().replaceAll("API Error (Status 400): ", "");                        print('response msg: ${response["message"]}');
+                                    response["message"].toString().replaceAll("API Error (Status 400): ", "");                        
                         msg = msg.toString().replaceAll("Value error, ","");
                         msg = msg.toString().replaceAll("value is ","");
-                        print("           $msg");
                         
                         HelperFunctions.showAlert(
                           response["status"] == "success" ? "Success" : "Signup Failed",
@@ -140,7 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         );
                       } finally {
                         setState(() {
-                          _isLoading = false; // Stop loading
+                          _isLoading = false; 
                         });
                       }
                     },

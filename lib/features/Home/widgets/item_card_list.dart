@@ -5,7 +5,6 @@ import 'package:ned_finder/features/Home/widgets/item_card.dart';
 class ItemCardList extends StatelessWidget {
   final List<ItemModel> items;
   
-  // Refined type from 'dynamic' to 'bool' for better type safety and clarity.
   final bool isMyItem; 
   
   final int userID;
@@ -23,7 +22,6 @@ class ItemCardList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
-      // The inner GridView.builder remains the same.
       child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -35,7 +33,7 @@ class ItemCardList extends StatelessWidget {
         itemBuilder: (context, index) {
           return ItemCard(
             item: items[index],
-            isMyItem: isMyItem, // Now definitively a bool
+            isMyItem: isMyItem, 
             userID: userID,
             onItemActionSuccess: onRefresh,
           );

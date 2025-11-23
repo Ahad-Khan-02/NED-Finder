@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Completed_items/completed_items_model.dart';
 import 'package:ned_finder/features/Admin/Completed_Items/widgets/completed_items_card.dart'; 
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart'; // Import Http client
 
@@ -23,27 +24,22 @@ class _CompletedItemsScreenState extends State<CompletedItemsScreen> {
      _fetchCompletedItems();
    }
 
-   // --- API FETCHING AND FILTERING METHOD ---
    Future<void> _fetchCompletedItems() async {
      setState(() {
         _isLoading = true;
         _error = null;
      });
 
-     // Using the existing 'items/approved' endpoint to fetch data
      try {
-        // Assuming this endpoint returns a list of items that includes the 'found' status.
         final responseData = await Http.get('items/approved'); 
 
         if (responseData['status'] == 'success' && responseData['data'] != null) {
           final List itemsJson = responseData['data']['items'] ?? [];
 
-          // 1. Map all fetched items to the model
           final List<CompletedItemModel> fetchedItems = itemsJson
                .map((item) => CompletedItemModel.fromJson(item))
                .toList();
 
-          // 2. Filter the list to include only items where the 'found' status is TRUE
           final List<CompletedItemModel> completedAndFoundItems = fetchedItems
                .where((item) => item.isFound)
                .toList();
@@ -69,7 +65,6 @@ class _CompletedItemsScreenState extends State<CompletedItemsScreen> {
    Widget build(BuildContext context) {
      bool isDark = HelperFunctions.isDarkMode(context);
      
-     // --- Conditional Content based on State ---
      Widget bodyContent;
 
      if (_isLoading) {
@@ -82,27 +77,24 @@ class _CompletedItemsScreenState extends State<CompletedItemsScreen> {
           ),
         );
      } else if (_completedItems.isEmpty) {
-        // Updated message to reflect that we are looking for completed/found items
         bodyContent = const Center(
           child: Text(
-             'No completed (found) items found.',
+             CustomTexts.noCompletedItemsFound,
              style: TextStyle(fontSize: 18),
           ),
         );
      } else {
-        // Data Loaded Successfully
         bodyContent = GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Forces exactly 2 items per row
+            crossAxisCount: 2, 
             childAspectRatio: 0.5,
             crossAxisSpacing: 20,
             mainAxisSpacing: 20,
           ),
           itemCount: _completedItems.length,
           itemBuilder: (context, index) {
-            // Pass the actual filtered model data to the card
             return AdminCompletedItemsCard(item: _completedItems[index]);
           },
         );
@@ -118,14 +110,13 @@ class _CompletedItemsScreenState extends State<CompletedItemsScreen> {
                crossAxisAlignment: CrossAxisAlignment.start,
                children: [
                  const Text(
-                    'Completed Items',
+                    CustomTexts.completedItemsTitle,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
                  ),
                  const SizedBox(height: 24),
-                 // Display the determined content (Loading, Error, Empty, or Grid)
                  bodyContent,
                ],
             ),

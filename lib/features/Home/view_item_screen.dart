@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ned_finder/Models/item_model.dart';
@@ -7,12 +6,11 @@ import 'package:ned_finder/features/Home/claim_item_screen.dart';
 import 'package:ned_finder/features/Home/widgets/api_call_functions.dart';
 import 'package:ned_finder/features/Home/widgets/edit_form_filed.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
-// --- 2. Main View Item Screen Widget ---
 
 class ViewItemScreen extends StatelessWidget {
-  // Pass the item data to the screen
   final ItemModel item;
   final bool isMyItem;
   final int currentUserID;
@@ -20,7 +18,6 @@ class ViewItemScreen extends StatelessWidget {
   const ViewItemScreen(
       {super.key, required this.item, required this.isMyItem, this.currentUserID = 0});
 
-  // New method to show the bottom sheet for editing
   void _showEditBottomSheet(BuildContext screenContext) {
     showModalBottomSheet(
       context: screenContext,
@@ -28,7 +25,7 @@ class ViewItemScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
-      builder: (BuildContext sheetContext) { // sheetContext is the bottom sheet context
+      builder: (BuildContext sheetContext) { 
         return SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(
@@ -36,12 +33,11 @@ class ViewItemScreen extends StatelessWidget {
             ),
             child: EditItemForm(
               item: item,
-              // Pass the external API call function to the form's onSave callback
               onSave: (sheetContext, screenContext, name, description, location, newImageBytes, newImageMimeType) {
                 editItemApiCall(
                   sheetContext: sheetContext, 
                   screenContext: screenContext,
-                  originalItem: item, // Pass the original item to get the ID/User ID
+                  originalItem: item, 
                   name: name,
                   description: description,
                   location: location,
@@ -56,7 +52,6 @@ class ViewItemScreen extends StatelessWidget {
     );
   }
 
-  // --- Widget Builders ---
 
   Widget _buildImageSection(BuildContext context, {required Uint8List imageBytes}) {
     final bool hasImage = imageBytes.isNotEmpty;
@@ -95,7 +90,7 @@ class ViewItemScreen extends StatelessWidget {
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pop(false), // Pop with false on simple back
+                    onPressed: () => Navigator.of(context).pop(false), 
                   ),
                 ),
               ),
@@ -180,8 +175,6 @@ class ViewItemScreen extends StatelessWidget {
     );
   }
   
-  // Note: The original _buildDetailRow was similar to _buildDetailSection,
-  // combining them for brevity and using the 'Description' style for all.
   Widget _buildCategoryRow({
     required IconData icon,
     required String label,
@@ -250,7 +243,7 @@ class ViewItemScreen extends StatelessWidget {
                       },
                       
                       child: const Text(
-                        'Claim This Item',
+                        CustomTexts.claimItemButton,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),
@@ -263,7 +256,7 @@ class ViewItemScreen extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(false),
            
             child: const Text(
-              'Close',
+              CustomTexts.close,
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
             ),
           ),
@@ -300,7 +293,7 @@ class ViewItemScreen extends StatelessWidget {
                               overflow: TextOverflow.ellipsis),
                         ),
                       ),
-                      if (isMyItem && !item.isFound) // Only show edit if it's my item and not yet found/closed
+                      if (isMyItem && !item.isFound)
                         SizedBox(
                           width: 80,
                           child: ElevatedButton(
@@ -310,7 +303,7 @@ class ViewItemScreen extends StatelessWidget {
                               children: [
                                 Icon(Icons.edit, size: 16),
                                 SizedBox(width: 5),
-                                Text('Edit', style: TextStyle(fontSize: 14)),
+                                Text(CustomTexts.edit, style: TextStyle(fontSize: 14)),
                               ],
                             ),
                           ),
@@ -321,7 +314,7 @@ class ViewItemScreen extends StatelessWidget {
                   _buildCategoryRow(
                     icon: Icons.category,
                     label: 'Category',
-                    value: 'Item Category', // Placeholder, update if ItemModel supports category
+                    value: 'Item Category',
                     isDark: isDark,
                   ),
                   isMyItem? Column(
@@ -333,7 +326,7 @@ class ViewItemScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   _buildDetailSection(
                     icon: Icons.description,
-                    label: 'Description',
+                    label: CustomTexts.description,
                     value: item.description,
                     isDark: isDark,
                   ),

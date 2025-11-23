@@ -108,18 +108,13 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
     });
 
     try {
-      print("📦 Sending fields: $fields");
-      print("📸 Sending image: ${_pickedImage!.path}");
-
-      // ✅ Make sure your Http.multipartPost uses MultipartFile.fromFile internally
-      final response = await Http.multipartPost(
+  
+        final response = await Http.multipartPost(
         'items/add',
         fields,
         _pickedImage!,
         'item_image',
       );
-
-      print("🔁 Server response: $response");
 
       if (response['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +124,6 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
           ),
         );
 
-        // Clear fields
         _nameController.clear();
         _descriptionController.clear();
         _locationController.clear();

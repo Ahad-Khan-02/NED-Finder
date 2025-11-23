@@ -5,48 +5,41 @@ import 'package:ned_finder/utils/constants/images.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
- // Import the new service
+
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({
     super.key,
     required this.selectedIndex,
     required this.onItemSelected,
-    required this.userId, // Requires a user ID to fetch data
+    required this.userId, 
   });
 
   final int selectedIndex;
-  // Callback function to inform the parent widget (Home Screen) about the selection
   final Function(int) onItemSelected;
-  final int userId; // The ID of the currently logged-in user
+  final int userId; 
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  // The Future that will hold the user data
   late Future<UserModel> _userFuture;
 
   @override
   void initState() {
     super.initState();
-    // Start fetching user data using the dedicated UserService
     _userFuture = fetchUser(widget.userId);
   }
 
   static Future<UserModel> fetchUser(int userId) async {
-    // Construct the endpoint path: e.g., 'users/11'
     final endpoint = 'users/$userId'; 
     
-    // Use the static Http client to make the GET request
     final result = await Http.get(endpoint);
 
     if (result['status'] == 'success' && result.containsKey('data')) {
-      // Map the 'data' part of the response to the UserModel
       return UserModel.fromJson(result['data'] as Map<String, dynamic>);
     } else {
-      // Throw an exception with the error message from the API or a default message
       throw Exception(result['message'] ?? 'Failed to load user data.');
     }
   }
@@ -60,19 +53,16 @@ class _CustomDrawerState extends State<CustomDrawer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // App Logo/Title Section (Drawer Header)
+          // App Logo/Title Section 
           Padding(
             padding: const EdgeInsets.only(top: 60.0, left: 16.0, bottom: 20.0),
             child: Row(
               children: [
-                // Assuming CustomImages.appLogo is correctly defined elsewhere
                 const Image(image: AssetImage(CustomImages.appLogo), height: 50, width: 50),
-
                 Text(
                   CustomTexts.appName,
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                     fontWeight: FontWeight.bold,
-                    // Ensure color adapts to dark mode if not handled by Theme
                     color: isDark ? Colors.white : Colors.black, 
                   ),
                 ),
@@ -92,7 +82,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
           const Spacer(),
 
-          // User Profile Section (Uses FutureBuilder to display fetched data)
+          // User Profile Section 
           FutureBuilder<UserModel>(
             future: _userFuture,
             builder: (context, snapshot) {
@@ -101,20 +91,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
               bool hasError = false;
               
               if (snapshot.connectionState == ConnectionState.waiting) {
-                // Default loading state
               } else if (snapshot.hasError) {
-                // If the UserService threw an exception (e.g., failed to parse or API returned error)
                 name = 'Guest User';
                 emailOrError = snapshot.error.toString().replaceFirst('Exception: ', '');
                 hasError = true;
-                // Log the error in a real app: print('Error: ${snapshot.error}');
               } else if (snapshot.hasData) {
-                // Data successfully fetched
                 final user = snapshot.data!;
                 name = user.fullname;
-                emailOrError = user.email; // Displaying email
+                emailOrError = user.email; 
               } else {
-                 // Should generally not happen if future is initialized correctly
                 name = 'Unknown User';
                 emailOrError = 'Unknown state';
               }
@@ -167,7 +152,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     );
   }
 
-  // Helper function to build a single navigation drawer item
+
   Widget _buildDrawerItem({
     required IconData icon,
     required String label,
@@ -179,8 +164,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
     return InkWell(
       onTap: () {
-        widget.onItemSelected(index); // Call the callback function
-        Navigator.pop(context); // Close the drawer
+        widget.onItemSelected(index); 
+        Navigator.pop(context); 
       },
       child: Container(
         margin: const EdgeInsets.only(right: 16, top: 4, bottom: 4),

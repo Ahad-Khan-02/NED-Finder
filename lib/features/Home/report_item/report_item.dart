@@ -17,7 +17,6 @@ class ReportItemScreen extends StatelessWidget {
 
     bool isDark = HelperFunctions.isDarkMode(context);
 
-    // Scaffold provides the app bar and main structure 
     return Scaffold(
       appBar: AppBar(
         title:  Text(isLost? CustomTexts.reportLostItem : CustomTexts.reportFoundItem, style: TextStyle(fontWeight: FontWeight.bold)),
@@ -25,17 +24,17 @@ class ReportItemScreen extends StatelessWidget {
         foregroundColor: isDark? Colors.white : Colors.black,
         elevation: 0,
       ),
-      // Use the light blue background across the whole body
+
       backgroundColor: isDark? CustomColors.darkBackground :CustomColors.lightBackground, 
       
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 500), // Max width for a clean form layout
+            constraints: const BoxConstraints(maxWidth: 500), 
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
             decoration: BoxDecoration(
-              color: isDark? CustomColors.dark : CustomColors.lightContainer, // White card container
+              color: isDark? CustomColors.dark : CustomColors.lightContainer, 
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -49,26 +48,16 @@ class ReportItemScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                // Header (Title and Subtitle) "Lost Something?"
+         
                 CustomTitlewithSubtitle(
                   title: isLost? CustomTexts.reportLostItemTitle : CustomTexts.reportFoundItemTitle,
                   subtitle: isLost? CustomTexts.reportLostItemDescription : CustomTexts.reportFoundItemDescription,      
                 ),
                 const SizedBox(height: 30),
 
-                // Main Form Fields
+        
                 ReportItemFormFields(isLost: isLost),
-                
-
-                // // Submit Button
-                // ElevatedButton(
-                //   onPressed: () {
-                //     print('Submit button pressed - Status: Pending');
-                //   },     
-                //   child: const Text(
-                //     CustomTexts.submit,
-                //   ),
-                // ),
+          
               ],
             ),
           ),

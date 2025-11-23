@@ -40,7 +40,6 @@ class ItemCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          // ✅ Image grows to fit card
           Expanded(
             child: Stack(
               children: [
@@ -52,7 +51,6 @@ class ItemCard extends StatelessWidget {
                        ),
                        child: Center(
                          child: 
-                            // 🎯 FIX: Display the image using Image.memory with the decoded bytes
                       hasImage
                       ? ClipRRect(
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
@@ -126,12 +124,11 @@ class ItemCard extends StatelessWidget {
             ),
           ),
 
-          // ✅ Text & button area
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // prevents overflow
+              mainAxisSize: MainAxisSize.min, 
               children: [
                 Text(
                   item.name,
@@ -151,15 +148,13 @@ class ItemCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () async { // 👈 Change to async
-                      // 💥 Await the result from the ViewItemScreen
+                    onPressed: () async { 
                       final bool? shouldRefresh = await Navigator.push<bool>(context,
                         MaterialPageRoute(builder: (context) => ViewItemScreen(item: item,isMyItem: isMyItem,currentUserID: userID,)),
                       );
                       
-                      // If the detail screen popped with 'true', call the success callback
-                      if (shouldRefresh == true) { // 👈 Check the result
-                        onItemActionSuccess(); // 👈 Trigger the refresh in MyItemsContent
+                      if (shouldRefresh == true) { 
+                        onItemActionSuccess(); 
                       }
                     },
                     child: const Text(

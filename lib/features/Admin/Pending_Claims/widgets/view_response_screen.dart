@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/Pending_Claims/pending_claim_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart'; // Import Http client
 
 class ViewResponseScreen extends StatefulWidget {
-  // Accepts the PendingClaimModel
+
   final PendingClaimModel claim; 
 
   const ViewResponseScreen({super.key, required this.claim});
@@ -15,32 +16,30 @@ class ViewResponseScreen extends StatefulWidget {
 }
 
 class _ViewResponseScreenState extends State<ViewResponseScreen> {
-  // --- State for actions ---
   bool _isProcessing = false;
   String? _statusMessage;
 
-  // --- API ACTION: Approve/Reject Claim ---
   Future<void> _updateClaimStatus(String action) async {
     setState(() {
       _isProcessing = true;
       _statusMessage = null;
     });
 
-    final endpoint = 'claims/${widget.claim.id}/$action'; // 'claims/1/approve' or 'claims/1/reject'
+    final endpoint = 'claims/${widget.claim.id}/$action'; 
     final isApproval = action == 'approve';
 
     try {
-      // Use the standard PUT method (assuming the API is idempotent and returns 200/400)
-      final responseData = await Http.put(endpoint); // PUT requests often send an empty body
+      final responseData = await Http.put(endpoint); 
 
       if (responseData['status'] == 'success') {
         setState(() {
           _statusMessage = 'Claim successfully ${isApproval ? 'approved' : 'rejected'}.';
         });
-        // Navigate back after a short delay to see the change reflected in the list
+
         Future.delayed(const Duration(seconds: 2), () {
           if (mounted) Navigator.pop(context);
         });
+
       } else {
         throw Exception(responseData['message'] ?? 'Failed to process claim.');
       }
@@ -67,12 +66,12 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
           content: text=='approve' ? const Text('Are you sure you want to approve this item? This action cannot be undone.') : const Text('Are you sure you want to reject this item? This action cannot be undone.'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(), // Close the dialog
+              onPressed: () => Navigator.of(context).pop(), 
               child: const Text('Cancel', style: TextStyle(color:  CustomColors.darkerGrey)),
             ),
             TextButton(onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog first
-                _updateClaimStatus(text); // Proceed with the approval
+                Navigator.of(context).pop();
+                _updateClaimStatus(text);
               }, child: text=='approve' ? const Text('Approve', style: TextStyle(color: CustomColors.primary)) : const Text('Reject', style: TextStyle(color: CustomColors.error))
             )
           ]
@@ -89,7 +88,7 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
     return Scaffold(
       backgroundColor: isDark ? CustomColors.darkBackground : CustomColors.lightBackground,
       appBar: AppBar(
-        title: const Text('Review Pending Claim'),
+        title: const Text(CustomTexts.reviewPendingClaim),
         backgroundColor: isDark ? CustomColors.darkBackground :CustomColors.lightBackground,
         elevation: 1,
       ),
@@ -98,7 +97,7 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Status Message Display ---
+
             if (_statusMessage != null) 
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
@@ -115,21 +114,17 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
 
             const SizedBox(height: 32),
 
-            // --- Section 2: Claimer and Justification Details ---
             const Text(
-              'Claimer Details & Justification',
+              CustomTexts.claimerDetailsAndJustification,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: CustomColors.primary),
             ),
             const SizedBox(height: 16),
             
-            // Claim Detail Card
             _buildClaimDetailSection(isDark, claim: widget.claim),
 
             const SizedBox(height: 32),
 
-            // --- Section 3: Admin Action Buttons ---
             
-            // Approve Button
             SizedBox(
               width:double.infinity,
               child: ElevatedButton.icon(
@@ -170,7 +165,6 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
     );
   }
 
-  // Helper widget to display the ITEM IMAGE
   Widget _buildImageDisplayCard(bool hasImage,imageBytes) {
     return Container(
       width: double.infinity,
@@ -208,7 +202,6 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
     );
   }
 
-  // Helper widget to display the CLAIM details
   Widget _buildClaimDetailSection(
     bool isDark, {
     required PendingClaimModel claim,
@@ -222,27 +215,22 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Item Name
           Text(
             'Item: ${claim.itemName}',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           
-          // Claimer Username (NEW)
           _buildInfoRow(Icons.person, 'Claimer: ${claim.username}', isDark),
           
-          // Claim ID and Item ID
           _buildInfoRow(Icons.numbers, 'Claim ID: ${claim.id} (Item ID: ${claim.itemId})', isDark),
           
-          // Date Claimed
           _buildInfoRow(Icons.calendar_today, 'Date Claimed: ${claim.dateString} at ${claim.timeString}', isDark),
           
           const Divider(height: 24),
 
-          // Claimer Justification/Message (Highlighted)
           const Text(
-            'Claimer Justification:',
+            CustomTexts.claimerJustification,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: CustomColors.primary),
           ),
           const SizedBox(height: 8),
@@ -258,7 +246,6 @@ class _ViewResponseScreenState extends State<ViewResponseScreen> {
     );
   }
 
-  // Helper widget to display a single row of info
   Widget _buildInfoRow(IconData icon, String text, bool isDark, {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
