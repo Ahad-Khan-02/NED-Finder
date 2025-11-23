@@ -175,14 +175,6 @@ class ViewItemScreen extends StatelessWidget {
     );
   }
   
-  Widget _buildCategoryRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    required bool isDark,
-  }) {
-    return _buildDetailSection(icon: icon, label: label, value: value, isDark: isDark);
-  }
 
 
   Widget _buildActionButtons(BuildContext context) {
@@ -310,13 +302,7 @@ class ViewItemScreen extends StatelessWidget {
                         )
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  _buildCategoryRow(
-                    icon: Icons.category,
-                    label: 'Category',
-                    value: 'Item Category',
-                    isDark: isDark,
-                  ),
+
                   isMyItem? Column(
                     children: [
                       const SizedBox(height: 10),

@@ -15,7 +15,6 @@ class ReportItemFormFields extends StatefulWidget {
 }
 
 class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
-  String? _selectedCategory;
   File? _pickedImage;
   bool _isUploading = false;
 
@@ -26,14 +25,7 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  final List<String> categories = [
-    'Electronics',
-    'Stationery',
-    'Wallet/Purse',
-    'ID/Documents',
-    'Clothing',
-    'Other'
-  ];
+
 
   @override
   void dispose() {
@@ -130,7 +122,6 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
         _dateController.clear();
         setState(() {
           _pickedImage = null;
-          _selectedCategory = null;
         });
         Navigator.pop(context);
       } else {
@@ -167,25 +158,6 @@ class _ReportItemFormFieldsState extends State<ReportItemFormFields> {
           controller: _nameController,
           decoration: _buildInputDecoration(
               CustomTexts.itemName, Icons.drive_file_rename_outline),
-        ),
-        const SizedBox(height: 20),
-
-        DropdownButtonFormField<String>(
-          decoration:
-              _buildInputDecoration(CustomTexts.category, Icons.category),
-          value: _selectedCategory,
-          hint: const Text(CustomTexts.category),
-          items: categories.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Text(category),
-            );
-          }).toList(),
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedCategory = newValue;
-            });
-          },
         ),
         const SizedBox(height: 20),
 

@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
     // Use Obx to rebuild GetMaterialApp when themeMode changes
     return Obx(
       () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
         themeMode: themeController.themeMode, 
         theme: CustomAppTheme.lightTheme,
         darkTheme: CustomAppTheme.darktheme,
