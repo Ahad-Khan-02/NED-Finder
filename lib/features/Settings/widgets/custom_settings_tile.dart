@@ -4,8 +4,8 @@ class SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final Widget? trailing; // For widgets like Switch
-  final VoidCallback? onTap; // For clickable tiles
+  final Widget? trailing; 
+  final VoidCallback? onTap; 
   final Color cardColor;
   final Color textColor;
 
@@ -29,7 +29,6 @@ class SettingsTile extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
-      // Use InkWell for a ripple effect on tap
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12.0),
@@ -68,7 +67,6 @@ class SettingsTile extends StatelessWidget {
                 const SizedBox(width: 16),
                 trailing!,
               ] else if (onTap != null) ...[
-                // Default arrow for clickable tiles
                 const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
               ],
             ],

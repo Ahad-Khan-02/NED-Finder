@@ -104,8 +104,7 @@ class AdminCompletedItemsCard extends StatelessWidget {
 
                   _buildDetailRow(
                     Icons.person,
-                    item.submitterName, 
-                    isSubtitle: true,
+                    'User ID: $item.userId.toString()', 
                     isDark,
                   ),
                   const SizedBox(height: 8),

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:ned_finder/Models/item_model.dart';
+import 'package:ned_finder/Models/Item/item_model.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';

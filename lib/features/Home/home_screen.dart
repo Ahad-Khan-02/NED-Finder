@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/Models/item_model.dart';
+import 'package:ned_finder/Models/Item/item_model.dart';
 import 'package:ned_finder/features/Home/widgets/custom_drawer.dart';
 import 'package:ned_finder/features/Home/widgets/home_header_section.dart';
 import 'package:ned_finder/features/Home/widgets/item_card_list.dart';

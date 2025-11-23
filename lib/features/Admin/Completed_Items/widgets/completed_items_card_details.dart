@@ -113,7 +113,7 @@ class CompletedItemsCardDetails extends StatelessWidget {
             ),
             const Divider(height: 20),
             
-            _buildDetailRow(Icons.person, item.submitterName, '', isDark),
+            _buildDetailRow(Icons.person,'User ID:',item.userId.toString(), isDark),
             _buildDetailRow(Icons.description, CustomTexts.description, item.description, isDark),
             _buildDetailRow(Icons.search_outlined, CustomTexts.category, item.itemType.toUpperCase(), isDark),
             

@@ -7,7 +7,7 @@ import 'package:mime/mime.dart';
 
 
 class Http {
-  static const String _baseUrl = 'http://10.0.2.2:8000'; // Replace with your API base URL
+  static const String _baseUrl = 'http://10.0.2.2:8000'; 
 
   // --- Helper method to merge default and custom headers ---
   static Map<String, String> _buildHeaders(
@@ -79,7 +79,6 @@ class Http {
     final response = await http.post(
       uri,
       headers: _buildHeaders(customHeaders: headers),
-      // IMPORTANT: No body is included, as the data is already in the URI.
     );
     return _handleResponse(response);
   }
@@ -88,18 +87,18 @@ class Http {
 
   // Helper method to make a PUT request
   static Future<Map<String, dynamic>> put(
-  String endpoint, {
-  Map<String, dynamic>? data,
-  bool isMultipart = false,
-  File? file,
-  String? fileFieldName,
-  Map<String, String>? headers,
-  Uint8List? fileBytes,
-  String? fileName,
-  String? fileMimeType,
-  }) async {
-  try {
-    final uri = Uri.parse('$_baseUrl/$endpoint');
+    String endpoint, {
+    Map<String, dynamic>? data,
+    bool isMultipart = false,
+    File? file,
+    String? fileFieldName,
+    Map<String, String>? headers,
+    Uint8List? fileBytes,
+    String? fileName,
+    String? fileMimeType,
+    }) async {
+    try {
+      final uri = Uri.parse('$_baseUrl/$endpoint');
 
     // -----------------------
     // CASE 1: MULTIPART PUT
@@ -224,7 +223,6 @@ class Http {
       }
       final body = json.decode(response.body);
 
-      // Ensure the response is a Map<String, dynamic> or wrap it if it's not
       return body is Map<String, dynamic>
           ? body
           : {
@@ -234,7 +232,6 @@ class Http {
               "statusCode": response.statusCode,
             };
     } catch (e) {
-      // JSON parsing failed for a success response
       return {
         "status": "error",
         "message": "Failed to parse successful response body: $e",
@@ -249,7 +246,7 @@ class Http {
     String endpoint, 
     Map<String, String> fields, 
     File? imageFile,
-    String imageFieldName, // e.g., 'item_image'
+    String imageFieldName, 
     {Map<String, String>? headers}
     ) async {
 

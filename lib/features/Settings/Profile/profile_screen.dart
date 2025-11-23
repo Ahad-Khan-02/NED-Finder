@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ned_finder/Models/User/user_item_stat_model.dart';
-// Note: Assuming these paths are correct for your project structure
 import 'package:ned_finder/Models/User/user_model.dart'; 
 import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/http/http_client.dart';
 
 
-
-
-// 1. Convert to StatefulWidget for better data management 
 class ProfileScreen extends StatefulWidget {
-  // Required: The ID of the user whose profile should be displayed
   final int userId; 
   
   const ProfileScreen({super.key, required this.userId});
@@ -21,15 +16,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Future to hold the result of the API call for user profile
   late Future<UserModel> _userProfileFuture;
 
-  // Future to hold the result of the API call for user item stats
   late Future<UserItemStatsModel> _itemStatsFuture;
 
-  // --- Data Fetching Methods ---
-
-  // Fetches User Model (Kept static inside State class as per user's provided pattern)
   static Future<UserModel> fetchUser(int userId) async {
     final endpoint = 'users/$userId'; 
     final result = await Http.get(endpoint);
@@ -41,7 +31,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // [NEW] Fetches item counts based on the response structure
   static Future<UserItemStatsModel> fetchItemStats(int userId) async {
     final endpoint = 'my-items/$userId'; 
     final result = await Http.get(endpoint);
@@ -54,7 +43,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       int missingCount = 0;
 
       for (var item in items) {
-        // Calculate counts based on the 'found' boolean field as requested
         if (item['found'] == true) {
           foundCount++;
         } else {
@@ -74,9 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Start fetching the user profile data
     _userProfileFuture = fetchUser(widget.userId);
-    // Start fetching the item statistics data
     _itemStatsFuture = fetchItemStats(widget.userId);
   }
 
@@ -96,23 +82,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Header Row (Profile Title and Actions) ---
             const _ProfileHeader(),
             const SizedBox(height: 32),
             
-            // --- Main Profile Info Section (Uses FutureBuilder) ---
             FutureBuilder<UserModel>(
               future: _userProfileFuture,
               builder: (context, snapshot) {
-                // Default placeholders for loading state
                 String userName = 'Loading Name...';
                 String userRole = 'Loading Role...';
                 String userEmail = 'Loading Email...';
                 bool isError = false;
 
-                // Handle data state
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Handled by placeholders
                 } else if (snapshot.hasError) {
                   userName = 'Error';
                   userRole = 'Profile Load Failed';
@@ -134,24 +115,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   userRole: userRole,
                   userEmail: userEmail,
                   isError: isError,
-                  userProfileFuture: _userProfileFuture, // Pass the future for the loading spinner
+                  userProfileFuture: _userProfileFuture,
                 );
               },
             ),
 
             const SizedBox(height: 40),
             
-            // --- Stats Cards (Missing/Found Items - Now uses FutureBuilder for Item Stats) ---
             FutureBuilder<UserItemStatsModel>(
               future: _itemStatsFuture,
               builder: (context, snapshot) {
-                // Default stats
+
                 int missingCount = 0;
                 int foundCount = 0;
                 bool isStatsError = false;
                 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Keep default 0s for missing/found, but show loading indicator if desired
                 } else if (snapshot.hasError) {
                   isStatsError = true;
                 } else if (snapshot.hasData) {
@@ -190,7 +169,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Extracted method to build the main profile detail section
   Widget _buildUserProfileSection({
     required String userName,
     required String userRole,
@@ -198,13 +176,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required Future<UserModel> userProfileFuture,
     bool isError = false,
   }) {
-    // Determine the color for the details based on the state
+
     final Color detailColor = isError ? Colors.red : Theme.of(context).textTheme.bodyMedium!.color!;
     
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Profile Avatar or Loading Spinner
         Container(
           width: 120,
           height: 120,
@@ -218,14 +195,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator(color: Colors.white));
               }
-              // Icon is shown once loading is complete or error occurred
               return const Icon(Icons.person, size: 70, color: Colors.white);
             },
           ),
         ),
         const SizedBox(width: 24),
 
-        // User Details (Vertically Aligned)
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               
-              // Role/Course (Using Role from API)
+              // Department
               _ProfileDetailRow(
                 icon: Icons.school_outlined,
                 text: userRole,
@@ -248,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 4),
               
-              // Email/Location (Using Email from API)
+              // Email
               _ProfileDetailRow(
                 icon: Icons.alternate_email,
                 text: userEmail,
@@ -262,17 +237,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// -------------------------------------------------------------
-// Extracted Private Widgets (Minor updates to accept color)
-// -------------------------------------------------------------
-
-// Helper widget for the Header Row
 class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader();
 
   @override
   Widget build(BuildContext context) {
-    // Using hardcoded strings for buttons as CustomTexts constants were not available
     return const Text(
       'Profile',
       style: TextStyle(
@@ -283,7 +252,6 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-// Helper widget for Course/Location details
 class _ProfileDetailRow extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -292,7 +260,7 @@ class _ProfileDetailRow extends StatelessWidget {
   const _ProfileDetailRow({
     required this.icon,
     required this.text,
-    this.color = Colors.black, // Default color
+    this.color = Colors.black, 
   });
 
   @override
@@ -313,7 +281,6 @@ class _ProfileDetailRow extends StatelessWidget {
   }
 }
 
-// Helper widget for Missing/Found stats
 class _StatCard extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -331,18 +298,15 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine primary color based on item type or error state
     final Color primaryColor = isError 
       ? Colors.red 
-      : (label.contains('Missing') ? Colors.orange : CustomColors.primary); // Example colors
+      : (label.contains('Missing') ? Colors.orange : CustomColors.primary); 
     
     final Color textColor = isError 
       ? Colors.white 
       : Theme.of(context).textTheme.bodyLarge!.color!;
       
-    // Adjust card color if there's an error to make it stand out
     final Color finalCardColor = isError ? primaryColor: cardColor;
-
 
     return Card(
       color: finalCardColor,
@@ -355,7 +319,7 @@ class _StatCard extends StatelessWidget {
             Icon(
               icon, 
               size: 30, 
-              color: isError ? Colors.white : primaryColor, // Icon color changes on error
+              color: isError ? Colors.white : primaryColor, 
             ),
             const SizedBox(height: 12),
             Text(

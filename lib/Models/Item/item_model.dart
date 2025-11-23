@@ -1,12 +1,9 @@
-// item_model.dart
-
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ned_finder/utils/constants/colors.dart'; // Assuming this provides CustomColors
 
 class ItemModel {
-  // Ensure fields are non-nullable by providing required defaults in the constructor
   final int id;
   final int userId;
   final String itemType;
@@ -20,19 +17,15 @@ class ItemModel {
   final DateTime createdAt; 
   final String imageBase64; 
   
-  // --- Computed Properties for UI ---
-  
-  // Uses base64Decode safely
+
   Uint8List get imageBytes {
     try {
       return base64Decode(imageBase64);
     } catch (e) {
-      // Return an empty list if decoding fails
       return Uint8List(0);
     }
   }
 
-  // Uses safe status string (guaranteed non-null by fromJson)
   Color get statusColor {
     switch (status.toLowerCase()) {
       case 'approved':
@@ -79,40 +72,29 @@ class ItemModel {
     required this.imageBase64,
   });
 
-  // --- Null-Safe JSON Factory Constructor ---
   factory ItemModel.fromJson(Map<String, dynamic> json) {
     
-    // 1. Image Base64 Extraction (Null-safe and splits off data URI headers)
     final String fullImageString = json['item_image'] as String? ?? '';
     final String base64Data = fullImageString.split(',').last.trim();
 
-    // 2. Field Extraction with Null Safety (using ?? to provide defaults)
     
     // Safety for DateTimes
     final DateTime safeDate = DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now();
     final DateTime safeCreatedAt = DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now();
 
     return ItemModel(
-      // Numbers (use ?? 0)
       id: json['id'] as int? ?? 0,
       userId: json['user_id'] as int? ?? 0,
       
-      // Strings (use ?? 'N/A' or a contextual default)
-      itemType: json['item_type'] as String? ?? 'lost', // Default to 'lost'
+      itemType: json['item_type'] as String? ?? 'lost', 
       name: json['item_name'] as String? ?? 'Unnamed Item',
       description: json['item_description'] as String? ?? 'No description provided.',
       email: json['email'] as String? ?? 'user@example.com',
       location: json['location'] as String? ?? 'Unknown Location',
-      status: json['status'] as String? ?? 'pending', // Default status to prevent UI crash
-      
-      // Booleans (use ?? false)
+      status: json['status'] as String? ?? 'pending',   
       isFound: json['found'] as bool? ?? false,
-
-      // DateTimes (use safe, parsed values)
       date: safeDate,
       createdAt: safeCreatedAt,
-
-      // Base64
       imageBase64: base64Data, 
     );
   }

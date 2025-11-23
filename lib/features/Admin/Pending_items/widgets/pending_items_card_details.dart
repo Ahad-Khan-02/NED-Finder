@@ -251,7 +251,7 @@ class _AdminItemDetailsScreenState extends State<AdminItemDetailsScreen> {
             const SizedBox(height: 20),
 
             // Details Section
-            _buildDetailRow(Icons.person, item.submitterName,'' ),
+            _buildDetailRow(Icons.person,'User ID: ' ,item.userId.toString()),
             _buildDetailRow(Icons.calendar_today, 'Date/Time', '${item.dateString} at ${item.timeString}'),
             _buildDetailRow(Icons.location_on, 'Location', item.location),
             _buildDetailRow(Icons.description, 'Description', item.description, maxLines: 5),

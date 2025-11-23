@@ -89,7 +89,7 @@ class _CompletedItemsScreenState extends State<CompletedItemsScreen> {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, 
-            childAspectRatio: 0.5,
+            childAspectRatio: 0.45,
             crossAxisSpacing: 20,
             mainAxisSpacing: 20,
           ),

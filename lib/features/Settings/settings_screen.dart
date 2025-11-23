@@ -5,17 +5,15 @@ import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
 import 'package:ned_finder/features/Settings/Profile/profile_screen.dart';
 import 'package:ned_finder/features/Settings/widgets/custom_settings_tile.dart';
 import 'package:ned_finder/utils/constants/colors.dart';
+import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 import 'package:ned_finder/utils/theme/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// NOTE: When using this inside HomeScreen's _buildMainContent, 
-// ensure the necessary constant files (colors, texts, helpers) are accessible.
 
 class SettingsContent extends StatefulWidget {
   final int userID;
 
-  // Renamed to SettingsContent to imply it's the body content, not a full screen
   const SettingsContent({super.key,required this.userID});
 
   @override
@@ -23,10 +21,8 @@ class SettingsContent extends StatefulWidget {
 }
 
 class _SettingsContentState extends State<SettingsContent> {
-  // State for the Dark Mode toggle
   @override
   Widget build(BuildContext context) {
-    // Determine card and text colors based on the current theme
     final themeController = Get.find<ThemeController>();
     final bool isDark = HelperFunctions.isDarkMode(context);
     final Color cardColor = isDark ? CustomColors.darkContainer : CustomColors.lightContainer;
@@ -37,11 +33,10 @@ class _SettingsContentState extends State<SettingsContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- Dark Mode Tile ---
           SettingsTile(
             icon: Icons.dark_mode,
-            title: 'Dark Mode',
-            subtitle: themeController.isDarkMode ? 'Dark Mode Is On' : 'Dark Mode Is Off',
+            title: CustomTexts.darkMode,
+            subtitle: themeController.isDarkMode ? CustomTexts.darkModeOn : CustomTexts.darkModeOff,
             cardColor: cardColor,
             textColor: textColor,
             trailing: Switch(
@@ -54,11 +49,10 @@ class _SettingsContentState extends State<SettingsContent> {
           ),
           const SizedBox(height: 16),
 
-          // --- SeekNFInd Android Tile ---
           SettingsTile(
             icon: Icons.person,
-            title: 'Profile',
-            subtitle: 'View Profile',
+            title: CustomTexts.profile,
+            subtitle: CustomTexts.viweProfile,
             cardColor: cardColor,
             textColor: textColor,
             onTap: () {
@@ -67,10 +61,9 @@ class _SettingsContentState extends State<SettingsContent> {
           ),
           const SizedBox(height: 16),
 
-          // --- About SeekNFInd Tile ---
           SettingsTile(
             icon: Icons.logout,
-            title: 'Logout',
+            title: CustomTexts.logout,
             cardColor: cardColor,
             textColor: textColor,
             onTap: () async {
@@ -81,7 +74,6 @@ class _SettingsContentState extends State<SettingsContent> {
                 MaterialPageRoute(builder: (context) => LoginScreen()),
                 (_) => false,
               );
-
             },
           ),
         ],

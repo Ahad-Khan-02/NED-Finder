@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/Models/item_model.dart';
+import 'package:ned_finder/Models/Item/item_model.dart';
 import 'package:ned_finder/features/Home/widgets/item_card.dart';
 
 class ItemCardList extends StatelessWidget {

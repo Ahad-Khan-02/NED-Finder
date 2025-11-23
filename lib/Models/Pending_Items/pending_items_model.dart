@@ -6,20 +6,17 @@ enum ItemStatus { found, missing }
 class PendingItemModel {
   final int id;
   final int userId; 
-  // This will be a placeholder since the name isn't joined in the API response
-  final String submitterName; 
   final String name;
   final String description;
   final String location;
-  final String itemType; // 'lost' or 'found'
-  final String status;   // Will always be 'pending' for this screen
+  final String itemType; 
+  final String status;   
   final DateTime dateSubmitted;
   final String imageBase64; 
 
   PendingItemModel({
     required this.id,
     required this.userId,
-    required this.submitterName,
     required this.name,
     required this.description,
     required this.location,
@@ -29,9 +26,7 @@ class PendingItemModel {
     required this.imageBase64,
   });
 
-  // --- Getters for UI Display ---
   
-  // Decodes Base64 string to a displayable byte array for Image.memory
   Uint8List get imageBytes {
     try {
       final cleanBase64 = imageBase64.replaceAll('\n', '').replaceAll('\r', '').trim();
@@ -49,20 +44,14 @@ class PendingItemModel {
   String get timeString => '${dateSubmitted.hour.toString().padLeft(2, '0')}:${dateSubmitted.minute.toString().padLeft(2, '0')}';
 
 
-  // --- Factory Constructor for JSON Deserialization ---
-
   factory PendingItemModel.fromJson(Map<String, dynamic> json) {
-    // We prefer 'created_at' if available for accurate submission time
     final dateString = json['created_at'] ?? json['date'] ?? ''; 
     final parsedDate = DateTime.tryParse(dateString) ?? DateTime.now();
     
-    // Placeholder for submitter name
-    final String submitterName = json['submitter_name'] ?? 'User ID: ${json['user_id']}';
 
     return PendingItemModel(
       id: json['id'] as int? ?? 0,
       userId: json['user_id'] as int? ?? 0,
-      submitterName: submitterName, 
       name: json['item_name'] ?? 'Unknown Item',
       description: json['item_description'] ?? 'No description.',
       location: json['location'] ?? 'Unknown Location',

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ned_finder/Models/item_model.dart';
+import 'package:ned_finder/Models/Item/item_model.dart';
 import 'package:ned_finder/features/Home/claim_item_screen.dart';
 import 'package:ned_finder/features/Home/widgets/api_call_functions.dart';
 import 'package:ned_finder/features/Home/widgets/edit_form_filed.dart';

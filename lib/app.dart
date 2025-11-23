@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ned_finder/app_startup_screen.dart';
 import 'package:ned_finder/utils/theme/theme.dart';
-import 'package:ned_finder/utils/theme/theme_controller.dart'; // 🔥 Import the new controller
+import 'package:ned_finder/utils/theme/theme_controller.dart'; 
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +14,6 @@ class MyApp extends StatelessWidget {
     // Use Obx to rebuild GetMaterialApp when themeMode changes
     return Obx(
       () => GetMaterialApp(
-        // 🔥 Use the reactive themeMode from the controller
         themeMode: themeController.themeMode, 
         theme: CustomAppTheme.lightTheme,
         darkTheme: CustomAppTheme.darktheme,

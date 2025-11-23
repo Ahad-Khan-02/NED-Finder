@@ -16,28 +16,23 @@ class _AppStartupScreenState extends State<AppStartupScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus(); // Call the check function on startup
+    _checkLoginStatus(); 
   }
 
   void _checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Retrieve the saved 'isLoggedIn' flag, defaults to false if not set
     final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false; 
     final String? role = prefs.getString('role');
     
 
-    // Use Future.microtask to perform navigation after the current build cycle
     Future.microtask(() {
       if (isLoggedIn) {
-        // User is logged in, go straight to the dashboard
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => role == 'admin' ? const AdminDashboardScreen() : const HomeScreen()),
         );
       } else {
-        // User is not logged in, show the login screen
         Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
@@ -47,7 +42,6 @@ class _AppStartupScreenState extends State<AppStartupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a loading spinner while the check is in progress
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),

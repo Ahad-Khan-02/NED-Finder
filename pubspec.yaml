@@ -60,12 +60,6 @@ flutter:
   # ----------------(Local Assets)-------------------- 
   assets:
     - assets/logos/
-    - assets/images/
-    # - assets/icons/
-    # - assets/icons/categories/
-    # - assets/images/onboarding_images/
-    # - assets/images/login_and_signup_images/
-    # - assets/images/banners/
 
   # ----------------(Fonts Assets)-------------------- #
   fonts:
