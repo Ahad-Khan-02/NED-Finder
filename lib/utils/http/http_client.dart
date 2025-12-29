@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
+import 'package:flutter/foundation.dart';
+
 
 
 class Http {
-  static const String _baseUrl = 'http://10.0.2.2:8000'; 
+  static final String _baseUrl = kIsWeb
+    ? 'http://127.0.0.1:8000'   // Chrome / Web
+    : 'http://10.0.2.2:8000';  // Android Emulator
+
 
   // --- Helper method to merge default and custom headers ---
   static Map<String, String> _buildHeaders(
@@ -305,3 +309,5 @@ class Http {
   }
 
 }
+
+

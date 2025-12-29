@@ -102,41 +102,47 @@ class _HomeHeaderSectionState extends State<HomeHeaderSection> {
         children: [
 
           Expanded(
-            child: TextButton.icon(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: false, appBarTitle: CustomTexts.reportFoundItem, )));
-                },
-                icon: const Icon(Icons.add, color: Colors.green),
-                label: const Text(
-                  CustomTexts.addItem,
-                  style: TextStyle(color:   Colors.green, fontWeight: FontWeight.bold,fontSize: 12),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.green.withOpacity(0.2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            child: SizedBox(
+              height: 50,
+              child: TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: false, appBarTitle: CustomTexts.reportFoundItem, )));
+                  },
+                  icon: const Icon(Icons.add, color: Colors.green),
+                  label: const Text(
+                    CustomTexts.addItem,
+                    style: TextStyle(color:   Colors.green, fontWeight: FontWeight.bold,fontSize: 12),
                   ),
-                ),
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.green.withOpacity(0.2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+              ),
             ),
           ),
           const SizedBox(width: 10),
 
           Expanded(
-            child: TextButton.icon(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: true, appBarTitle: CustomTexts.reportLostItem)));
-                },
-                icon: const Icon(Icons.warning_amber, color: Colors.red),
-                label: const Text(
-                  CustomTexts.reportItem,
-                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold,fontSize: 12),
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.red.withOpacity(0.2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            child: SizedBox(
+              height: 50,
+              child: TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>   ReportItemScreen(isLost: true, appBarTitle: CustomTexts.reportLostItem)));
+                  },
+                  icon: const Icon(Icons.warning_amber, color: Colors.red),
+                  label: const Text(
+                    CustomTexts.reportItem,
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold,fontSize: 12),
                   ),
-                ),
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.red.withOpacity(0.2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+              ),
             ),
           ),
         ],

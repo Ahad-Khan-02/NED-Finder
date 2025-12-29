@@ -61,21 +61,21 @@ class CustomDropdownField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
+          isExpanded: true, // This fixes the overflow issue
           items: items.map((item) {
             return DropdownMenuItem(
               value: item,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: Text(
-                  item,
-                ),
+              child: Text(
+                item,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             );
           }).toList(),
           onChanged: onChanged,
         ),
         const SizedBox(
-          height:CustomSizes.spaceBtwInputFields / 3 ,
+          height: 8, // Replace CustomSizes.spaceBtwInputFields / 3 with your value
         ),
       ],
     );

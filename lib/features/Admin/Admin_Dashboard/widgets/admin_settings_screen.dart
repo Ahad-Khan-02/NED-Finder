@@ -73,11 +73,35 @@ class _SettingsContentState extends State<AdminSettingsScreen> {
               cardColor: cardColor,
               textColor: textColor,
               onTap: () async {
+                // 1. Show confirmation dialog
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Confirm Logout'),
+                    content: const Text('Are you sure you want to logout?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+
+                // 2. Check user response and context validity
+                if (confirm != true || !context.mounted) return;
+
+                // 3. Clear local storage
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.clear();
 
                 if (!context.mounted) return;
 
+                // 4. Navigate back to Login Screen
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ned_finder/features/Authentication/Auth%20Services/auth_services.dart';
+import 'package:ned_finder/Providers/Authentication/signup_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import 'package:ned_finder/features/Authentication/Login/login_screen.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_app_logo_with_title.dart';
 import 'package:ned_finder/features/Authentication/common_widgets/custom_title_with_subtitle.dart';
@@ -9,7 +11,6 @@ import 'package:ned_finder/utils/constants/colors.dart';
 import 'package:ned_finder/utils/constants/texts.dart';
 import 'package:ned_finder/utils/helpers/helper_functions.dart';
 
-
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -18,130 +19,115 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  bool _isLoading = false;
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController fullNameController = TextEditingController();
-  String user = 'student';
-  String department = '';
-  String year = '';
-
   @override
-  void dispose() {
-    passwordController.dispose();
-    emailController.dispose();
-    fullNameController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    // Clear fields when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SignupProvider>().clearFields();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     bool isDark = HelperFunctions.isDarkMode(context);
-  
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
+    final isTablet = size.width >= 600 && size.width < 1024;
+    
+    // Responsive padding
+    final horizontalPadding = isSmallScreen ? 16.0 : (isTablet ? 32.0 : 48.0);
+    final verticalPadding = isSmallScreen ? 16.0 : 24.0;
+    
+    // Responsive container constraints
+    final maxWidth = isSmallScreen ? double.infinity : (isTablet ? 550.0 : 500.0);
+    
+    // Responsive box padding
+    final boxHorizontalPadding = isSmallScreen ? 20.0 : 24.0;
+    final boxVerticalPadding = isSmallScreen ? 24.0 : 32.0;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: isDark? CustomColors.dgradientColors : CustomColors.lgradientColors,begin: Alignment.topCenter,end: Alignment.bottomCenter),
+          gradient: LinearGradient(
+            colors: isDark ? CustomColors.dgradientColors : CustomColors.lgradientColors,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 450),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              decoration: BoxDecoration(
-                color: isDark?  CustomColors.dboxColor: CustomColors.lboxColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: CustomColors.shadowColor.withOpacity(0.5),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+                vertical: verticalPadding,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-        
-                  // 1. Logo and Title
-                  CustomAppLogoWithTitle(),
-                  CustomTitlewithSubtitle(title: CustomTexts.signUpTitle, subtitle: CustomTexts.signUpSubTitle),
-        
-                  // 2. Email Input Field
-                  SignupInputFields(
-                    password: passwordController, 
-                    email: emailController, 
-                    fullName: fullNameController, 
-                    onDepartmentChanged: (selectedDepartment){
-                      department = selectedDepartment!;
-                    },
-                    onYearChanged: (selectedYear){
-                      year = selectedYear!;
-                    },
-                  ),
-        
-                 SignUpScreenButtons(
-                  isLoading: _isLoading,
-                    onPressed: () async {
-                      if (_isLoading) return; 
+              child: Container(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                padding: EdgeInsets.symmetric(
+                  horizontal: boxHorizontalPadding,
+                  vertical: boxVerticalPadding,
+                ),
+                decoration: BoxDecoration(
+                  color: isDark ? CustomColors.dboxColor : CustomColors.lboxColor,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.shadowColor.withOpacity(0.5),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Consumer<SignupProvider>(
+                  builder: (context, signupProvider, child) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        // Logo and Title
+                        CustomAppLogoWithTitle(),
+                        CustomTitlewithSubtitle(
+                          title: CustomTexts.signUpTitle,
+                          subtitle: CustomTexts.signUpSubTitle,
+                        ),
 
-                      if (emailController.text.isEmpty ||
-                          passwordController.text.isEmpty ||
-                          fullNameController.text.isEmpty ||
-                          year.isEmpty ||
-                          user.isEmpty ||
-                          department.isEmpty) {
-                        return HelperFunctions.showAlert(
-                          "Missing Fields",
-                          "Please fill all required fields."
-                        );
-                      }
+                        // Input Fields
+                        SignupInputFields(
+                          password: signupProvider.passwordController,
+                          email: signupProvider.emailController,
+                          fullName: signupProvider.fullNameController,
+                          onDepartmentChanged: (selectedDepartment) {
+                            signupProvider.setDepartment(selectedDepartment!);
+                          },
+                          onYearChanged: (selectedYear) {
+                            signupProvider.setYear(selectedYear!);
+                          },
+                        ),
 
-                      setState(() {
-                        _isLoading = true; 
-                      });
-
-                      try {
-                        final response = await AuthService.signup(
-                          role: user,
-                          fullname: fullNameController.text.trim(),
-                          email: emailController.text.trim(),
-                          fieldOfStudy: department,
-                          year: int.tryParse(year) ?? 1,
-                          password: passwordController.text.trim(),
-                        ); 
-
-
-                        String msg = response["data"]?["message"] ??
-                                    response["message"].toString().replaceAll("API Error (Status 400): ", "");                        
-                        msg = msg.toString().replaceAll("Value error, ","");
-                        msg = msg.toString().replaceAll("value is ","");
-                        
-                        HelperFunctions.showAlert(
-                          response["status"] == "success" ? "Success" : "Signup Failed",
-                          msg
-                        );
-
-                        if (response["status"] == "success") {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen())); // Go back to login
-                        }
-
-                      } catch (e) {
-                        HelperFunctions.showAlert(
-                          "Error",
-                          "Failed to signup. Please try again.\nDetails: ${e.toString()}"
-                        );
-                      } finally {
-                        setState(() {
-                          _isLoading = false; 
-                        });
-                      }
-                    },
-                  ),       
-                ],
+                        SignUpScreenButtons(
+                          isLoading: signupProvider.isLoading,
+                          onPressed: () async {
+                            final success = await signupProvider.signup();
+                            
+                            if (success) {
+                              // Use GetX navigation
+                              Get.off(() => LoginScreen());
+                              
+                              // Or use regular Navigator
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => LoginScreen(),
+                              //   ),
+                              // );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -150,8 +136,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
-
-
-
-
-

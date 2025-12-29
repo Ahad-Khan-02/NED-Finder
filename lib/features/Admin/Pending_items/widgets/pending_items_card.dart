@@ -114,7 +114,7 @@ class AdminPendingItemCard extends StatelessWidget {
                   // Submitter
                   _buildDetailRow(
                     Icons.person,
-                    'User ID: $item.userId.toString()',
+                    'User ID: ${item.userId.toString()}',
                     isSubtitle: true,
                     isDark,
                   ),
